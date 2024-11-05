@@ -1,0 +1,26 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Changa", serif;
+    font-optical-sizing: auto;
+    color: #212631;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #F0F1F5;
+}
+
+.globalHeader {
+    display: flex;
+    color: #212631;
+    font-optical-sizing: auto;
+    font-size: 70px;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    margin-top: 120px;
+    align-items: center;
+}
