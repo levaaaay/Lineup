@@ -32,4 +32,12 @@ export default {
     height: 79px;
     margin-left: 65px;
 }
+
+@media (max-width: 1366px) {
+    .logo {
+        width: 120px;
+        height: 67px; 
+        margin-left: 50px; 
+    }
+}
 </style>

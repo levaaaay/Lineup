@@ -32,13 +32,13 @@ export default {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    padding-bottom: 85px;
 }
 
 .ltoLogo {
     width: 119px;
     height: 119px;
     margin-top: 23px;
-    margin-bottom: -120px;
 }
 
 .container {
@@ -58,6 +58,26 @@ export default {
     align-items: center;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
     border-radius: 15px;
+    margin-top: 20px;
 }
+
+@media (max-width: 1366px) {
+    .ltoLogo {
+        width: 100px; /* Scale down the logo */
+        height: 100px;
+        margin-top: 20px;
+    }
+
+    .container {
+        gap: 20px; /* Reduce the gap between service boxes */
+    }
+
+    .servicesBox {
+        width: 300px; /* Reduce the width of the boxes for smaller screens */
+        height: 300px; /* Adjust height of the boxes */
+        margin-top: 15px;
+    }
+}
+
 
 </style>

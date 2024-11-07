@@ -51,10 +51,15 @@ export default {
 </script>
 
 <style scoped>
+.specificServices {
+    padding-top: 85px;
+}
+
 .centerWrap {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-bottom: 85px;
 }
 
 .container {
@@ -138,8 +143,38 @@ export default {
   transition: all 0s ease;
 }
 
-.expand-enter, .expand-leave-to /* .expand-leave-active in <2.1.8 */ {
+.expand-enter, .expand-leave-to {
   opacity: 0;
   height: 0;
 }
+
+@media (max-width: 1366px) {
+    .container {
+        width: 100%;
+        padding: 10px 10px 30px 10px;
+    }
+
+    .circleContainer {
+        margin-bottom: 20px;
+    }
+
+    .expand-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 36px;
+    }
+
+    .serviceHeader {
+        padding: 15px 40px;
+        margin-left: -40px;
+        margin-right: 20px;
+    }
+
+    .serviceDetails {
+        margin-left: 20px;
+        margin-right: 20px;
+        padding-top: 30px;
+    }
+}
+
 </style>

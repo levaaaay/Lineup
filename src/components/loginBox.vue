@@ -93,7 +93,7 @@ export default {
 }
 
 .box {
-    width: 458px;
+    width: 460px;
     height: 521px;
     background: linear-gradient(#B6CFF7, #F0F1F5);
     margin-top: 120px;
@@ -105,6 +105,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 0px;
 }
 
 .ltoLogo {
@@ -158,7 +159,6 @@ p {
     font-size: 16px;
     color: #F0F1F5;
     font-weight: 600;
-    
     border: none;
     cursor: pointer;
 }
@@ -195,5 +195,45 @@ p {
     background-repeat: no-repeat;
     padding-left: 22px;
     font-size: 30px;
+}
+
+@media (max-width: 1366px) {
+    .box {
+        width: 80%; 
+        height: auto; 
+        margin-top: 100px; 
+        padding: 20px; 
+    }
+
+    .ltoLogo {
+        width: 100px; 
+        height: 100px;
+        margin: 10px 0; 
+    }
+
+    p {
+        font-size: 18px; 
+    }
+
+    .email, .password {
+        width: 90%; 
+        font-size: 14px; 
+        padding-left: 30px;
+    }
+
+    .button {
+        width: 90%; 
+        font-size: 14px;
+    }
+
+    .num {
+        width: 50px; 
+        height: 70px;
+        font-size: 25px;
+    }
+
+    .numContainer {
+        gap: 8px; 
+    }
 }
 </style>
