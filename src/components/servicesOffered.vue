@@ -51,8 +51,8 @@ export default {
 .servicesBox {
     width: 393px;
     height: 376px;
-    background-color: #174082;
-    border: 2px solid #174082;
+    background-color: #E0E4EB;
+    border: 2px solid #E0E4EB;
     display: flex;
     justify-content: center;
     align-items: center;

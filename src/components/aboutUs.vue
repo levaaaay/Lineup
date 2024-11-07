@@ -1,13 +1,15 @@
 <template>
     <div id="aboutUs" class="aboutUs">
-        <div class="globalHeader"> 
-            <p> What is </p>
-            <img :src="lineupLogo" alt="lineuplogo" class="logo"> 
-            <p>?</p>
-        </div>
-        <div class="container">
-            <div class="infoBox" v-for="(index) in boxes" :key="index">
-                <p> Box {{ index + 1 }}</p>
+        <div class="invisBox">
+            <div class="globalHeader"> 
+                <p> What is </p>
+                <img :src="lineupLogo" alt="lineuplogo" class="logo"> 
+                <p>?</p>
+            </div>
+            <div class="container">
+                <div class="infoBox" v-for="(index) in boxes" :key="index">
+                    <p> Box {{ index + 1 }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -33,9 +35,14 @@ export default {
     margin-top: -50px;
 }
 
+.invisBox {
+    background: grey;
+    height: 557px;
+}
+
 .logo {
-        width: 311px;
-        height: 169px; 
+        width: 291px;
+        height: 149px; 
         margin: 0 -40px 0 -25px;
     }
 
@@ -47,8 +54,8 @@ export default {
 }
 
 .infoBox {
-    width: 600.44px;
-    height: 221.78px;
+    width: 550.44px;
+    height: 171.78px;
     background-color: #E0E4EB;
     border: 2px solid #E0E4EB;
     display: flex;

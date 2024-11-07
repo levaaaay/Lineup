@@ -1,12 +1,14 @@
 <template>
     <div class="qWithL"> 
-        <div class="globalHeader">
-            <p>Queueing with </p>
-            <img :src="lineupLogo" class="logo"> 
-        </div>
-        <div class="container">
-            <div class="box">
-                <p> box 1</p>
+        <div class="invisBox">
+            <div class="globalHeader">
+                <p>Queueing with </p>
+                <img :src="lineupLogo" class="logo"> 
+            </div>
+            <div class="container">
+                <div class="box">
+                    <p> box 1</p>
+                </div>
             </div>
         </div>
     </div>
@@ -39,8 +41,8 @@ export default {
 }
 
 .logo {
-    width: 311px;
-    height: 169px; 
+    width: 291px;
+    height: 149px; 
     margin: 0 -40px 0 -25px;
 }
 
@@ -53,8 +55,8 @@ export default {
 .box {
     display: flex;
     justify-content: center;
-    width: 1235px;
-    height: 469px;
+    width: 1035px;
+    height: 369px;
     background-color: #E0E4EB;
     border: 2px solid #E0E4EB;
     align-items: center;

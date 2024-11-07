@@ -3,9 +3,9 @@
         <router-link :to="{ name: 'home'}" @click="navigateOrScrollToLandingPage"><img :src="lineupLogo" alt="lineuplogo" class="logo"></router-link>
         <div class="navButtons">
             <p @click="navigateOrScrollToAboutUs('aboutUs')">{{ aboutUs }}</p>
-            <router-link class="nav-item" :to="{ name: 'services'}">{{ services }}</router-link>
-            <p>{{ schedule }}</p>
-            <router-link class="nav-item" :to="{ name: 'login'}">{{ ticket }}</router-link>
+            <router-link class="nav-item" :to="{ name: 'services' }">{{ services }}</router-link>
+            <router-link class="nav-item" :to="{ name: 'schedule' }">{{ schedule }}</router-link>
+            <router-link class="nav-item" :to="{ name: 'login' }">{{ ticket }}</router-link>
         </div>
     </div> 
 </template>
@@ -48,7 +48,9 @@ gsap.registerPlugin(ScrollToPlugin);
                 } else {
                     this.$router.push({ name: 'home' }).then(() => {
                         this.$nextTick(() => {
-                            this.scrollToAboutUs(sectionId);
+                            this.$nextTick(() => {
+                                this.scrollToAboutUs(sectionId);
+                            });
                         });
                     });
                 }
@@ -59,7 +61,7 @@ gsap.registerPlugin(ScrollToPlugin);
                     this.$nextTick(() => {
                         window.scrollTo({
                             top: 0,
-                            behavior: 'smooth'
+                            behavior: "smooth"
                         });
                     });
                 });

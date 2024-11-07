@@ -1,19 +1,21 @@
 <template>
     <div class="lineupMinds">
-        <div class="globalHeader">
-            <p>Minds Behind </p>
-            <img :src="lineupLogo" class="logo">
-        </div>
-        <div class="container">
-            <div class="dev" v-for="(dev, index) in devs" :key="index">
-                <div class="minds"></div>
-                <div class="devInfo">
-                    <p class="name"> {{ dev.name }} </p>
-                    <p class="position"> {{ dev.position }} </p>
-                </div>
-                <div class="socIcons">
-                    <img :src="gitLogo" class="git">
-                    <img :src="linkedLogo" class="linked">
+        <div class="invisBox">
+            <div class="globalHeader">
+                <p>Minds Behind </p>
+                <img :src="lineupLogo" class="logo">
+            </div>
+            <div class="container">
+                <div class="dev" v-for="(dev, index) in devs" :key="index">
+                    <div class="minds"></div>
+                    <div class="devInfo">
+                        <p class="name"> {{ dev.name }} </p>
+                        <p class="position"> {{ dev.position }} </p>
+                    </div>
+                    <div class="socIcons">
+                        <img :src="gitLogo" class="git">
+                        <img :src="linkedLogo" class="linked">
+                    </div>
                 </div>
             </div>
         </div>
@@ -45,8 +47,8 @@ export default {
 
 <style scoped>
 .logo {
-    width: 311px;
-    height: 169px; 
+    width: 291px;
+    height: 132px; 
     margin: 0 -40px 0 -25px;
 }
 
@@ -63,8 +65,8 @@ export default {
 }
 
 .minds {
-    width: 333.96px;
-    height: 333.71px;
+    width: 283.96px;
+    height: 283.71px;
     border-radius: 50%;
     background-color: #E0E4EB;
     border: 2px solid #E0E4EB;

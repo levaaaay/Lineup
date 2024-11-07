@@ -54,17 +54,22 @@ export default {
     },
     methods: {
         queue() {
-            alert("TANGINAMO");
-        }
+            this.$router.push({ name: 'schedule' }).then(() => {
+            });
+        },
     }
 }
 </script>
 
 <style scoped>
+.landPage {
+    background: grey;
+    height: 557px;
+}
 .landPageHeader {
     color: #212631;
     font-optical-sizing: auto;
-    font-size: 70px;
+    font-size: 55px;
     justify-content: center;
     text-align: center;
     font-weight: 800;
@@ -121,7 +126,7 @@ export default {
 }
 
 .logosSlide img {
-    height: 275px;
+    height: 205px;
     margin: -40px 0 -50px 40px;
 }
 
@@ -132,7 +137,7 @@ export default {
 .queueText {
     display: flex;
     justify-content: center;
-    font-size: 30px;    
+    font-size: 25px;    
     align-items: center;
     margin-top: 20px;
 }
@@ -147,7 +152,7 @@ button {
     font-weight: 700;
     color: #F0F1F5;
     background-color: #174082;
-    padding: 10px 80px;
+    padding: 7px 60px;
     border: 2px solid #174082;
     border-radius: 30px;
     cursor: pointer;

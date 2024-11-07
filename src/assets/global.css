@@ -17,10 +17,16 @@ body {
     display: flex;
     color: #212631;
     font-optical-sizing: auto;
-    font-size: 70px;
+    font-size: 55px;
     justify-content: center;
     text-align: center;
     font-weight: 700;
     margin-top: 120px;
     align-items: center;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

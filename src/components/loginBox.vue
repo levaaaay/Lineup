@@ -101,12 +101,6 @@ export default {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .ltoLogo {
     width: 119px;
     height: 119px;
