@@ -61,6 +61,10 @@ export default {
 </script>
 
 <style scoped>
+.landPage {
+    padding-bottom: 85px;
+}
+
 .landPageHeader {
     color: #212631;
     font-optical-sizing: auto;
@@ -68,7 +72,6 @@ export default {
     justify-content: center;
     text-align: center;
     font-weight: 800;
-    margin-top: 0px;
 }
 
 .headerline2 {
@@ -122,7 +125,7 @@ export default {
 
 .logosSlide img {
     height: 275px;
-    margin: -40px 0 -50px 40px;
+    margin: -30px 0 -40px 40px;
 }
 
 .comingSoon {
@@ -134,7 +137,7 @@ export default {
     justify-content: center;
     font-size: 30px;    
     align-items: center;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .dynamic {
@@ -151,7 +154,7 @@ button {
     border: 2px solid #174082;
     border-radius: 30px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 30px;
 }
 
 button:hover {
@@ -165,4 +168,26 @@ button:hover {
     justify-content: center;
     align-items: center;
 }
+
+@media (max-width: 1366px) {
+        .navbar {
+            height: 45px;
+        }
+        
+        .logo {
+            width: 90px;
+            height: 45px;
+            margin-left: 30px;
+        }
+
+        .navButtons {
+            margin-right: 60px;
+            font-size: 9px;
+        }
+
+        .navButtons p, .nav-item {
+            margin-left: 30px;
+            font-size: 9px;
+        }
+    }
 </style>

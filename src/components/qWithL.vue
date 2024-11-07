@@ -1,6 +1,6 @@
 <template>
     <div class="qWithL"> 
-        <div class="globalHeader">
+        <div class="qWithLHeader">
             <p>Queueing with </p>
             <img :src="lineupLogo" class="logo"> 
         </div>
@@ -26,6 +26,10 @@ export default {
 </script>
 
 <style scoped>
+.qWithL {
+    padding: 85px 0 85px 0;
+}
+
 .qWithLHeader {
     display: flex;
     color: #212631;
@@ -34,7 +38,6 @@ export default {
     justify-content: center;
     text-align: center;
     font-weight: 700;
-    margin-top: 120px;
     align-items: center;
 }
 
@@ -60,5 +63,26 @@ export default {
     align-items: center;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
     border-radius: 15px;
+}
+
+@media (max-width: 1366px) {
+    .qWithL {
+        padding: 70px 0;
+    }
+
+    .qWithLHeader {
+        font-size: 50px;
+    }
+
+    .logo {
+        width: 250px;
+        height: 136px;
+        margin: 0 -20px 0 -15px;
+    }
+
+    .box {
+        width: 1000px;
+        height: 400px;
+    }
 }
 </style>

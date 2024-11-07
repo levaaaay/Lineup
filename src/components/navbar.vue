@@ -32,10 +32,9 @@ gsap.registerPlugin(ScrollToPlugin);
             scrollToAboutUs(sectionId) {
                 const section = document.getElementById(sectionId);
                 if (section) {
-                    const offset = 120;
                     const elementPosition = section.getBoundingClientRect().top + window.scrollY;
                     window.scrollTo({
-                        top: elementPosition + offset,
+                        top: elementPosition,
                         behavior: "smooth"
                     });
                 }
@@ -112,5 +111,28 @@ gsap.registerPlugin(ScrollToPlugin);
     .nav-item {
         cursor: pointer;
     }
+
+    @media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 20px;
+    }
+
+    .logo {
+        margin: 0 auto;
+        width: 90px;
+        height: auto;
+    }
+
+    .navButtons {
+        flex-direction: column;
+        font-size: 12px;
+    }
+
+    .navButtons p, .nav-item {
+        margin: 10px 0;
+    }
+}
 
 </style>

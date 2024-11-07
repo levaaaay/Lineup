@@ -44,6 +44,10 @@ export default {
 </script>
 
 <style scoped>
+.lineupMinds {
+    padding-top: 85px;
+}
+
 .logo {
     width: 311px;
     height: 169px; 
@@ -100,4 +104,30 @@ export default {
     height: 48px;
 }
 
+@media (max-width: 1366px) {
+    .logo {
+        width: 250px;
+        height: 136px;
+        margin: 0 -20px 0 -15px;
+    }
+
+    .minds {
+        width: 280px;
+        height: 280px;
+    }
+
+    .name {
+        font-size: 20px;
+    }
+
+    .git, .linked {
+        width: 40px;
+        height: 40px;
+    }
+
+    .container {
+        gap: 20px;
+        padding: 0 10px;
+    }
+}
 </style>

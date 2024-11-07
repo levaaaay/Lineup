@@ -120,6 +120,7 @@ p {
 }
 
 .email, .password {
+    display: flex;
     width: 395px;
     height: 46px;
     box-sizing: border-box;
@@ -129,7 +130,6 @@ p {
     border: none;
     background-position: 10px center;
     background-repeat: no-repeat;
-    margin-left: 32px;
     margin-bottom: 12px;
     padding-left: 35px;
 }
