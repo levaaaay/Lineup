@@ -59,7 +59,7 @@ export default {
 
 .container {
     width: 1235px;
-    height: 542px;
+    height: 450px;
     overflow-y: auto;
     background: #E0E4EB;
     border-radius: 10px;

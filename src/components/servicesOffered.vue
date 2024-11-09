@@ -4,7 +4,7 @@
         <div class="globalHeader">
             <p>Services Offered</p>
         </div>
-        <div class="container">
+        <div class="boxContainer">
             <div class="servicesBox" v-for="(index) in boxes" :key="index">
                 <p> Box {{ index + 1 }}</p>
             </div>
@@ -35,22 +35,23 @@ export default {
 }
 
 .ltoLogo {
-    width: 119px;
-    height: 119px;
+    width: 100px;
+    height: 100px;
     margin-top: 23px;
     margin-bottom: -120px;
 }
 
-.container {
+.boxContainer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 30px;
+    width: 100%;
 }
 
 .servicesBox {
-    width: 393px;
-    height: 376px;
+    width: 24.9%;
+    height: 306px;
     background-color: #E0E4EB;
     border: 2px solid #E0E4EB;
     display: flex;

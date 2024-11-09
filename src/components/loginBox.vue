@@ -35,10 +35,8 @@
                                 <input type="text" required class="num" maxlength="1" inputmode="numeric" @input="validateInput($event)" v-model="code[index]">
                             </form>
                         </div>
-                    </div>
-                    <div class="container">
-                        <button class="button" @click="authenticate">Verify</button>
-                    </div>
+                    </div>   
+                    <button class="verifyButton" @click="authenticate">Verify</button>
                 </div>
             </div>
         </div>
@@ -93,10 +91,10 @@ export default {
 }
 
 .box {
-    width: 458px;
-    height: 521px;
+    width: 30%;
+    height: 471px;
     background: linear-gradient(#B6CFF7, #F0F1F5);
-    margin-top: 120px;
+    margin-top: 80px;
     border-radius: 15px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
@@ -114,8 +112,8 @@ p {
 }
 
 .email, .password {
-    width: 395px;
-    height: 46px;
+    width: 85%;
+    height: 40px;
     box-sizing: border-box;
     border-radius: 10px;
     font-size: 16px;
@@ -145,20 +143,34 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 395px;
+    width: 85%;
     height: 46px;
     border-radius: 10px;
     background-color: #174082;
     font-size: 16px;
     color: #F0F1F5;
     font-weight: 600;
-    
+    border: none;
+    cursor: pointer;
+}
+
+.verifyButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 85%;
+    height: 46px;
+    border-radius: 10px;
+    background-color: #174082;
+    font-size: 16px;
+    color: #F0F1F5;
+    font-weight: 600;
     border: none;
     cursor: pointer;
 }
 
 #getStarted {
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .signIn {
@@ -168,19 +180,22 @@ p {
 }
 
 .googleLogo {
-    margin-top: 10px;
+    margin: 5px 0 20px 0;
     cursor: pointer;
 }
 
 .numContainer {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
     margin-top: -45px;
+    width: 100%
 }
 
 .num {
     width: 57px;
-    height: 83px;
+    height: 78px;
     box-sizing: border-box;
     border-radius: 20px;
     border: none;
