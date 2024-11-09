@@ -1,36 +1,27 @@
 <template>
     <div class="scheduleBox">
         <div class="globalHeader">Schedule</div>
-        <div class="boxContainer">
-            <div class="box">
+            <div class="boxContainer">
+                <div 
+                    v-for="(day, index) in twoWeeksDays"
+                    :key="index"
+                    :class="index % 2 === 0 ? 'box' : 'invertedBox'"
+                >
                 <div class="container">
                     <div class="halfContainer" id="red">
-                        <div class="day">Wednesday</div>
-                        <div class="date">30.10</div>
-                        <div class="button">Queue Now</div>
+                        <div :class="index % 2 === 0 ? 'day' : 'invertedDay'">{{ day.formattedDay }}</div>
+                        <div :class="index % 2 === 0 ? 'date' : 'invertedDate'">{{ day.formattedDate }}</div>
+                        <div :class="index % 2 === 0 ? 'button' : 'invertedButton'">Queue Now</div>
                     </div>
                     <div class="halfContainer" id="green">
-                        <div class="line"></div>
+                        <div :class="index % 2 === 0 ? 'line' : 'invertedLine'"></div>
                         <div class="columnContainer">
-                            <div class="infoBox" v-for="(index) in boxes" :key="index">
-                                <p> Box {{ index + 1 }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="invertedBox">
-                <div class="container">
-                    <div class="halfContainer" id="red">
-                        <div class="invertedDay">Wednesday</div>
-                        <div class="invertedDate">30.10</div>
-                        <div class="invertedButton">Queue Now</div>
-                    </div>
-                    <div class="halfContainer" id="green">
-                        <div class="invertedLine"></div>
-                        <div class="columnContainer">
-                            <div class="invertedInfoBox" v-for="(index) in boxes" :key="index">
-                                <p> Box {{ index + 1 }}</p>
+                            <div
+                                v-for="(infoBox, boxIndex) in boxes"
+                                :key="boxIndex"
+                                :class="index % 2 === 0 ? 'infoBox' : 'invertedInfoBox'"
+                            >
+                                <p> Box {{ boxIndex + 1 }}</p>
                             </div>
                         </div>
                     </div>
@@ -45,10 +36,34 @@ export default {
     name: "scheduleBox",
     data() {
         return {
-            boxes: Array(3).fill(null)
+            boxes: Array(3).fill(null),
+            twoWeeksDays: this.generateTwoWeeks(),
+        };
+    },
+    methods: {
+        generateTwoWeeks() {
+        const days = [];
+        const today = new Date();
+        
+        for (let i = 0; i < 14; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i); 
+
+            const formattedDay = date.toLocaleDateString("en-US", { weekday: "long" });
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const formattedDate = `${month}.${day}`;
+
+            days.push({
+            formattedDay,
+            formattedDate,
+            date,
+            });
         }
-    }
-}
+        return days;
+        },
+    },
+};
 </script>
 
 <style scoped>
@@ -63,7 +78,7 @@ export default {
     align-items: center;
     gap: 100px;
     flex-wrap: nowrap;
-    margin-left: 420px;
+    margin-left: 5875px;
 }
 
 .container {
