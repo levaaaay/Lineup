@@ -1,8 +1,7 @@
 <template>
     <div class="landPage">
         <div class="landPageHeader">
-            <p class="headerline">{{ headerLine1 }}</p>
-            <p class="headerline2">{{ headerLine2 }}</p>
+            <h1 class="text-center">{{ headerLine1 }}</h1>
         </div>
         <div class="logos">
             <div class="logosSlide">
@@ -41,8 +40,7 @@ export default {
     name: "landPage",
     data() {
         return {
-            headerLine1: "Queue at the Comfort",
-            headerLine2: "of Your Home",
+            headerLine1: "Queue at the comfort of your home",
             ltoLogo,
             dfaLogo,
             prcLogo,
@@ -64,21 +62,15 @@ export default {
 <style scoped>
 .landPage {
     background: grey;
-    height: 557px;
-}
-.landPageHeader {
-    color: #212631;
-    font-optical-sizing: auto;
-    font-size: 55px;
-    justify-content: center;
-    text-align: center;
-    font-weight: 800;
-    margin-top: 0px;
+    height: 38rem;
 }
 
-.headerline2 {
-    margin-top: -30px;
+h1 {
+    font-weight: 800;
+    padding-top: 1.25rem;
 }
+
+
 
 @keyframes slide {
     from {
@@ -126,8 +118,8 @@ export default {
 }
 
 .logosSlide img {
-    height: 205px;
-    margin: -40px 0 -50px 40px;
+    height: 18.75rem;
+    margin: -40px 0 -40px 40px;
 }
 
 .comingSoon {

@@ -1,12 +1,21 @@
 <template> 
     <div class="navbar">
-        <router-link :to="{ name: 'home'}" @click="navigateOrScrollToLandingPage"><img :src="lineupLogo" alt="lineuplogo" class="logo"></router-link>
-        <div class="navButtons">
-            <p @click="navigateOrScrollToAboutUs('aboutUs')">{{ aboutUs }}</p>
-            <router-link class="nav-item" :to="{ name: 'services' }">{{ services }}</router-link>
-            <router-link class="nav-item" :to="{ name: 'schedule' }">{{ schedule }}</router-link>
-            <router-link class="nav-item" :to="{ name: 'login' }">{{ ticket }}</router-link>
-        </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <div class="container-fluid">
+                <img src="../assets/lineupLogo.svg" alt="" width="70" height="40">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
+                        <a class="nav-link" href="services">Services</a>
+                        <a class="nav-link" href="schedule">Schedule</a>
+                        <a class="nav-link" href="ticket">Ticket</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
     </div> 
 </template>
 
@@ -22,10 +31,6 @@ gsap.registerPlugin(ScrollToPlugin);
         data() {
             return {
                 lineupLogo,
-                aboutUs: "About Us",
-                services: "Services",
-                schedule: "Schedule",
-                ticket: "My Ticket",
             }
         },
         methods: {
@@ -71,48 +76,19 @@ gsap.registerPlugin(ScrollToPlugin);
 </script>
 
 <style scoped> 
-    .navbar {
-        height: 50px;
-        background: #F0F1F5;
-        display: flex; 
-        justify-content: space-between;
-        align-items: center; 
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        width: 100%;
-    }
+.navbar {
+    --bs-navbar-padding-y: 0.25rem;
+}
 
-    .logo {
-        width: 113px;
-        height: 50px; 
-        margin-left: 50px;
-        cursor: pointer;
-        position: relative;
-        z-index: 10;
-        pointer-events: auto;
-    }
+.navbar-nav {
+    margin-left: 1rem;
+    gap: 1rem;
+}
 
-    .navButtons {
-        color: #212631;
-        display: flex;
-        margin-right: 120px;
-        font-size: 10px;
-        font-style: normal;
-        cursor: pointer;
-    }
+.nav-link {
+    font-size: 1rem;
+    cursor: pointer;
+}
 
-    .navButtons p, .nav-item {
-        margin-top: 15px;
-        margin-left: 51px;
-        color: #212631;
-        text-decoration: none;
-    }
-
-    .nav-item {
-        cursor: pointer;
-    }
 
 </style>
