@@ -11,3 +11,4 @@ export default {
     components: { navbar, scheduleBox }
 }
 </script>
+

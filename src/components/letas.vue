@@ -4,41 +4,28 @@
             <h1>Law Enforcement and Traffic Adjudication Service (LETAS)</h1>
         </div>
         <div class="container">
-            <div class="accordion" id="accordionPanelsStayOpenExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                            Settlement of Apprehension Cases
+            <div class="accordion" :id="accordionId">
+                <div class="accordion-item" v-for="(item, index) in accordionItems" :key="index">
+                    <h2 class="accordion-header" :id="`heading-${accordionId}-${index}`">
+                        <button
+                            class="accordion-button"
+                            type="button"
+                            :data-bs-toggle="'collapse'"
+                            :data-bs-target="`#collapse-${accordionId}-${index}`"
+                            aria-expanded="true"
+                            :aria-controls="`collapse-${accordionId}-${index}`"
+                        >
+                            {{ item.title }}
                         </button>
                     </h2>
-                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                    <div
+                        :id="`collapse-${accordionId}-${index}`"
+                        class="accordion-collapse collapse"
+                        :aria-labelledby="`heading-${accordionId}-${index}`"
+                        :data-bs-parent="`#${accordionId}`"
+                    >
                         <div class="accordion-body">
-                            This is the first item's accordion body. It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-                            This is the first item's accordion body. It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                            LETAS Fines and Penalties
-                        </button>
-                    </h2>
-                    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
-                        <div class="accordion-body">
-                            This is the second item's accordion body. It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="panelsStayOpen-headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                            Encoding of Alarm on Driver's License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies
-                        </button>
-                    </h2>
-                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
-                        <div class="accordion-body">
-                            This is the third item's accordion body. It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+                            {{ item.content }}
                         </div>
                     </div>
                 </div>
@@ -50,6 +37,16 @@
 <script>
 export default {
     name: 'letas',
+    data() {
+        return {
+            accordionId: `accordion-${Date.now()}`, 
+            accordionItems: [
+                { title: "Settlement of Apprehension Cases", content: "Details about Settlement of Apprehension Cases." },
+                { title: "LETAS Fines and Penalties", content: "Details about LETAS Fines and Penalties." },
+                { title: "Encoding of Alarm on Driver's License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies", content: "Details about Encoding of Alarm on Driver's License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies." },
+            ],
+        };
+    },
 }
 </script>
 
