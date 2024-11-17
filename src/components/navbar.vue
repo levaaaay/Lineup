@@ -1,8 +1,8 @@
 <template> 
-    <div class="navbar">
+    <div class="navbar sticky-top">
         <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
             <div class="container-fluid">
-                <img src="../assets/lineupLogo.svg" alt="" width="70" height="40">
+                <img :src="lineupLogo" alt="" @click="navigateOrScrollToLandingPage()" class="logo">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -20,7 +20,7 @@
 </template>
 
 <script> 
-import lineupLogo from '@/assets/lineupLogo.svg';
+import lineupLogo from '@/assets/lightLogo.svg';
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
@@ -37,7 +37,7 @@ gsap.registerPlugin(ScrollToPlugin);
             scrollToAboutUs(sectionId) {
                 const section = document.getElementById(sectionId);
                 if (section) {
-                    const offset = 120;
+                    const offset = 0;
                     const elementPosition = section.getBoundingClientRect().top + window.scrollY;
                     window.scrollTo({
                         top: elementPosition + offset,
@@ -78,17 +78,32 @@ gsap.registerPlugin(ScrollToPlugin);
 <style scoped> 
 .navbar {
     --bs-navbar-padding-y: 0.25rem;
+    height: 3.5rem;
+    width: 100%;
+    background: var(--colors-blue-blue-800, #052C65);
+    padding-left: 1rem;
 }
 
 .navbar-nav {
-    margin-left: 1rem;
-    gap: 1rem;
+    margin-left: 85rem;
+    gap: 5rem;
 }
 
 .nav-link {
-    font-size: 1rem;
+    font-size: 0.85rem;
     cursor: pointer;
+    color: #F8F9FA;
 }
 
+.nav-link:hover {
+    color: #C0D6E8;
+}
+
+.logo {
+    cursor: pointer;
+    height: 2.5rem;
+    width: 4.375rem;
+    margin-top: -0.5rem;
+}
 
 </style>

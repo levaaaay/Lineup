@@ -24,7 +24,7 @@
             <span>{{ queueText }}</span>
         </div>
         <div class="queueNowButton">
-            <button @click="queue">Queue Now</button>
+            <button class="btn btn-primary text-nowrap" @click="queue">Queue Now</button>
         </div>
     </div>
 </template>
@@ -46,7 +46,7 @@ export default {
             prcLogo,
             birLogo,
             psaLogo,
-            queueText: "In Queue Today.",
+            queueText: "in queue today.",
             queueNumber: 200
         }
     },
@@ -61,16 +61,15 @@ export default {
 
 <style scoped>
 .landPage {
-    background: grey;
-    height: 38rem;
+    background: #DEE2E6;
+    height: 39.3rem;
 }
 
 h1 {
     font-weight: 800;
     padding-top: 1.25rem;
+    padding-bottom: 2.5rem;
 }
-
-
 
 @keyframes slide {
     from {
@@ -83,7 +82,7 @@ h1 {
 
 .logos {
     overflow: hidden;
-    padding: 40px;
+    padding: 2.5rem;
     white-space: nowrap;
     position: relative;
 }
@@ -92,7 +91,7 @@ h1 {
 .logos:after {
     position: absolute;
     top: 0;
-    width: 250px;
+    width: 15.625rem;
     height: 100%;
     content: "";
     z-index: 2;
@@ -100,12 +99,12 @@ h1 {
 
 .logos:before {
     left: 0;
-    background: linear-gradient(to left, rgba(255,255,255, 0), #F0F1F5);    
+    background: linear-gradient(to left, rgba(255,255,255, 0), #DEE2E6);    
 }
 
 .logos:after {
     right: 0;
-    background: linear-gradient(to right, rgba(255,255,255, 0), #F0F1F5);
+    background: linear-gradient(to right, rgba(255,255,255, 0), #DEE2E6);
 }
 
 .logos:hover .logosSlide {
@@ -119,7 +118,7 @@ h1 {
 
 .logosSlide img {
     height: 18.75rem;
-    margin: -40px 0 -40px 40px;
+    margin: -2.5rem 0 -2.5rem 2.5rem;
 }
 
 .comingSoon {
@@ -129,26 +128,15 @@ h1 {
 .queueText {
     display: flex;
     justify-content: center;
-    font-size: 25px;    
+    font-size: 1.25rem;    
     align-items: center;
-    margin-top: 20px;
+    margin-top: 3.6rem;
+    font-weight: 700;
 }
 
 .dynamic {
     color: #2252A0;
-    margin-right: 10px;
-}
-
-button {
-    font-size: 20px;
-    font-weight: 700;
-    color: #F0F1F5;
-    background-color: #174082;
-    padding: 7px 60px;
-    border: 2px solid #174082;
-    border-radius: 30px;
-    cursor: pointer;
-    margin-top: 10px;
+    margin-right: 0.625rem;
 }
 
 button:hover {
@@ -157,9 +145,30 @@ button:hover {
     border: 2px solid #2252A0;
 }
 
+.btn  {
+    width: Fill (8.625rem);
+    height: Hug 3.125rem;
+    padding: 1rem 1.5rem 1rem 1.5rem;
+    gap: 0.5rem;
+    border: none;
+    background: var(--colors-blue-blue-800, #052C65);
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn:hover {
+    color: #F0F1F5;
+    background-color: #2252A0;
+}
+
+
 .queueNowButton {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 0.93rem;
 }
 </style>

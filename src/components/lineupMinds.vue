@@ -2,7 +2,7 @@
     <div class="lineupMinds">
         <div class="invisBox">
             <div class="globalHeader">
-                <p>Minds Behind </p>
+                <h1>Minds Behind </h1>
                 <img :src="lineupLogo" class="logo">
             </div>
             <div class="container">
@@ -46,10 +46,15 @@ export default {
 </script>
 
 <style scoped>
+.lineupMinds {
+   background: #E9ECEF;
+   height: 41rem;
+}
+
 .logo {
-    width: 291px;
-    height: 132px; 
-    margin: 0 -40px 0 -25px;
+    width: 8.31rem;
+    height: 4.75rem; 
+    margin: 3.3rem 0.5rem 0 1rem;
 }
 
 .container {
@@ -65,8 +70,8 @@ export default {
 }
 
 .minds {
-    width: 283.96px;
-    height: 283.71px;
+    width: 17.7475rem;
+    height: 17.73rem;
     border-radius: 50%;
     background-color: #E0E4EB;
     border: 2px solid #E0E4EB;
@@ -78,11 +83,11 @@ export default {
 
 .devInfo {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 1.25rem;
 }
 
 .name {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #212631;
 }
@@ -93,13 +98,12 @@ export default {
 }
 
 .git {
-    width: 48px;
-    height: 48px;
+    width: 3rem;
+    height: 3rem;
 }
 
 .linked {
-    width: 48px;
-    height: 48px;
+    width: 3rem;
+    height: 3rem;
 }
-
 </style>
