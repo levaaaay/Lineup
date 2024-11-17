@@ -6,7 +6,7 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
                         <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
                         <a class="nav-link" href="services">Services</a>
@@ -78,6 +78,7 @@ gsap.registerPlugin(ScrollToPlugin);
 <style scoped> 
 .navbar {
     --bs-navbar-padding-y: 0.25rem;
+    width: 100%;
     height: 3.5rem;
     width: 100%;
     background: var(--colors-blue-blue-800, #052C65);
@@ -85,8 +86,8 @@ gsap.registerPlugin(ScrollToPlugin);
 }
 
 .navbar-nav {
-    margin-left: 5rem;
     gap: 5rem;
+    padding-right: 3rem;
 }
 
 .nav-link {

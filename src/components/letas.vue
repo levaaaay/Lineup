@@ -55,7 +55,7 @@ export default {
 
 <style scoped>
 .letas {
-    background: #DEE2E6;
+    background: #E9ECEF;
 }
 
 .centerWrap {
