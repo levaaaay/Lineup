@@ -67,8 +67,8 @@ export default {
 
 h1 {
     font-weight: 800;
-    padding-top: 1.25rem;
-    padding-bottom: 2.5rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
 }
 
 @keyframes slide {
@@ -117,7 +117,7 @@ h1 {
 }
 
 .logosSlide img {
-    height: 18.75rem;
+    height: 18rem;
     margin: -2.5rem 0 -2.5rem 2.5rem;
 }
 
@@ -130,7 +130,7 @@ h1 {
     justify-content: center;
     font-size: 1.25rem;    
     align-items: center;
-    margin-top: 3.6rem;
+    margin-top: 3rem;
     font-weight: 700;
 }
 

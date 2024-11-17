@@ -1,12 +1,29 @@
 <template>
     <div class="servicesOffered">
-        <img :src="ltoLogo" alt="ltoLogo" class="ltoLogo">
         <div class="globalHeader">
-            <p>Services Offered</p>
+            <h1>Services Offered</h1>
         </div>
-        <div class="boxContainer">
-            <div class="servicesBox" v-for="(index) in boxes" :key="index">
-                <p> Box {{ index + 1 }}</p>
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <div class="line"></div>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <div class="line"></div>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <div class="line"></div>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -28,37 +45,35 @@ export default {
 
 <style scoped>
 .servicesOffered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    background: #DEE2E6;
+    height: 38rem;
+}
+
+h1 {
+    font-weight: 800 !important;
+    padding-top: 2.43rem;
+    padding-bottom: 1rem;
+}
+
+h5, p {
+    color: white;
 }
 
 .ltoLogo {
     width: 100px;
     height: 100px;
     margin-top: 23px;
-    margin-bottom: -120px;
 }
 
-.boxContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
+.card {
+    width: 21.875rem; 
+    height: 25.625rem; 
+    background: #084298;
+}
+
+.line {
     width: 100%;
+    height: 1.5px;
+    background: #0A58CA;
 }
-
-.servicesBox {
-    width: 24.9%;
-    height: 306px;
-    background-color: #E0E4EB;
-    border: 2px solid #E0E4EB;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    border-radius: 15px;
-}
-
 </style>
