@@ -85,7 +85,7 @@ gsap.registerPlugin(ScrollToPlugin);
 }
 
 .navbar-nav {
-    margin-left: 85rem;
+    margin-left: 5rem;
     gap: 5rem;
 }
 

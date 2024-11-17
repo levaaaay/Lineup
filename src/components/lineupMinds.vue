@@ -13,8 +13,8 @@
                         <p class="position"> {{ dev.position }} </p>
                     </div>
                     <div class="socIcons">
-                        <img :src="gitLogo" class="git">
-                        <img :src="linkedLogo" class="linked">
+                        <img :src="gitLogo" class="git" @click="redirectTo(dev.github)">
+                        <img :src="linkedLogo" class="linked" @click="redirectTo(dev.linkedin)">
                     </div>
                 </div>
             </div>
@@ -36,10 +36,15 @@ export default {
             linkedLogo,
             circles: Array(3).fill(null),
             devs: [
-                { name: "Nicky Ronald Y. Cadalig Jr.", position: "Frontend Developer"},
-                { name: "Gabriel Mark A. Capalad", position: "UI/UX Designer"},
-                { name: "Peter Alvir M. Gonzales", position: "Backend Developer"}
+                { name: "Nicky Ronald Y. Cadalig Jr.", position: "Frontend Developer", github: "https://github.com/levaaaay", linkedin: "https://github.com/levaaaay"},
+                { name: "Gabriel Mark A. Capalad", position: "UI/UX Designer", github: "https://github.com/gemcapalad", linkedin: "https://github.com/levaaaay"},
+                { name: "Peter Alvir M. Gonzales", position: "Backend Developer", github: "https://github.com/peteralvir", linkedin: "https://github.com/peteralvir"}
             ]
+        }
+    },
+    methods: {
+        redirectTo(url) {
+            window.open(url, "_blank");
         }
     }
 }

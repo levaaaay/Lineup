@@ -24,7 +24,7 @@
             <span>{{ queueText }}</span>
         </div>
         <div class="queueNowButton">
-            <button class="btn btn-primary text-nowrap" @click="queue">Queue Now</button>
+            <button class="btn btn-primary" @click="queue">Queue Now</button>
         </div>
     </div>
 </template>
@@ -137,12 +137,6 @@ h1 {
 .dynamic {
     color: #2252A0;
     margin-right: 0.625rem;
-}
-
-button:hover {
-    color: #F0F1F5;
-    background-color: #2252A0;
-    border: 2px solid #2252A0;
 }
 
 .btn  {
