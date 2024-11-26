@@ -3,50 +3,65 @@
         <div class="globalHeader">
             <h1>Schedule</h1>
         </div>
-        <div class="card-group">
+        <div class="boxArea">
             <img class="prevButton" :src="previous" @click="goToPrevious" v-if="showPrevButton" />
-            <div class="card mb-3" style="max-width: 53.625rem; height: 22.75rem;">
-                <div class="row g-0">
-                    <div class="col-md-6">
-                        <div class="dateCardContent">
-                            <div class="dateTime">
-                                <h3 class="card-title" :class="{ smallerFont: isCurrentCard }">
-                                    {{ currentDay.formattedDay }}
-                                </h3>
-                                <h2 class="card-title">{{ currentDay.formattedDate }}</h2>
+            <div class="boxContainer" :style="containerStyle">
+                <div v-for="(day, index) in twoWeeksDays" :key="index" class="card-group"
+                    :class="{ current: index === currentIndex }">
+                    <div class="card mb-3" style="max-width: 53.625rem; height: 22.75rem;">
+                        <div class="row g-0">
+                            <div class="col-md-6">
+                                <div class="dateCardContent" :class="{ 'disabled-card': !selectedServiceType }">
+                                    <div class="dateTime">
+                                        <h3 class="card-title" :class="{ smallerFont: isCurrentCard }">
+                                            {{ day.formattedDay }}
+                                        </h3>
+                                        <h2 class="card-title">{{ day.formattedDate }}</h2>
+                                    </div>
+                                    <button class="btn btn-primary" type="submit" :disabled="!selectedServiceType"
+                                        :class="{ 'disabled-btn': !selectedServiceType }">
+                                        Queue now
+                                    </button>
+                                </div>
+                                <span class="backToToday" @click="resetToToday">Back to today</span>
                             </div>
-                            <button class="btn btn-primary" type="submit">
-                                Queue now
-                            </button>
-                        </div>
-                        <span class="backToToday">Back to today</span>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="line"></div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="card-body">
-                            <button class="specServ">
-                                <span>Licensing</span>
-                                <span class="counter" :class="queueNumberColor(license)">
-                                    {{ license }}/100
-                                </span>
-                                <span class="select">Select</span>
-                            </button>
-                            <button class="specServ">
-                                <span>Registration</span>
-                                <span class="counter" :class="queueNumberColor(Registration)">
-                                    {{ Registration }}/100
-                                </span>
-                                <span class="select">Select</span>
-                            </button>
-                            <button class="specServ">
-                                <span>LETAS</span>
-                                <span class="counter" :class="queueNumberColor(LETAS)">
-                                    {{ LETAS }}/100
-                                </span>
-                                <span class="select">Select</span>
-                            </button>
+                            <div class="col-md-1">
+                                <div class="line"></div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card-body">
+                                    <button class="btn btn-primary specServ"
+                                        :class="{ selected: selectedServiceType === 'license' && selectedServiceIndex === index, disabled: day.license >= 100 }"
+                                        :disabled="day.license >= 100" @click="selectService('license', index)">
+                                        <span>Licensing</span>
+                                        <span class="counter" :class="queueNumberColor(day.license)">
+                                            {{ day.license }}/100
+                                        </span>
+                                        <span class="select">Select</span>
+                                    </button>
+                                    <button class="btn btn-primary specServ"
+                                        :class="{ selected: selectedServiceType === 'registration' && selectedServiceIndex === index, disabled: day.registration >= 100 }"
+                                        :disabled="day.registration >= 100"
+                                        @click="selectService('registration', index)">
+                                        <span>Registration</span>
+                                        <span class="counter" :class="queueNumberColor(day.registration)">
+                                            {{ day.registration }}/100
+                                        </span>
+                                        <span class="select">Select</span>
+                                    </button>
+                                    <button class="btn btn-primary specServ"
+                                        :class="{ selected: selectedServiceType === 'LETAS' && selectedServiceIndex === index, disabled: day.LETAS >= 100 }"
+                                        :disabled="day.LETAS >= 100" @click="selectService('LETAS', index)">
+                                        <span>LETAS</span>
+                                        <span class="counter" :class="queueNumberColor(day.LETAS)">
+                                            {{ day.LETAS }}/100
+                                        </span>
+                                        <span class="select">Select</span>
+                                    </button>
+                                </div>
+
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -64,20 +79,30 @@ export default {
     name: "scheduleBox",
     data() {
         return {
-            license: 100,
+            license: 1,
             Registration: 75,
             LETAS: 50,
             previous,
             next,
-            showPrevButton: false,
-            showNextButton: true,
             currentIndex: 0,
             twoWeeksDays: this.generateTwoWeeks(),
+            selectedServiceIndex: null,
+            selectedServiceType: null,
         };
     },
     computed: {
-        currentDay() {
-            return this.twoWeeksDays[this.currentIndex];
+        containerStyle() {
+            const offset = -this.currentIndex * 100;
+            return {
+                transform: `translateX(${offset}%)`,
+                transition: "transform 0.5s ease-in-out",
+            };
+        },
+        showPrevButton() {
+            return this.currentIndex > 0;
+        },
+        showNextButton() {
+            return this.currentIndex < this.twoWeeksDays.length - 1;
         },
     },
     methods: {
@@ -89,9 +114,7 @@ export default {
                 const date = new Date(today);
                 date.setDate(today.getDate() + i);
 
-                const formattedDay = date.toLocaleDateString("en-US", {
-                    weekday: "long",
-                });
+                const formattedDay = date.toLocaleDateString("en-US", { weekday: "long" });
                 const day = String(date.getDate()).padStart(2, "0");
                 const month = String(date.getMonth() + 1).padStart(2, "0");
                 const formattedDate = `${month}.${day}`;
@@ -100,6 +123,9 @@ export default {
                     formattedDay,
                     formattedDate,
                     date,
+                    license: Math.floor(Math.random() * 101),
+                    registration: Math.floor(Math.random() * 101),
+                    LETAS: Math.floor(Math.random() * 101),
                 });
             }
             return days;
@@ -107,49 +133,57 @@ export default {
         goToNext() {
             if (this.currentIndex < this.twoWeeksDays.length - 1) {
                 this.currentIndex++;
-                this.showPrevButton = true;
-            }
-            if (this.currentIndex === this.twoWeeksDays.length - 1) {
-                this.showNextButton = false;
             }
         },
         goToPrevious() {
             if (this.currentIndex > 0) {
                 this.currentIndex--;
-                this.showNextButton = true;
-            }
-            if (this.currentIndex === 0) {
-                this.showPrevButton = false;
             }
         },
         queueNumberColor(value) {
-            if (value > 76) {
-                return "red";
-            } else if (value > 50) {
-                return "yellow";
-            } else {
-                return "green";
+            if (value > 76) return "red";
+            if (value > 50) return "yellow";
+            return "green";
+        },
+        resetToToday() {
+            const today = new Date();
+            const todayIndex = this.twoWeeksDays.findIndex(day =>
+                day.date.toDateString() === today.toDateString()
+            );
+            if (todayIndex !== -1) {
+                this.currentIndex = todayIndex;
             }
         },
+        selectService(service, index) {
+            const selectedDay = this.twoWeeksDays[index];
+            if (this.selectedServiceType === service && this.selectedServiceIndex === index) {
+                this.selectedServiceType = null;
+                this.selectedServiceIndex = null;
+                console.log(`Deselected ${service} on ${selectedDay.formattedDate}`);
+            } else if (selectedDay[service] < 100) {
+                this.selectedServiceType = service;
+                this.selectedServiceIndex = index;
+                console.log(`Selected ${service} on ${selectedDay.formattedDate}`);
+            } else {
+                console.log(`${service} is full and cannot be selected.`);
+            }
+        }
     },
-    computed: {
-            currentDay() {
-                return this.twoWeeksDays[this.currentIndex];
-            },
-            isCurrentCard() {
-                const today = new Date();
-                return (
-                    today.toLocaleDateString("en-US", { weekday: "long" }) ===
-                    this.currentDay.formattedDay
-                );
-            },
-        },
 };
 </script>
 
 <style scoped>
 .scheduleBox {
     background: #dee2e6;
+}
+
+.boxArea {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
 h1 {
@@ -171,15 +205,27 @@ h3 {
     font-weight: bold;
 }
 
+.boxContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+}
+
 .card-group {
+    min-width: 100%;
+    display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
 }
 
 .row {
+    display: flex;
     height: 100%;
     padding: 2rem 1.5rem 2rem 1.5rem;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    transition: transform 0.5s ease;
 }
 
 .dateCardContent {
@@ -191,6 +237,16 @@ h3 {
     border: 1px solid #dee2e6;
     border-radius: 1rem;
     padding: 2rem;
+}
+
+.disabled-card {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.disabled-btn {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
 
 .dateTime {
@@ -251,6 +307,11 @@ h3 {
     padding-right: 1rem;
 }
 
+.selected {
+    background-color: #007bff;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+}
+
 .counter {
     display: flex;
     align-items: center;
@@ -286,24 +347,24 @@ h3 {
 
 .prevButton,
 .nextButton {
-    width: 30rem;
-    height: 2rem;
-    cursor: pointer;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    z-index: 10;
 }
 
 .prevButton {
-    left: -2.5rem;
+    left: 10rem;
 }
 
 .nextButton {
-    right: -2.5rem;
+    right: 10rem;
 }
 
 .smallerFont {
-    font-size: 2rem; 
+    font-size: 2rem;
 }
-
 </style>
