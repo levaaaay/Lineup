@@ -1,168 +1,185 @@
 <template>
-    <div class="landPage">
-        <div class="landPageHeader">
-            <h1 class="text-center">{{ headerLine1 }}</h1>
-        </div>
-        <div class="logos">
-            <div class="logosSlide">
-                <img class="comingSoon" :src="prcLogo" alt="PRC Logo">
-                <img class="comingSoon" :src="dfaLogo" alt="DFA Logo">
-                <img :src="ltoLogo" alt="LTO Logo">
-                <img class="comingSoon" :src="birLogo" alt="BIR Logo">
-                <img class="comingSoon" :src="psaLogo" alt="PSA Logo">
-            </div>
-            <div class="logosSlide">
-                <img class="comingSoon" :src="prcLogo" alt="PRC Logo">
-                <img class="comingSoon" :src="dfaLogo" alt="DFA Logo">
-                <img :src="ltoLogo" alt="LTO Logo">
-                <img class="comingSoon" :src="birLogo" alt="BIR Logo">
-                <img class="comingSoon" :src="psaLogo" alt="PSA Logo">
-            </div>
-        </div>
-        <div class="queueText">
-            <div class="dynamic">{{ queueNumber }}</div>
-            <span>{{ queueText }}</span>
-        </div>
-        <div class="queueNowButton">
-            <button class="btn btn-primary" @click="queue">Queue Now</button>
-        </div>
+  <div class="landPage">
+    <div class="landPageHeader">
+      <h1 class="text-center">{{ headerLine1 }}</h1>
     </div>
+    <div class="logos">
+      <div class="logosSlide">
+        <img class="comingSoon" :src="prcLogo" alt="PRC Logo" />
+        <img class="comingSoon" :src="dfaLogo" alt="DFA Logo" />
+        <img :src="ltoLogo" alt="LTO Logo" />
+        <img class="comingSoon" :src="birLogo" alt="BIR Logo" />
+        <img class="comingSoon" :src="psaLogo" alt="PSA Logo" />
+      </div>
+      <div class="logosSlide">
+        <img class="comingSoon" :src="prcLogo" alt="PRC Logo" />
+        <img class="comingSoon" :src="dfaLogo" alt="DFA Logo" />
+        <img :src="ltoLogo" alt="LTO Logo" />
+        <img class="comingSoon" :src="birLogo" alt="BIR Logo" />
+        <img class="comingSoon" :src="psaLogo" alt="PSA Logo" />
+      </div>
+    </div>
+    <div class="queueText">
+      <div class="dynamic">{{ queueNumber }}</div>
+      <span>{{ queueText }}</span>
+    </div>
+    <div class="queueNowButton">
+      <button class="btn btn-primary" @click="queue">Queue Now</button>
+    </div>
+  </div>
 </template>
 
 <script>
-import ltoLogo from '@/assets/ltoLogo.svg'
-import dfaLogo from '@/assets/dfaLogo.svg'
-import prcLogo from '@/assets/prcLogo.svg'
-import birLogo from '@/assets/birLogo.svg'
-import psaLogo from '@/assets/psaLogo.svg'
+  import ltoLogo from "@/assets/ltoLogo.svg";
+  import dfaLogo from "@/assets/dfaLogo.svg";
+  import prcLogo from "@/assets/prcLogo.svg";
+  import birLogo from "@/assets/birLogo.svg";
+  import psaLogo from "@/assets/psaLogo.svg";
 
-export default {
+  export default {
     name: "landPage",
     data() {
-        return {
-            headerLine1: "Queue at the comfort of your home",
-            ltoLogo,
-            dfaLogo,
-            prcLogo,
-            birLogo,
-            psaLogo,
-            queueText: "in queue today.",
-            queueNumber: 200
-        }
+      return {
+        headerLine1: "Queue at the comfort of your home",
+        ltoLogo,
+        dfaLogo,
+        prcLogo,
+        birLogo,
+        psaLogo,
+        queueText: "in queue today.",
+        queueNumber: 200,
+      };
+    },
+    mounted() {
+      // Check for URL error parameters on mount
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get("error");
+      const errorCode = urlParams.get("error_code");
+      const errorDescription = urlParams.get("error_description");
+
+      // Display alert if unauthorized error is found
+      if (
+        error === "server_error" &&
+        errorCode === "500" &&
+        errorDescription === "Database error saving new user"
+      ) {
+        alert(
+          "Unauthorized access: You are not authorized to sign in with this account."
+        );
+        this.$router.push("/");
+      }
     },
     methods: {
-        queue() {
-            this.$router.push({ name: 'schedule' }).then(() => {
-            });
-        },
-    }
-}
+      queue() {
+        this.$router.push({ name: "schedule" }).then(() => {});
+      },
+    },
+  };
 </script>
 
 <style scoped>
-.landPage {
-    background: #DEE2E6;
+  .landPage {
+    background: #dee2e6;
     height: 39.3rem;
-}
+  }
 
-h1 {
+  h1 {
     font-weight: 800;
     padding-top: 1rem;
     padding-bottom: 2rem;
-}
+  }
 
-@keyframes slide {
+  @keyframes slide {
     from {
-        transform: translateX(0)
+      transform: translateX(0);
     }
     to {
-        transform: translate(-100%);
+      transform: translate(-100%);
     }
-}
+  }
 
-.logos {
+  .logos {
     overflow: hidden;
     padding: 2.5rem;
     white-space: nowrap;
     position: relative;
-}
+  }
 
-.logos:before,
-.logos:after {
+  .logos:before,
+  .logos:after {
     position: absolute;
     top: 0;
     width: 15.625rem;
     height: 100%;
     content: "";
     z-index: 2;
-}
+  }
 
-.logos:before {
+  .logos:before {
     left: 0;
-    background: linear-gradient(to left, rgba(255,255,255, 0), #DEE2E6);    
-}
+    background: linear-gradient(to left, rgba(255, 255, 255, 0), #dee2e6);
+  }
 
-.logos:after {
+  .logos:after {
     right: 0;
-    background: linear-gradient(to right, rgba(255,255,255, 0), #DEE2E6);
-}
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #dee2e6);
+  }
 
-.logos:hover .logosSlide {
+  .logos:hover .logosSlide {
     animation-play-state: paused;
-}
+  }
 
-.logosSlide {
+  .logosSlide {
     display: inline-block;
     animation: 25s slide infinite linear;
-}
+  }
 
-.logosSlide img {
+  .logosSlide img {
     height: 18rem;
     margin: -2.5rem 0 -2.5rem 2.5rem;
-}
+  }
 
-.comingSoon {
+  .comingSoon {
     opacity: 0.5;
-}
+  }
 
-.queueText {
+  .queueText {
     display: flex;
     justify-content: center;
-    font-size: 1.25rem;    
+    font-size: 1.25rem;
     align-items: center;
     margin-top: 3rem;
     font-weight: 700;
-}
+  }
 
-.dynamic {
-    color: #2252A0;
+  .dynamic {
+    color: #2252a0;
     margin-right: 0.625rem;
-}
+  }
 
-.btn  {
+  .btn {
     width: Fill (8.625rem);
     height: Hug 3.125rem;
     padding: 1rem 1.5rem 1rem 1.5rem;
     gap: 0.5rem;
     border: none;
-    background: var(--colors-blue-blue-800, #052C65);
+    background: var(--colors-blue-blue-800, #052c65);
     font-weight: 600;
     font-size: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
-}
+  }
 
-.btn:hover {
-    color: #F0F1F5;
-    background-color: #2252A0;
-}
+  .btn:hover {
+    color: #f0f1f5;
+    background-color: #2252a0;
+  }
 
-
-.queueNowButton {
+  .queueNowButton {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 0.93rem;
-}
+  }
 </style>
