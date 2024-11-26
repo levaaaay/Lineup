@@ -1,18 +1,16 @@
 <template>
     <div class="pageContainer">
-        <navbar />
         <scheduleBox />
         <foot />
     </div>
 </template>
 
 <script>
-import navbar from '@/components/navbar.vue';
 import scheduleBox from '@/components/scheduleBox.vue';
 import foot from '@/components/footer.vue';
 
 export default {
-    components: { navbar, scheduleBox, foot },
+    components: { scheduleBox, foot },
 };
 </script>
 

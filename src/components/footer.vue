@@ -1,15 +1,13 @@
 <template>
-    <div class="footer">
-        <div class="footerBar">
-            <img :src="lineupLogo" class="footerLogo">
-        </div>
+    <div class="foot">
+        <div class="footerBar"></div>
     </div>
 </template>
 
 <script>
 
 export default {
-    name: "footer",
+    name: "foot",
 }
 
 </script>

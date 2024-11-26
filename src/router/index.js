@@ -3,6 +3,7 @@ import homeView from '@/views/home.vue';
 import services from '@/views/services.vue';
 import login from '@/views/login.vue';
 import schedule from '@/views/schedule.vue';
+import ticket from '@/views/ticket.vue';
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/schedule',
     name: 'schedule',
     component: schedule
+  },
+  {
+    path: '/ticket',
+    name: 'ticket',
+    component: ticket
   }
 ];
 

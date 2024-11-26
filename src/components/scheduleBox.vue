@@ -1,5 +1,6 @@
 <template>
     <div class="scheduleBox">
+        <navbar />
         <div class="globalHeader">
             <h1>Schedule</h1>
         </div>
@@ -13,13 +14,14 @@
                             <div class="col-md-6">
                                 <div class="dateCardContent" :class="{ 'disabled-card': !selectedServiceType }">
                                     <div class="dateTime">
-                                        <h3 class="card-title" :class="{ smallerFont: isCurrentCard }">
+                                        <h3 class="card-title">
                                             {{ day.formattedDay }}
                                         </h3>
                                         <h2 class="card-title">{{ day.formattedDate }}</h2>
                                     </div>
-                                    <button class="btn btn-primary"
-                                        :disabled="!day.selectedService || day.selectedService !== 'license'">
+                                    <button class="btn btn-primary specbtn" :disabled="!day.selectedService"
+                                        @click="showQueueModal(day)"
+                                        style="background-color: #052c65; border: none; width: 8.625rem; height: 3.125rem;">
                                         Queue now
                                     </button>
                                 </div>
@@ -31,9 +33,8 @@
                             <div class="col-md-5">
                                 <div class="card-body">
                                     <button class="btn btn-primary specServ"
-                                        :class="{ selected: day.selectedService === 'license', disabled: day.license >= 100 || (day.selectedService && day.selectedService !== 'license') }"
-                                        :disabled="day.license >= 100 || (day.selectedService && day.selectedService !== 'license')"
-                                        @click="selectService('license', index)">
+                                        :class="{ selected: day.selectedService === 'license', disabled: day.license >= 100 }"
+                                        :disabled="day.license >= 100" @click="selectService('license', index)">
                                         <span>Licensing</span>
                                         <span class="counter" :class="queueNumberColor(day.license)">
                                             {{ day.license }}/100
@@ -41,8 +42,8 @@
                                         <span class="select">Select</span>
                                     </button>
                                     <button class="btn btn-primary specServ"
-                                        :class="{ selected: day.selectedService === 'registration', disabled: day.registration >= 100 || (day.selectedService && day.selectedService !== 'registration') }"
-                                        :disabled="day.registration >= 100 || (day.selectedService && day.selectedService !== 'registration')"
+                                        :class="{ selected: day.selectedService === 'registration', disabled: day.registration >= 100 }"
+                                        :disabled="day.registration >= 100"
                                         @click="selectService('registration', index)">
                                         <span>Registration</span>
                                         <span class="counter" :class="queueNumberColor(day.registration)">
@@ -51,9 +52,8 @@
                                         <span class="select">Select</span>
                                     </button>
                                     <button class="btn btn-primary specServ"
-                                        :class="{ selected: day.selectedService === 'LETAS', disabled: day.LETAS >= 100 || (day.selectedService && day.selectedService !== 'LETAS') }"
-                                        :disabled="day.LETAS >= 100 || (day.selectedService && day.selectedService !== 'LETAS')"
-                                        @click="selectService('LETAS', index)">
+                                        :class="{ selected: day.selectedService === 'LETAS', disabled: day.LETAS >= 100 }"
+                                        :disabled="day.LETAS >= 100" @click="selectService('LETAS', index)">
                                         <span>LETAS</span>
                                         <span class="counter" :class="queueNumberColor(day.LETAS)">
                                             {{ day.LETAS }}/100
@@ -68,21 +68,148 @@
             </div>
             <img class="nextButton" :src="next" @click="goToNext" v-if="showNextButton" />
         </div>
+        <div v-if="blur" class="overlay" @click="closeModal"></div>
+        <div v-if="showModal" class="modal-box" style="padding: 0;">
+            <div style="display: flex; flex-direction: column;">
+                <div class="modalHeader" style="display: flex; padding: 1rem;">
+                    <span style="font-size: 1rem; font-weight: 600;">Select Service</span>
+                    <img :src="x" alt="x" style="margin-left: auto; cursor: pointer;" @click="closeModal">
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalBody" style="padding: 1rem;">
+                    <div class="list-group">
+                        <button type="button"
+                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                            aria-current="true"
+                            :class="{ 'active': selectedSpecificService === 'Sales Reporting and Registration of Motor Vehicles' }"
+                            @click="selectSpecificService('Sales Reporting and Registration of Motor Vehicles')"
+                            style="margin-top: 0;">
+                            Sales Reporting and Registration of Motor Vehicles
+                            <span class="badge bg-primary rounded-pill">14</span>
+                        </button>
+                        <button type="button"
+                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                            :class="{ 'active': selectedSpecificService === 'Vehicle Encoding/Linking' }"
+                            @click="selectSpecificService('Vehicle Encoding/Linking')" style="margin-top: 0;">
+                            Vehicle Encoding/Linking
+                            <span class="badge bg-primary rounded-pill">14</span>
+                        </button>
+                        <button type="button"
+                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                            :class="{ 'active': selectedSpecificService === 'Renewal of Motor Vehicle Registration' }"
+                            @click="selectSpecificService('Renewal of Motor Vehicle Registration')"
+                            style="margin-top: 0;">
+                            Renewal of Motor Vehicle Registration
+                            <span class="badge bg-primary rounded-pill">14</span>
+                        </button>
+                    </div>
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalFooter"
+                    style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
+                    <button type="button" class="btn btn-secondary" @click="closeModal">Cancel</button>
+                    <button type="button" class="btn btn-primary specbtn" style="border: none;"
+                        @click="proceedToEmail">Next</button>
+                </div>
+            </div>
+        </div>
+        <div v-if="showEmailModal" class="modal-box" style="padding: 0;">
+            <div style="display: flex; flex-direction: column;">
+                <div class="modalHeader" style="display: flex; padding: 1rem;">
+                    <span style="font-size: 1rem; font-weight: 600;">Enter Email</span>
+                    <img :src="x" alt="x" style="margin-left: auto; cursor: pointer;" @click="closeModal">
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalBody" style="padding: 1rem;">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Email Address" aria-label="Email Address"
+                            aria-describedby="basic-addon1" v-model="email">
+                    </div>
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalFooter"
+                    style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
+                    <button type="button" class="btn btn-secondary" @click="goBackModal">Return</button>
+                    <button type="button" class="btn btn-primary specbtn" style="border: none;"
+                        @click="proceedToVerify">Next</button>
+                </div>
+            </div>
+        </div>
+        <div v-if="showVerifyModal" class="modal-box" style="padding: 0;">
+            <div style="display: flex; flex-direction: column;">
+                <div class="modalHeader" style="display: flex; padding: 1rem;">
+                    <span style="font-size: 1rem; font-weight: 600;">Verify Email</span>
+                    <img :src="x" alt="x" style="margin-left: auto; cursor: pointer;" @click="closeModal">
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalBody" style="padding: 1rem;">
+                    <span>We have sent an OTP to your entered email address. Kindly input the OTP in the space provided
+                        below.</span>
+                </div>
+                <div class="numContainer">
+                    <div class="numbox" v-for="(digit, index) in code" :key="index">
+                        <form>
+                            <input type="text" required class="num" maxlength="1" inputmode="numeric"
+                                @input="validateInput($event)" v-model="code[index]">
+                        </form>
+                    </div>
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalFooter"
+                    style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
+                    <button type="button" class="btn btn-secondary" @click="goBackEmail">Return</button>
+                    <button type="button" class="btn btn-primary specbtn" style="border: none;"
+                        @click="proceedToTicket">Confirm</button>
+                </div>
+            </div>
+        </div>
+        <div v-if="showTicketModal" class="modal-box" style="padding: 0;">
+            <div style="display: flex; flex-direction: column;">
+                <div class="modalHeader" style="display: flex; padding: 1rem;">
+                    <span style="font-size: 1rem; font-weight: 600;">Queue Ticket Confirmation</span>
+                    <img :src="x" alt="x" style="margin-left: auto; cursor: pointer;" @click="closeModal">
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalBody" style="padding: 1rem;">
+                    <span>You have successfully queued your ticket. View your ticket with the button below.</span>
+                </div>
+                <div style="height: 1px; width: 100%; background-color: #CED4DA;"> </div>
+                <div class="modalFooter"
+                    style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
+                    <button type="button" class="btn btn-secondary" @click="close">Close</button>
+                    <button type="button" class="btn btn-primary specbtn" style="border: none;"
+                        @click="ticketRoute">View Ticket</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import previous from "@/assets/previous.svg";
 import next from "@/assets/next.svg";
+import x from "@/assets/x-lg.svg";
+import navbar from '@/components/navbar.vue';
 
 export default {
+    components: { navbar },
     name: "scheduleBox",
     data() {
         return {
             previous,
             next,
+            x,
             currentIndex: 0,
             twoWeeksDays: this.generateTwoWeeks(),
+            blue: false,
+            showModal: false,
+            showEmailModal: false,
+            showVerifyModal: false,
+            showTicketModal: false,
+            selectedServiceType: null,
+            selectedSpecificService: null,
+            email: '',
+            code: Array(6).fill(''),
         };
     },
     computed: {
@@ -121,7 +248,7 @@ export default {
                     license: Math.floor(Math.random() * 101),
                     registration: Math.floor(Math.random() * 101),
                     LETAS: Math.floor(Math.random() * 101),
-                    selectedService: null,  // Store selected service for this day
+                    selectedService: null,
                 });
             }
             return days;
@@ -169,12 +296,73 @@ export default {
             } else {
                 console.log(`${service} is full and cannot be selected.`);
             }
-        }
+        },
+        showQueueModal(day) {
+            this.selectedDay = day;
+            this.selectedServiceType = day.selectedService || null;
+            this.showModal = true;
+            this.blur = true;
+        },
+        closeModal() {
+            this.showModal = false;
+            this.selectedDay = null;
+            this.selectedServiceType = null;
+        },
+        close() {
+            this.showModal = false;
+        },
+        selectSpecificService(service) {
+            if (this.selectedSpecificService === service) {
+                this.selectedSpecificService = null;
+            } else {
+                this.selectedSpecificService = service;
+            }
+        },
+        proceedToEmail() {
+            if (this.selectedSpecificService) {
+                this.showModal = false;
+                this.showEmailModal = true;
+            }
+        },
+        proceedToVerify() {
+            if (this.email) {
+                this.showEmailModal = false;
+                this.showVerifyModal = true;
+            }
+        },
+        proceedToTicket() {
+            if (this.code){
+                this.showVerifyModal = false;
+                this.showTicketModal = true;
+            }
+        },
+        ticketRoute() {
+            this.$router.push({ name: 'ticket' });
+        },
+        goBackModal() {
+            this.showEmailModal = false;
+            this.showModal = true;
+        },
+        goBackEmail() {
+            this.showEmailModal = true;
+            this.showVerifyModal = false;
+        },
+        validateInput(event) {
+            const input = event.target;
+            if (!/^\d*$/.test(input.value)) {
+                input.value = "";
+            }
+        },
     },
 };
 </script>
 
 <style scoped>
+.navbar {
+    position: relative;
+    z-index: 998;
+}
+
 .scheduleBox {
     background: #dee2e6;
 }
@@ -278,13 +466,6 @@ h3 {
     background: black;
 }
 
-.btn {
-    background-color: #052c65;
-    border: none;
-    width: 8.625rem;
-    height: 3.125rem;
-}
-
 .backToToday {
     color: #68717a;
     text-decoration: underline;
@@ -368,5 +549,70 @@ h3 {
 
 .smallerFont {
     font-size: 2rem;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+}
+
+.modal-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 38.9375rem;
+    text-align: center;
+}
+
+.modal-box button {
+    margin-top: 20px;
+    padding: 10px 20px;
+}
+
+.specbtn {
+    background-color: #084298;
+}
+
+.specbtn:hover {
+    background-color: #052c65;
+}
+
+.selected {
+    background-color: #084298;
+    color: white;
+}
+
+.numContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.num {
+    width: 57px;
+    height: 78px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: none;
+    background-color: #F0F1F5;
+    background-position: 10px center;
+    background-repeat: no-repeat;
+    padding-left: 22px;
+    font-size: 30px;
 }
 </style>
