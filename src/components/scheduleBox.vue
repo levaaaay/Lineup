@@ -18,8 +18,8 @@
                                         </h3>
                                         <h2 class="card-title">{{ day.formattedDate }}</h2>
                                     </div>
-                                    <button class="btn btn-primary" type="submit" :disabled="!selectedServiceType"
-                                        :class="{ 'disabled-btn': !selectedServiceType }">
+                                    <button class="btn btn-primary"
+                                        :disabled="!day.selectedService || day.selectedService !== 'license'">
                                         Queue now
                                     </button>
                                 </div>
@@ -31,8 +31,9 @@
                             <div class="col-md-5">
                                 <div class="card-body">
                                     <button class="btn btn-primary specServ"
-                                        :class="{ selected: selectedServiceType === 'license' && selectedServiceIndex === index, disabled: day.license >= 100 }"
-                                        :disabled="day.license >= 100" @click="selectService('license', index)">
+                                        :class="{ selected: day.selectedService === 'license', disabled: day.license >= 100 || (day.selectedService && day.selectedService !== 'license') }"
+                                        :disabled="day.license >= 100 || (day.selectedService && day.selectedService !== 'license')"
+                                        @click="selectService('license', index)">
                                         <span>Licensing</span>
                                         <span class="counter" :class="queueNumberColor(day.license)">
                                             {{ day.license }}/100
@@ -40,8 +41,8 @@
                                         <span class="select">Select</span>
                                     </button>
                                     <button class="btn btn-primary specServ"
-                                        :class="{ selected: selectedServiceType === 'registration' && selectedServiceIndex === index, disabled: day.registration >= 100 }"
-                                        :disabled="day.registration >= 100"
+                                        :class="{ selected: day.selectedService === 'registration', disabled: day.registration >= 100 || (day.selectedService && day.selectedService !== 'registration') }"
+                                        :disabled="day.registration >= 100 || (day.selectedService && day.selectedService !== 'registration')"
                                         @click="selectService('registration', index)">
                                         <span>Registration</span>
                                         <span class="counter" :class="queueNumberColor(day.registration)">
@@ -50,8 +51,9 @@
                                         <span class="select">Select</span>
                                     </button>
                                     <button class="btn btn-primary specServ"
-                                        :class="{ selected: selectedServiceType === 'LETAS' && selectedServiceIndex === index, disabled: day.LETAS >= 100 }"
-                                        :disabled="day.LETAS >= 100" @click="selectService('LETAS', index)">
+                                        :class="{ selected: day.selectedService === 'LETAS', disabled: day.LETAS >= 100 || (day.selectedService && day.selectedService !== 'LETAS') }"
+                                        :disabled="day.LETAS >= 100 || (day.selectedService && day.selectedService !== 'LETAS')"
+                                        @click="selectService('LETAS', index)">
                                         <span>LETAS</span>
                                         <span class="counter" :class="queueNumberColor(day.LETAS)">
                                             {{ day.LETAS }}/100
@@ -59,8 +61,6 @@
                                         <span class="select">Select</span>
                                     </button>
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
@@ -79,15 +79,10 @@ export default {
     name: "scheduleBox",
     data() {
         return {
-            license: 1,
-            Registration: 75,
-            LETAS: 50,
             previous,
             next,
             currentIndex: 0,
             twoWeeksDays: this.generateTwoWeeks(),
-            selectedServiceIndex: null,
-            selectedServiceType: null,
         };
     },
     computed: {
@@ -126,6 +121,7 @@ export default {
                     license: Math.floor(Math.random() * 101),
                     registration: Math.floor(Math.random() * 101),
                     LETAS: Math.floor(Math.random() * 101),
+                    selectedService: null,  // Store selected service for this day
                 });
             }
             return days;
@@ -156,13 +152,19 @@ export default {
         },
         selectService(service, index) {
             const selectedDay = this.twoWeeksDays[index];
+            if (this.selectedServiceType && this.selectedServiceIndex !== index) {
+                const previousSelectedDay = this.twoWeeksDays[this.selectedServiceIndex];
+                previousSelectedDay.selectedService = null;
+            }
             if (this.selectedServiceType === service && this.selectedServiceIndex === index) {
                 this.selectedServiceType = null;
                 this.selectedServiceIndex = null;
+                selectedDay.selectedService = null;
                 console.log(`Deselected ${service} on ${selectedDay.formattedDate}`);
             } else if (selectedDay[service] < 100) {
                 this.selectedServiceType = service;
                 this.selectedServiceIndex = index;
+                selectedDay.selectedService = service;
                 console.log(`Selected ${service} on ${selectedDay.formattedDate}`);
             } else {
                 console.log(`${service} is full and cannot be selected.`);
