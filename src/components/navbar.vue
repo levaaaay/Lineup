@@ -81,7 +81,7 @@ gsap.registerPlugin(ScrollToPlugin);
     width: 100%;
     height: 3.5rem;
     width: 100%;
-    background: var(--colors-blue-blue-800, #052C65);
+    background: var(--colors-blue-blue-800, #084298);
     padding-left: 1rem;
 }
 

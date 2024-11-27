@@ -4,6 +4,8 @@ import services from '@/views/services.vue';
 import login from '@/views/login.vue';
 import schedule from '@/views/schedule.vue';
 import ticket from '@/views/ticket.vue';
+import StaffHome from '@/views/staffHome.vue';
+import SysadHome from '@/views/sysadHome.vue';
 
 const routes = [
   {
@@ -30,7 +32,17 @@ const routes = [
     path: '/ticket',
     name: 'ticket',
     component: ticket
-  }
+  },
+  {
+    path: '/staffhome',
+    name: 'staffhome',
+    component: StaffHome
+  },
+  {
+    path: '/sysadhome',
+    name: 'sysadhome',
+    component: SysadHome
+  },
 ];
 
 const router = createRouter({

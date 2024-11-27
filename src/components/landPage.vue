@@ -145,7 +145,7 @@ h1 {
     padding: 1rem 1.5rem 1rem 1.5rem;
     gap: 0.5rem;
     border: none;
-    background: var(--colors-blue-blue-800, #052C65);
+    background: var(--colors-blue-blue-800, #084298);
     font-weight: 600;
     font-size: 1rem;
     display: flex;

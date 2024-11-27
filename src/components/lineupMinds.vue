@@ -7,7 +7,7 @@
             </div>
             <div class="container">
                 <div class="dev" v-for="(dev, index) in devs" :key="index">
-                    <div class="minds"></div>
+                    <img :src="dev.img" alt="devbabyface">
                     <div class="devInfo">
                         <p class="name"> {{ dev.name }} </p>
                         <p class="position"> {{ dev.position }} </p>
@@ -26,6 +26,9 @@
 import lineupLogo from '@/assets/lineupLogo.svg'
 import gitLogo from '@/assets/gitLogo.svg'
 import linkedLogo from '@/assets/linkedLogo.svg'
+import nicky from '@/assets/nicky.svg'
+import gem from '@/assets/gem.svg'
+import alvir from '@/assets/alvir.svg'
 
 export default {
     name: "lineupMinds",
@@ -34,11 +37,14 @@ export default {
             lineupLogo,
             gitLogo,
             linkedLogo,
+            nicky,
+            gem,
+            alvir,
             circles: Array(3).fill(null),
             devs: [
-                { name: "Nicky Ronald Y. Cadalig Jr.", position: "Frontend Developer", github: "https://github.com/levaaaay", linkedin: "https://github.com/levaaaay"},
-                { name: "Gabriel Mark A. Capalad", position: "UI/UX Designer", github: "https://github.com/gemcapalad", linkedin: "https://github.com/levaaaay"},
-                { name: "Peter Alvir M. Gonzales", position: "Backend Developer", github: "https://github.com/peteralvir", linkedin: "https://github.com/peteralvir"}
+                { name: "Nicky Ronald Y. Cadalig Jr.", position: "Frontend Developer", github: "https://github.com/levaaaay", linkedin: "https://github.com/levaaaay", img: nicky},
+                { name: "Gabriel Mark A. Capalad", position: "UI/UX Designer", github: "https://github.com/gemcapalad", linkedin: "https://github.com/levaaaay", img: gem},
+                { name: "Peter Alvir M. Gonzales", position: "Backend Developer", github: "https://github.com/peteralvir", linkedin: "https://github.com/peteralvir", img: alvir}
             ]
         }
     },

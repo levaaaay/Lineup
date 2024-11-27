@@ -15,7 +15,7 @@ export default {
 <style scoped>
 .footerBar {
     height: 6.1875rem;
-    background: #052C65;
+    background: #084298;
     display: flex; 
     justify-content: center;
     align-items: center; 
