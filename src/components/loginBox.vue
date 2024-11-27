@@ -72,14 +72,13 @@ export default {
       });
       if (error) {
         alert("Invalid username or password.");
-        console.log(await supabase.auth.getSession());
+    
       } else {
         this.loginIsVisible = !this.loginIsVisible;
         this.authIsVisible = !this.authIsVisible;
         const { data, error } = await supabase.auth.signInWithOtp({
           email: this.email,
           options: {
-            // set this to false if you do not want the user to be automatically signed up
             shouldCreateUser: false,
           },
         });
