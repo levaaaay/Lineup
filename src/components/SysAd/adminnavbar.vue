@@ -11,7 +11,7 @@
                         <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
                         <a class="nav-link" href="services">Services</a>
                         <a class="nav-link" href="schedule">Schedule</a>
-                        <a class="nav-link" href="ticket">Ticket</a>
+                        <a class="nav-link" href="ticket">Verify</a>
                     </div>
                 </div>
             </div>
