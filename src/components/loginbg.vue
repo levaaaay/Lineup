@@ -28,8 +28,8 @@ export default {
 }
 
 .logo {
-    width: 142px;
-    height: 79px;
-    margin-left: 65px;
+    width: 4.375rem;
+    height: 2.5rem;
+    margin: 0.5rem 0 0 1rem;
 }
 </style>
