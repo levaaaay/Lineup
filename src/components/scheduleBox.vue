@@ -359,508 +359,526 @@
 </template>
 
 <script>
-import previous from "@/assets/previous.svg";
-import next from "@/assets/next.svg";
-import x from "@/assets/x-lg.svg";
-import navbar from "@/components/navbar.vue";
-import { supabase } from "../client/supabase";
+  import previous from "@/assets/previous.svg";
+  import next from "@/assets/next.svg";
+  import x from "@/assets/x-lg.svg";
+  import navbar from "@/components/navbar.vue";
+  import { supabase } from "../client/supabase";
 
-export default {
-  components: { navbar },
-  name: "scheduleBox",
-  data() {
-    return {
-      previous,
-      next,
-      x,
-      currentIndex: 0,
-      twoWeeksDays: [],
-      blur: false,
-      showModal: false,
-      showEmailModal: false,
-      showVerifyModal: false,
-      showTicketModal: false,
-      selectedServiceType: null,
-      selectedSpecificService: null,
-      email: "",
-      code: Array(6).fill(""),
-      queueCount: [],
-    };
-  },
-  computed: {
-    containerStyle() {
-      const offset = -this.currentIndex * 100;
+  export default {
+    components: { navbar },
+    name: "scheduleBox",
+    data() {
       return {
-        transform: `translateX(${offset}%)`,
-        transition: "transform 0.5s ease-in-out",
+        previous,
+        next,
+        x,
+        currentIndex: 0,
+        twoWeeksDays: [],
+        blur: false,
+        showModal: false,
+        showEmailModal: false,
+        showVerifyModal: false,
+        showTicketModal: false,
+        selectedServiceType: null,
+        selectedSpecificService: null,
+        email: "",
+        code: Array(6).fill(""),
+        queueCount: [],
       };
     },
-    showPrevButton() {
-      return this.currentIndex > 0;
+    computed: {
+      containerStyle() {
+        const offset = -this.currentIndex * 100;
+        return {
+          transform: `translateX(${offset}%)`,
+          transition: "transform 0.5s ease-in-out",
+        };
+      },
+      showPrevButton() {
+        return this.currentIndex > 0;
+      },
+      showNextButton() {
+        return this.currentIndex < this.twoWeeksDays.length - 1;
+      },
     },
-    showNextButton() {
-      return this.currentIndex < this.twoWeeksDays.length - 1;
-    },
-  },
-  methods: {
-    async showServiceQueueNumber() {
-      const { count: DriverLicenseCount, error: DriverLicenseCountError } =
-        await supabase
+    methods: {
+      async showServiceQueueNumber() {
+        const { count: DriverLicenseCount, error: DriverLicenseCountError } =
+          await supabase
+            .from("tickets")
+            .select("service_id", { count: "exact", head: true })
+            .or("service_id.eq.3,parent_service_id.eq.3");
+
+        if (DriverLicenseCountError) {
+          console.error(DriverLicenseCountError);
+        }
+
+        const {
+          count: VehicleRegistrationCount,
+          error: VehicleRegistrationCountError,
+        } = await supabase
           .from("tickets")
           .select("service_id", { count: "exact", head: true })
-          .or("service_id.eq.3,parent_service_id.eq.3");
+          .or("service_id.eq.4,parent_service_id.eq.4");
 
-      if (DriverLicenseCountError) {
-        console.error(DriverLicenseCountError);
-      }
+        if (VehicleRegistrationCountError) {
+          console.error(VehicleRegistrationCountError);
+        }
 
-      const {
-        count: VehicleRegistrationCount,
-        error: VehicleRegistrationCountError,
-      } = await supabase
-        .from("tickets")
-        .select("service_id", { count: "exact", head: true })
-        .or("service_id.eq.4,parent_service_id.eq.4");
+        const { count: LawEnforcementCount, error: LawEnforcementCountError } =
+          await supabase
+            .from("tickets")
+            .select("service_id", { count: "exact", head: true })
+            .or("service_id.eq.5,parent_service_id.eq.5");
 
-      if (VehicleRegistrationCountError) {
-        console.error(VehicleRegistrationCountError);
-      }
+        if (LawEnforcementCountError) {
+          console.error(LawEnforcementCountError);
+        }
+        this.queueCount = [
+          DriverLicenseCount,
+          VehicleRegistrationCount,
+          LawEnforcementCount,
+        ];
+      },
+      generateTwoWeeks() {
+        const days = [];
+        const today = new Date();
 
-      const { count: LawEnforcementCount, error: LawEnforcementCountError } =
-        await supabase
-          .from("tickets")
-          .select("service_id", { count: "exact", head: true })
-          .or("service_id.eq.5,parent_service_id.eq.5");
+        for (let i = 0; i < 14; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
 
-      if (LawEnforcementCountError) {
-        console.error(LawEnforcementCountError);
-      }
-      this.queueCount = [
-        DriverLicenseCount,
-        VehicleRegistrationCount,
-        LawEnforcementCount,
-      ];
-    },
-    generateTwoWeeks() {
-      const days = [];
-      const today = new Date();
-
-      for (let i = 0; i < 14; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
-
-        const formattedDay = date.toLocaleDateString("en-US", {
-          weekday: "long",
-        });
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const formattedDate = `${month}.${day}`;
-        days.push({
-          formattedDay,
-          formattedDate,
-          date,
-          license: this.queueCount[0],
-          registration: Math.floor(Math.random() * 101),
-          LETAS: Math.floor(Math.random() * 101),
-          selectedService: null,
-        });
-      }
-      return days;
-    },
-    goToNext() {
-      if (this.currentIndex < this.twoWeeksDays.length - 1) {
-        this.currentIndex++;
-      }
-    },
-    goToPrevious() {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
-      }
-    },
-    queueNumberColor(value) {
-      if (value > 76) return "red";
-      if (value > 50) return "yellow";
-      return "green";
-    },
-    resetToToday() {
-      const today = new Date();
-      const todayIndex = this.twoWeeksDays.findIndex(
-        (day) => day.date.toDateString() === today.toDateString()
-      );
-      if (todayIndex !== -1) {
-        this.currentIndex = todayIndex;
-      }
-    },
-    selectService(service, index) {
-      const selectedDay = this.twoWeeksDays[index];
-      if (this.selectedServiceType && this.selectedServiceIndex !== index) {
-        const previousSelectedDay =
-          this.twoWeeksDays[this.selectedServiceIndex];
-        previousSelectedDay.selectedService = null;
-      }
-      if (
-        this.selectedServiceType === service &&
-        this.selectedServiceIndex === index
-      ) {
-        this.selectedServiceType = null;
-        this.selectedServiceIndex = null;
-        selectedDay.selectedService = null;
-        console.log(`Deselected ${service} on ${selectedDay.formattedDate}`);
-      } else if (selectedDay[service] < 100) {
-        this.selectedServiceType = service;
-        this.selectedServiceIndex = index;
-        selectedDay.selectedService = service;
-        console.log(`Selected ${service} on ${selectedDay.formattedDate}`);
-      } else {
-        console.log(`${service} is full and cannot be selected.`);
-      }
-    },
-    showQueueModal(day) {
-      this.selectedDay = day;
-      this.selectedServiceType = day.selectedService || null;
-      this.showModal = true;
-      this.blur = true;
-    },
-    closeModal() {
-      this.showModal = false;
-      this.selectedDay = null;
-      this.selectedServiceType = null;
-      this.blur = false;
-    },
-    close() {
-      this.showModal = false;
-      this.blur = false;
-    },
-    selectSpecificService(service) {
-      if (this.selectedSpecificService === service) {
-        this.selectedSpecificService = null;
-      } else {
-        this.selectedSpecificService = service;
-      }
-    },
-    proceedToEmail() {
-      if (this.selectedSpecificService) {
+          const formattedDay = date.toLocaleDateString("en-US", {
+            weekday: "long",
+          });
+          const day = String(date.getDate()).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const formattedDate = `${month}.${day}`;
+          days.push({
+            formattedDay,
+            formattedDate,
+            date,
+            license: this.queueCount[0],
+            registration: Math.floor(Math.random() * 101),
+            LETAS: Math.floor(Math.random() * 101),
+            selectedService: null,
+          });
+        }
+        return days;
+      },
+      goToNext() {
+        if (this.currentIndex < this.twoWeeksDays.length - 1) {
+          this.currentIndex++;
+        }
+      },
+      goToPrevious() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+        }
+      },
+      queueNumberColor(value) {
+        if (value > 76) return "red";
+        if (value > 50) return "yellow";
+        return "green";
+      },
+      resetToToday() {
+        const today = new Date();
+        const todayIndex = this.twoWeeksDays.findIndex(
+          (day) => day.date.toDateString() === today.toDateString()
+        );
+        if (todayIndex !== -1) {
+          this.currentIndex = todayIndex;
+        }
+      },
+      selectService(service, index) {
+        const selectedDay = this.twoWeeksDays[index];
+        if (this.selectedServiceType && this.selectedServiceIndex !== index) {
+          const previousSelectedDay =
+            this.twoWeeksDays[this.selectedServiceIndex];
+          previousSelectedDay.selectedService = null;
+        }
+        if (
+          this.selectedServiceType === service &&
+          this.selectedServiceIndex === index
+        ) {
+          this.selectedServiceType = null;
+          this.selectedServiceIndex = null;
+          selectedDay.selectedService = null;
+          console.log(`Deselected ${service} on ${selectedDay.formattedDate}`);
+        } else if (selectedDay[service] < 100) {
+          this.selectedServiceType = service;
+          this.selectedServiceIndex = index;
+          selectedDay.selectedService = service;
+          console.log(`Selected ${service} on ${selectedDay.formattedDate}`);
+        } else {
+          console.log(`${service} is full and cannot be selected.`);
+        }
+      },
+      showQueueModal(day) {
+        this.selectedDay = day;
+        this.selectedServiceType = day.selectedService || null;
+        this.showModal = true;
+        this.blur = true;
+      },
+      closeModal() {
         this.showModal = false;
-        this.showEmailModal = true;
-      }
-    },
-    proceedToVerify() {
-      if (this.email) {
+        this.selectedDay = null;
+        this.selectedServiceType = null;
+        this.blur = false;
+      },
+      close() {
+        this.showModal = false;
+        this.blur = false;
+      },
+      selectSpecificService(service) {
+        if (this.selectedSpecificService === service) {
+          this.selectedSpecificService = null;
+        } else {
+          this.selectedSpecificService = service;
+        }
+      },
+      proceedToEmail() {
+        if (this.selectedSpecificService) {
+          this.showModal = false;
+          this.showEmailModal = true;
+        }
+      },
+      async proceedToVerify() {
+        if (this.email) {
+          const { data, error } = await supabase.auth.signInWithOtp({
+            email: this.email,
+            options: {
+              shouldCreateUser: true,
+            },
+          });
+          this.showEmailModal = false;
+          this.showVerifyModal = true;
+        }
+      },
+      async proceedToTicket() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.verifyOtp({
+          email: this.email,
+          token: this.code.join(""),
+          type: "email",
+        });
+        if (error) {
+          console.log(error);
+          alert("Invalid Code!");
+        } else {
+          console.log(session);
+          this.showVerifyModal = false;
+          this.showTicketModal = true;
+        }
+      },
+      ticketRoute() {
+        this.$router.push({ name: "ticket" });
+      },
+      goBackModal() {
         this.showEmailModal = false;
-        this.showVerifyModal = true;
-      }
-    },
-    proceedToTicket() {
-      if (this.code) {
+        this.showModal = true;
+      },
+      goBackEmail() {
+        this.showEmailModal = true;
         this.showVerifyModal = false;
-        this.showTicketModal = true;
-      }
+      },
+      validateInput(event) {
+        const input = event.target;
+        if (!/^\d*$/.test(input.value)) {
+          input.value = "";
+        }
+      },
     },
-    ticketRoute() {
-      this.$router.push({ name: "ticket" });
-    },
-    goBackModal() {
-      this.showEmailModal = false;
-      this.showModal = true;
-    },
-    goBackEmail() {
-      this.showEmailModal = true;
-      this.showVerifyModal = false;
-    },
-    validateInput(event) {
-      const input = event.target;
-      if (!/^\d*$/.test(input.value)) {
-        input.value = "";
-      }
-    },
-  },
-  created() {
-    this.showServiceQueueNumber().then(() => {
-      const days = [];
-      const today = new Date();
+    created() {
+      this.showServiceQueueNumber().then(() => {
+        const days = [];
+        const today = new Date();
 
-      for (let i = 0; i < 14; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() + i);
+        for (let i = 0; i < 14; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
 
-        const formattedDay = date.toLocaleDateString("en-US", {
-          weekday: "long",
-        });
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const formattedDate = `${month}.${day}`;
-        days.push({
-          formattedDay,
-          formattedDate,
-          date,
-          license: this.queueCount[0] || Math.floor(Math.random() * 101),
-          registration: this.queueCount[1] || Math.floor(Math.random() * 101),
-          LETAS: this.queueCount[2] || Math.floor(Math.random() * 101),
-          selectedService: null,
-        });
-      }
-      this.twoWeeksDays = days;
-    });
-  },
-};
+          const formattedDay = date.toLocaleDateString("en-US", {
+            weekday: "long",
+          });
+          const day = String(date.getDate()).padStart(2, "0");
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const formattedDate = `${month}.${day}`;
+          days.push({
+            formattedDay,
+            formattedDate,
+            date,
+            license: this.queueCount[0] || Math.floor(Math.random() * 101),
+            registration: this.queueCount[1] || Math.floor(Math.random() * 101),
+            LETAS: this.queueCount[2] || Math.floor(Math.random() * 101),
+            selectedService: null,
+          });
+        }
+        this.twoWeeksDays = days;
+      });
+    },
+  };
 </script>
 
 <style scoped>
-.navbar {
-  position: relative;
-  z-index: 998;
-}
+  .navbar {
+    position: relative;
+    z-index: 998;
+  }
 
-.scheduleBox {
-  background: #dee2e6;
-}
+  .scheduleBox {
+    background: #dee2e6;
+  }
 
-.boxArea {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
+  .boxArea {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
 
-h1 {
-  font-weight: 800 !important;
-  padding-top: 2.43rem;
-  padding-bottom: 1rem;
-}
+  h1 {
+    font-weight: 800 !important;
+    padding-top: 2.43rem;
+    padding-bottom: 1rem;
+  }
 
-h3 {
-  font-size: 1.7rem;
-}
+  h3 {
+    font-size: 1.7rem;
+  }
 
-h2 {
-  font-size: 2.5rem;
-}
+  h2 {
+    font-size: 2.5rem;
+  }
 
-h2,
-h3 {
-  font-weight: bold;
-}
+  h2,
+  h3 {
+    font-weight: bold;
+  }
 
-.boxContainer {
-  display: flex;
-  flex-wrap: nowrap;
-  transition: transform 0.5s ease-in-out;
-  width: 100%;
-}
+  .boxContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+  }
 
-.card-group {
-  min-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .card-group {
+    min-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.row {
-  display: flex;
-  height: 100%;
-  padding: 2rem 1.5rem 2rem 1.5rem;
-  flex-wrap: nowrap;
-  flex-shrink: 0;
-  transition: transform 0.5s ease;
-}
+  .row {
+    display: flex;
+    height: 100%;
+    padding: 2rem 1.5rem 2rem 1.5rem;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    transition: transform 0.5s ease;
+  }
 
-.dateCardContent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 88%;
-  height: 60%;
-  border: 1px solid #dee2e6;
-  border-radius: 1rem;
-  padding: 2rem;
-}
+  .dateCardContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 88%;
+    height: 60%;
+    border: 1px solid #dee2e6;
+    border-radius: 1rem;
+    padding: 2rem;
+  }
 
-.disabled-card {
-  opacity: 0.5;
-  pointer-events: none;
-}
+  .disabled-card {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
-.disabled-btn {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
+  .disabled-btn {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 
-.dateTime {
-  display: flex;
-  flex-direction: column;
-}
+  .dateTime {
+    display: flex;
+    flex-direction: column;
+  }
 
-.card-title {
-  margin: 0;
-}
+  .card-title {
+    margin: 0;
+  }
 
-.col-md-1 {
-  width: 2.2rem;
-}
+  .col-md-1 {
+    width: 2.2rem;
+  }
 
-.col-md-6 {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-  position: relative;
-}
+  .col-md-6 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    position: relative;
+  }
 
-.line {
-  width: 1px;
-  height: 98%;
-  background: black;
-}
+  .line {
+    width: 1px;
+    height: 98%;
+    background: black;
+  }
 
-.backToToday {
-  color: #68717a;
-  text-decoration: underline;
-  cursor: pointer;
-  margin-top: auto;
-  text-align: center;
-}
+  .backToToday {
+    color: #68717a;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: auto;
+    text-align: center;
+  }
 
-.specServ {
-  display: flex;
-  align-items: center;
-  background-color: #6ea8fe;
-  width: 20.625rem;
-  height: 5.125rem;
-  margin-bottom: 0.7rem;
-  border-radius: 1rem;
-  border: none;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
-  font-size: 1.75rem;
-  font-weight: bold;
-  padding-left: 1.7rem;
-  padding-right: 1rem;
-}
+  .specServ {
+    display: flex;
+    align-items: center;
+    background-color: #6ea8fe;
+    width: 20.625rem;
+    height: 5.125rem;
+    margin-bottom: 0.7rem;
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+    font-size: 1.75rem;
+    font-weight: bold;
+    padding-left: 1.7rem;
+    padding-right: 1rem;
+  }
 
-.selected {
-  background-color: #007bff;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
-}
+  .selected {
+    background-color: #007bff;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.1);
+  }
 
-.counter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3.5625rem;
-  height: 1.25rem;
-  background-color: #ebe5fc;
-  margin-left: 0.3rem;
-  border-radius: 1rem;
-  font-size: 0.625rem;
-}
+  .counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5625rem;
+    height: 1.25rem;
+    background-color: #ebe5fc;
+    margin-left: 0.3rem;
+    border-radius: 1rem;
+    font-size: 0.625rem;
+  }
 
-.select {
-  display: flex;
-  font-size: 0.75rem;
-  color: #68717a;
-  font-weight: lighter;
-  margin-left: auto;
-  text-decoration: underline;
-}
+  .select {
+    display: flex;
+    font-size: 0.75rem;
+    color: #68717a;
+    font-weight: lighter;
+    margin-left: auto;
+    text-decoration: underline;
+  }
 
-.red {
-  color: #dc3545;
-}
+  .red {
+    color: #dc3545;
+  }
 
-.yellow {
-  color: #fd7e14;
-}
+  .yellow {
+    color: #fd7e14;
+  }
 
-.green {
-  color: #198754;
-}
+  .green {
+    color: #198754;
+  }
 
-.prevButton,
-.nextButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  width: 2rem;
-  height: 2rem;
-  z-index: 10;
-}
+  .prevButton,
+  .nextButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    z-index: 10;
+  }
 
-.prevButton {
-  left: 10rem;
-}
+  .prevButton {
+    left: 10rem;
+  }
 
-.nextButton {
-  right: 10rem;
-}
+  .nextButton {
+    right: 10rem;
+  }
 
-.smallerFont {
-  font-size: 2rem;
-}
+  .smallerFont {
+    font-size: 2rem;
+  }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  z-index: 999;
-}
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    z-index: 999;
+  }
 
-.modal-box {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  width: 38.9375rem;
-  text-align: center;
-}
+  .modal-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 38.9375rem;
+    text-align: center;
+  }
 
-.modal-box button {
-  margin-top: 20px;
-  padding: 10px 20px;
-}
+  .modal-box button {
+    margin-top: 20px;
+    padding: 10px 20px;
+  }
 
-.specbtn {
-  background-color: #084298;
-}
+  .specbtn {
+    background-color: #084298;
+  }
 
-.specbtn:hover {
-  background-color: #052c65;
-}
+  .specbtn:hover {
+    background-color: #052c65;
+  }
 
-.selected {
-  background-color: #084298;
-  color: white;
-}
+  .selected {
+    background-color: #084298;
+    color: white;
+  }
 
-.numContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin-bottom: 1rem;
-}
+  .numContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
 
-.num {
-  width: 57px;
-  height: 78px;
-  box-sizing: border-box;
-  border-radius: 20px;
-  border: none;
-  background-color: #f0f1f5;
-  background-position: 10px center;
-  background-repeat: no-repeat;
-  padding-left: 22px;
-  font-size: 30px;
-}
+  .num {
+    width: 57px;
+    height: 78px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: none;
+    background-color: #f0f1f5;
+    background-position: 10px center;
+    background-repeat: no-repeat;
+    padding-left: 22px;
+    font-size: 30px;
+  }
 </style>
