@@ -104,7 +104,7 @@ export default {
       });
       if (error) {
         console.log(error);
-        alert("Invalid Code!");
+        alert("Invalid OTP! Check and enter again.");
       } else {
         console.log(session);
         this.$router.push("staffhome");

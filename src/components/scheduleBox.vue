@@ -382,7 +382,7 @@
         showTicketModal: false,
         selectedServiceType: null,
         selectedSpecificService: null,
-        email: "",
+        email: null,
         code: Array(6).fill(""),
         queueCount: [],
       };
@@ -538,14 +538,23 @@
           this.selectedSpecificService = service;
         }
       },
-      proceedToEmail() {
+      async proceedToEmail() {
         if (this.selectedSpecificService) {
           this.showModal = false;
           this.showEmailModal = true;
         }
       },
       async proceedToVerify() {
-        if (this.email) {
+        const { data, error } =
+          await supabase
+            .from("tickets")
+            .select("email")
+            .eq("email", this.email);  
+
+        if (data.length == 1) {
+          console.log(data)
+          alert("You already queued!")
+        } else {
           const { data, error } = await supabase.auth.signInWithOtp({
             email: this.email,
             options: {
@@ -554,6 +563,23 @@
           });
           this.showEmailModal = false;
           this.showVerifyModal = true;
+        }
+      },
+      async insertTicket() {
+        if (this.selectedSpecificService === "Sales Reporting and Registration of Motor Vehicles") {
+          const { count: motorRegistration, error: motorRegistrationError } =
+          await supabase
+            .from("tickets")
+            .select("service_id", { count: "exact", head: true })
+            .eq("service_id", 7);
+          const { error } = await supabase
+            .from("tickets")
+            .insert({
+              ticket_number: motorRegistration + 1,
+              service_id: 7,
+              parent_service_id: 4,
+              email: this.email
+          });
         }
       },
       async proceedToTicket() {
@@ -567,9 +593,9 @@
         });
         if (error) {
           console.log(error);
-          alert("Invalid Code!");
-        } else {
-          console.log(session);
+          alert("Invalid OTP! Check and enter again.");
+        } else {        
+          this.insertTicket();
           this.showVerifyModal = false;
           this.showTicketModal = true;
         }
