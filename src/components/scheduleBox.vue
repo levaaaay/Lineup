@@ -581,7 +581,7 @@
           const { error } = await supabase.from("tickets").insert({
             ticket_number: motorRegistration + 1,
             service_id: 9,
-            parent_service_id: 4,
+            parent_service_id: 2,
             email: this.email,
           });
         }
