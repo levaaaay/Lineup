@@ -577,10 +577,10 @@
             await supabase
               .from("tickets")
               .select("service_id", { count: "exact", head: true })
-              .eq("service_id", 7);
+              .eq("service_id", 9);
           const { error } = await supabase.from("tickets").insert({
             ticket_number: motorRegistration + 1,
-            service_id: 7,
+            service_id: 9,
             parent_service_id: 4,
             email: this.email,
           });
@@ -599,9 +599,9 @@
           console.log(error);
           alert("Invalid OTP! Check and enter again.");
         } else {
-          this.insertTicket();
           this.showVerifyModal = false;
           this.showTicketModal = true;
+          this.insertTicket();
         }
       },
       ticketRoute() {
@@ -641,9 +641,9 @@
             formattedDay,
             formattedDate,
             date,
-            license: this.queueCount[0] || Math.floor(Math.random() * 101),
-            registration: this.queueCount[1] || Math.floor(Math.random() * 101),
-            LETAS: this.queueCount[2] || Math.floor(Math.random() * 101),
+            license: this.queueCount[0],
+            registration: this.queueCount[1],
+            LETAS: this.queueCount[2],
             selectedService: null,
           });
         }
