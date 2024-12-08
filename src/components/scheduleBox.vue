@@ -408,7 +408,7 @@
           await supabase
             .from("tickets")
             .select("service_id", { count: "exact", head: true })
-            .or("service_id.eq.3,parent_service_id.eq.3");
+            .or("service_id.eq.1,parent_service_id.eq.1");
 
         if (DriverLicenseCountError) {
           console.error(DriverLicenseCountError);
@@ -420,7 +420,7 @@
         } = await supabase
           .from("tickets")
           .select("service_id", { count: "exact", head: true })
-          .or("service_id.eq.4,parent_service_id.eq.4");
+          .or("service_id.eq.2,parent_service_id.eq.2");
 
         if (VehicleRegistrationCountError) {
           console.error(VehicleRegistrationCountError);
@@ -430,7 +430,7 @@
           await supabase
             .from("tickets")
             .select("service_id", { count: "exact", head: true })
-            .or("service_id.eq.5,parent_service_id.eq.5");
+            .or("service_id.eq.3,parent_service_id.eq.3");
 
         if (LawEnforcementCountError) {
           console.error(LawEnforcementCountError);
@@ -577,7 +577,7 @@
             await supabase
               .from("tickets")
               .select("service_id", { count: "exact", head: true })
-              .eq("service_id", 9);
+              .eq("service_id", 7);
           const { error } = await supabase.from("tickets").insert({
             ticket_number: motorRegistration + 1,
             service_id: 9,
