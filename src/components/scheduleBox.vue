@@ -545,40 +545,44 @@
         }
       },
       async proceedToVerify() {
-        const { data, error } =
-          await supabase
+        if (this.email) {
+          const { data, error } = await supabase
             .from("tickets")
             .select("email")
-            .eq("email", this.email);  
+            .eq("email", this.email);
 
-        if (data.length == 1) {
-          console.log(data)
-          alert("You already queued!")
+          if (data.length == 1) {
+            console.log(data);
+            alert("You already queued!");
+          } else {
+            const { data, error } = await supabase.auth.signInWithOtp({
+              email: this.email,
+              options: {
+                shouldCreateUser: true,
+              },
+            });
+            this.showEmailModal = false;
+            this.showVerifyModal = true;
+          }
         } else {
-          const { data, error } = await supabase.auth.signInWithOtp({
-            email: this.email,
-            options: {
-              shouldCreateUser: true,
-            },
-          });
-          this.showEmailModal = false;
-          this.showVerifyModal = true;
+          alert("Enter Valid Email!");
         }
       },
       async insertTicket() {
-        if (this.selectedSpecificService === "Sales Reporting and Registration of Motor Vehicles") {
+        if (
+          this.selectedSpecificService ===
+          "Sales Reporting and Registration of Motor Vehicles"
+        ) {
           const { count: motorRegistration, error: motorRegistrationError } =
-          await supabase
-            .from("tickets")
-            .select("service_id", { count: "exact", head: true })
-            .eq("service_id", 7);
-          const { error } = await supabase
-            .from("tickets")
-            .insert({
-              ticket_number: motorRegistration + 1,
-              service_id: 7,
-              parent_service_id: 4,
-              email: this.email
+            await supabase
+              .from("tickets")
+              .select("service_id", { count: "exact", head: true })
+              .eq("service_id", 7);
+          const { error } = await supabase.from("tickets").insert({
+            ticket_number: motorRegistration + 1,
+            service_id: 7,
+            parent_service_id: 4,
+            email: this.email,
           });
         }
       },
@@ -594,7 +598,7 @@
         if (error) {
           console.log(error);
           alert("Invalid OTP! Check and enter again.");
-        } else {        
+        } else {
           this.insertTicket();
           this.showVerifyModal = false;
           this.showTicketModal = true;
