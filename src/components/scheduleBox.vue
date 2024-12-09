@@ -569,22 +569,77 @@
         }
       },
       async insertTicket() {
-        if (
-          this.selectedSpecificService ===
-          "Sales Reporting and Registration of Motor Vehicles"
-        ) {
-          const { count: motorRegistration, error: motorRegistrationError } =
-            await supabase
-              .from("tickets")
-              .select("service_id", { count: "exact", head: true })
-              .eq("service_id", 7);
-          const { error } = await supabase.from("tickets").insert({
-            ticket_number: motorRegistration + 1,
-            service_id: 9,
-            parent_service_id: 2,
-            email: this.email,
-          });
+
+        let service;
+        let parent_service;
+        
+        switch (this.selectedSpecificService) {
+          case "Student's Permit":
+            service = 4;
+            parent_service = 1;
+            break;
+          case "Non-Professional Driver's License":
+            service = 5;
+            parent_service = 1;
+            break;   
+          case "Conductor’s License":
+            service = 6;
+            parent_service = 1;
+            break;          
+          case "Sales Reporting and Registration of Motor Vehicles":
+            service = 7;
+            parent_service = 2;
+            break;      
+          case "Vehicle Encoding/Linking":
+            service = 8;
+            parent_service = 2;
+            break;
+          case "Renewal of Motor Vehicle Registration":
+            service = 9;
+            parent_service = 2;
+            break;
+          case "Storage of Motor Vehicle":
+            service = 10;
+            parent_service = 2;
+            break;
+          case "Request for Motor Vehicle Verification":
+            service = 11;
+            parent_service = 2;
+            break;
+          case "Settlement of Apprehension Cases":
+            service = 12;
+            parent_service = 3;
+            break;
+          case "LETAS Fines and Penalties":
+            service = 13;
+            parent_service = 3;
+            break;
+          case "Filing of Complaint and Lifting of Alarm":
+            service = 14;
+            parent_service = 3;
+            break;
+          case "Lifting of Alarm (TAS)":
+            service = 15;
+            parent_service = 3;
+            break;
+          case "Releasing of Confiscated":
+            service = 16;
+            parent_service = 3;
         }
+        const { count, error: countError } = await supabase
+          .from("tickets")
+          .select("service_id", { count: "exact", head: true })
+          .eq("service_id", service);
+
+        const { error } = await supabase.from("tickets").insert({
+          ticket_number: count + 1,
+          service_id: service,
+          parent_service_id: parent_service,
+          email: this.email,
+          time_generated: new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Manila",
+          }),
+        });
       },
       async proceedToTicket() {
         const {
