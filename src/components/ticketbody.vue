@@ -55,7 +55,11 @@
               {{ status }}</span
             >
           </div>
-          <button class="queue" @click="updateTicket"style="font-size: 0.9rem; font-weight: 500">
+          <button
+            class="queue"
+            @click="updateTicket"
+            style="font-size: 0.9rem; font-weight: 500"
+          >
             Update
           </button>
         </div>
@@ -65,6 +69,7 @@
 </template>
 
 <script>
+  import { supabase } from "../client/supabase";
   export default {
     name: "ticketbody",
     data() {
@@ -77,23 +82,35 @@
         status: "pending",
       };
     },
+    mounted() {
+      this.showTicketDetails();
+    },
     methods: {
       gotoSchedule() {
         this.$router.push("schedule");
       },
       async showTicketDetails() {
-        const { data, error } = await supabase
-          .from("tickets")
-          .select("ticket_number, queue_time, reference_number")
-          .eq("email", email);
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-        if (error) {
-          console.error(error);
-        }
-      },
-      updateTicket() {
+        if (session) {
+          const { data, error } = await supabase
+            .from("tickets")
+            .select("email, ticket_number, transaction, queue_time, reference_number, status")
+            .eq("email", session.user.email); 
 
+            if (data && data.length > 0) {
+              console.log(data[0]);
+              this.queueNumber =  String(data[0].ticket_number).padStart(3, '0');
+              this.transaction = data[0].transaction;
+              this.estimatedWait = data[0].queue_time;
+              this.referenceNumber = data[0].reference_number;
+              this.status = data[0].status;
+            } else {
+              this.noTicketIsVisible = true;
+            }
+        } 
       },
+      updateTicket() {},
     },
   };
 </script>

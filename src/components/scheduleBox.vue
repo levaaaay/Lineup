@@ -415,16 +415,15 @@
         for (let i = 0; i < 5; i++) {
           const currentDay = new Date(today);
           currentDay.setDate(today.getDate() + i);
-          const dateString = currentDay.toISOString().split("T")[0];
+          const dateString = currentDay.toLocaleDateString("en-CA");
 
-          console.log(dateString);
           const { count: DriverLicenseCount, error: DriverLicenseCountError } =
             await supabase
               .from("tickets")
               .select("service_id", { count: "exact", head: true })
               .or("service_id.eq.1,parent_service_id.eq.1")
-              .gte("time_generated", `${dateString} 00:00:00`)
-              .lte("time_generated", `${dateString} 23:59:59`);
+              .gte("queue_date", `${dateString} 00:00:00`)
+              .lte("queue_date", `${dateString} 23:59:59`);
 
           if (DriverLicenseCountError) {
             console.error(DriverLicenseCountError);
@@ -437,8 +436,8 @@
             .from("tickets")
             .select("service_id", { count: "exact", head: true })
             .or("service_id.eq.2,parent_service_id.eq.2")
-            .gte("time_generated", `${dateString} 00:00:00`)
-            .lte("time_generated", `${dateString} 23:59:59`);
+            .gte("queue_date", `${dateString} 00:00:00`)
+            .lte("queue_date", `${dateString} 23:59:59`);
 
           if (VehicleRegistrationCountError) {
             console.error(VehicleRegistrationCountError);
@@ -451,8 +450,8 @@
             .from("tickets")
             .select("service_id", { count: "exact", head: true })
             .or("service_id.eq.3,parent_service_id.eq.3")
-            .gte("time_generated", `${dateString} 00:00:00`)
-            .lte("time_generated", `${dateString} 23:59:59`);
+            .gte("queue_date", `${dateString} 00:00:00`)
+            .lte("queue_date", `${dateString} 23:59:59`);
 
           if (LawEnforcementCountError) {
             console.error(LawEnforcementCountError);
@@ -522,7 +521,6 @@
         this.showEmailModal = false;
         this.showVerifyModal = false;
         this.showTicketModal = false;
-        this.selectedDay = null;
         this.selectedServiceType = null;
         this.blur = false;
       },
@@ -541,6 +539,7 @@
         if (this.selectedSpecificService) {
           this.showModal = false;
           this.showEmailModal = true;
+          console.log(this.selectedDay);
         }
       },
       async proceedToVerify() {
@@ -570,59 +569,64 @@
       async insertTicket() {
         let service;
         let parent_service;
+        let transaction;
+        let queue_time;
 
         switch (this.selectedSpecificService) {
           case "Student's Permit":
             service = 4;
             parent_service = 1;
+            transaction = "Student's Permit";
+            queue_time = 0;
             break;
-          case "Non-Professional Driver's License":
+          case "New Driver's License (Non-Professional)":
             service = 5;
             parent_service = 1;
+            transaction = "New Driver's License (Non-Professional)";
+            queue_time = 0;
             break;
           case "Conductor’s License":
             service = 6;
             parent_service = 1;
+            transaction = "Conductor’s License";
+            queue_time = 0;
             break;
           case "Sales Reporting and Registration of Motor Vehicles":
             service = 7;
             parent_service = 2;
+            transaction = "Sales Reporting and Registration of Motor Vehicles";
+            queue_time = 0;
             break;
           case "Vehicle Encoding/Linking":
             service = 8;
             parent_service = 2;
+            transaction = "Vehicle Encoding/Linking";
+            queue_time = 0;
             break;
           case "Renewal of Motor Vehicle Registration":
             service = 9;
             parent_service = 2;
-            break;
-          case "Storage of Motor Vehicle":
-            service = 10;
-            parent_service = 2;
-            break;
-          case "Request for Motor Vehicle Verification":
-            service = 11;
-            parent_service = 2;
+            transaction = "Renewal of Motor Vehicle Registration";
+            queue_time = 0;
             break;
           case "Settlement of Apprehension Cases":
             service = 12;
             parent_service = 3;
+            transaction = "Settlement of Apprehension Cases";
+            queue_time = 0;
             break;
           case "LETAS Fines and Penalties":
             service = 13;
             parent_service = 3;
+            transaction = "LETAS Fines and Penalties";
+            queue_time = 0;
             break;
-          case "Filing of Complaint and Lifting of Alarm":
-            service = 14;
+          case "Encoding of Alarm on Driver's License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies":
+            service = 17;
             parent_service = 3;
-            break;
-          case "Lifting of Alarm (TAS)":
-            service = 15;
-            parent_service = 3;
-            break;
-          case "Releasing of Confiscated":
-            service = 16;
-            parent_service = 3;
+            transaction =
+              "Encoding of Alarm on Driver's License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies";
+            queue_time = 0;
         }
         const { count, error: countError } = await supabase
           .from("tickets")
@@ -637,6 +641,11 @@
           time_generated: new Date().toLocaleString("en-US", {
             timeZone: "Asia/Manila",
           }),
+          queue_date: this.selectedDay.formattedQueueDate,
+          transaction: transaction,
+          status: "pending",
+          queue_time: queue_time,
+          reference_number: Math.floor(Math.random() * 1000000000000),
         });
       },
       async proceedToTicket() {
@@ -687,12 +696,15 @@
           const formattedDay = date.toLocaleDateString("en-US", {
             weekday: "long",
           });
+          const year = date.getFullYear();
           const day = String(date.getDate()).padStart(2, "0");
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const formattedDate = `${month}.${day}`;
+          const formattedQueueDate = `${year}-${month}-${day}`;
           days.push({
             formattedDay,
             formattedDate,
+            formattedQueueDate,
             date,
             license: this.DriverLicense[i],
             registration: this.VehicleRegistration[i],
