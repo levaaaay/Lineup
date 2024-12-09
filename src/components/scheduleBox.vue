@@ -519,6 +519,9 @@
       },
       closeModal() {
         this.showModal = false;
+        this.showEmailModal = false;
+        this.showVerifyModal = false;
+        this.showTicketModal = false;
         this.selectedDay = null;
         this.selectedServiceType = null;
         this.blur = false;
