@@ -25,7 +25,6 @@
       </div>
       <div class="ticket" v-if="!noTicketIsVisible">
         <div class="ticketBorder" style="justify-content: flex-start">
-          <div class="progressBar"></div>
           <div class="infobox">
             <span class="boldtext">Queue Number: </span>
             <span style="color: #084298; font-weight: 700; margin-left: 0.5vw">
@@ -50,8 +49,14 @@
               {{ referenceNumber }}</span
             >
           </div>
-          <button class="queue" style="font-size: 0.9rem; font-weight: 500">
-            View Routing Slip
+          <div class="infobox">
+            <span class="boldtext">Status: </span>
+            <span style="color: #68717a; margin-left: 0.5vw">
+              {{ status }}</span
+            >
+          </div>
+          <button class="queue" @click="updateTicket"style="font-size: 0.9rem; font-weight: 500">
+            Update
           </button>
         </div>
       </div>
@@ -69,6 +74,7 @@
         transaction: "Renewal of Motor Vehicle (MV) Registration",
         estimatedWait: "2 hours 0 minutes 0 seconds",
         referenceNumber: "2024231102001",
+        status: "pending",
       };
     },
     methods: {
@@ -85,6 +91,9 @@
           console.error(error);
         }
       },
+      updateTicket() {
+
+      },
     },
   };
 </script>
@@ -95,7 +104,7 @@
     justify-content: center;
     align-items: center;
     width: 37.5vw;
-    height: 50vh;
+    height: 52vh;
     background-color: white;
   }
 
@@ -105,7 +114,7 @@
     justify-content: center;
     align-items: center;
     width: 33vw;
-    height: 41vh;
+    height: 43vh;
     border: 5px solid black;
     border-radius: 10px;
     padding: 1rem 0 0 0;
