@@ -404,68 +404,64 @@
     },
     methods: {
       async showServiceQueueNumber() {
-        const { count: DriverLicenseCount, error: DriverLicenseCountError } =
-          await supabase
+        const today = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
+
+        this.DriverLicense = [];
+        this.VehicleRegistration = [];
+        this.LawEnforcement = [];
+
+        for (let i = 0; i < 5; i++) {
+          const currentDay = new Date(today);
+          currentDay.setDate(today.getDate() + i);
+          const dateString = currentDay.toISOString().split("T")[0];
+
+          console.log(dateString);
+          const { count: DriverLicenseCount, error: DriverLicenseCountError } =
+            await supabase
+              .from("tickets")
+              .select("service_id", { count: "exact", head: true })
+              .or("service_id.eq.1,parent_service_id.eq.1")
+              .gte("time_generated", `${dateString} 00:00:00`)
+              .lte("time_generated", `${dateString} 23:59:59`);
+
+          if (DriverLicenseCountError) {
+            console.error(DriverLicenseCountError);
+          }
+
+          const {
+            count: VehicleRegistrationCount,
+            error: VehicleRegistrationCountError,
+          } = await supabase
             .from("tickets")
             .select("service_id", { count: "exact", head: true })
-            .or("service_id.eq.1,parent_service_id.eq.1");
+            .or("service_id.eq.2,parent_service_id.eq.2")
+            .gte("time_generated", `${dateString} 00:00:00`)
+            .lte("time_generated", `${dateString} 23:59:59`);
 
-        if (DriverLicenseCountError) {
-          console.error(DriverLicenseCountError);
-        }
+          if (VehicleRegistrationCountError) {
+            console.error(VehicleRegistrationCountError);
+          }
 
-        const {
-          count: VehicleRegistrationCount,
-          error: VehicleRegistrationCountError,
-        } = await supabase
-          .from("tickets")
-          .select("service_id", { count: "exact", head: true })
-          .or("service_id.eq.2,parent_service_id.eq.2");
-
-        if (VehicleRegistrationCountError) {
-          console.error(VehicleRegistrationCountError);
-        }
-
-        const { count: LawEnforcementCount, error: LawEnforcementCountError } =
-          await supabase
+          const {
+            count: LawEnforcementCount,
+            error: LawEnforcementCountError,
+          } = await supabase
             .from("tickets")
             .select("service_id", { count: "exact", head: true })
-            .or("service_id.eq.3,parent_service_id.eq.3");
+            .or("service_id.eq.3,parent_service_id.eq.3")
+            .gte("time_generated", `${dateString} 00:00:00`)
+            .lte("time_generated", `${dateString} 23:59:59`);
 
-        if (LawEnforcementCountError) {
-          console.error(LawEnforcementCountError);
+          if (LawEnforcementCountError) {
+            console.error(LawEnforcementCountError);
+          }
+
+          this.DriverLicense[i] = DriverLicenseCount;
+          this.VehicleRegistration[i] = VehicleRegistrationCount;
+          this.LawEnforcement[i] = LawEnforcementCount;
         }
-        this.queueCount = [
-          DriverLicenseCount,
-          VehicleRegistrationCount,
-          LawEnforcementCount,
-        ];
-      },
-      generateTwoWeeks() {
-        const days = [];
-        const today = new Date();
-
-        for (let i = 0; i < 14; i++) {
-          const date = new Date(today);
-          date.setDate(today.getDate() + i);
-
-          const formattedDay = date.toLocaleDateString("en-US", {
-            weekday: "long",
-          });
-          const day = String(date.getDate()).padStart(2, "0");
-          const month = String(date.getMonth() + 1).padStart(2, "0");
-          const formattedDate = `${month}.${day}`;
-          days.push({
-            formattedDay,
-            formattedDate,
-            date,
-            license: this.queueCount[0],
-            registration: Math.floor(Math.random() * 101),
-            LETAS: Math.floor(Math.random() * 101),
-            selectedService: null,
-          });
-        }
-        return days;
       },
       goToNext() {
         if (this.currentIndex < this.twoWeeksDays.length - 1) {
@@ -569,10 +565,9 @@
         }
       },
       async insertTicket() {
-
         let service;
         let parent_service;
-        
+
         switch (this.selectedSpecificService) {
           case "Student's Permit":
             service = 4;
@@ -581,15 +576,15 @@
           case "Non-Professional Driver's License":
             service = 5;
             parent_service = 1;
-            break;   
+            break;
           case "Conductor’s License":
             service = 6;
             parent_service = 1;
-            break;          
+            break;
           case "Sales Reporting and Registration of Motor Vehicles":
             service = 7;
             parent_service = 2;
-            break;      
+            break;
           case "Vehicle Encoding/Linking":
             service = 8;
             parent_service = 2;
@@ -682,7 +677,7 @@
         const days = [];
         const today = new Date();
 
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < 5; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
 
@@ -696,9 +691,9 @@
             formattedDay,
             formattedDate,
             date,
-            license: this.queueCount[0],
-            registration: this.queueCount[1],
-            LETAS: this.queueCount[2],
+            license: this.DriverLicense[i],
+            registration: this.VehicleRegistration[i],
+            LETAS: this.LawEnforcement[i],
             selectedService: null,
           });
         }
