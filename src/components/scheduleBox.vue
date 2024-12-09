@@ -631,7 +631,9 @@
         const { count, error: countError } = await supabase
           .from("tickets")
           .select("service_id", { count: "exact", head: true })
-          .eq("service_id", service);
+          .eq("service_id", service)
+          .gte("queue_date", `${this.selectedDay.formattedQueueDate} 00:00:00`)
+          .lte("queue_date", `${this.selectedDay.formattedQueueDate} 23:59:59`);
 
         const { error } = await supabase.from("tickets").insert({
           ticket_number: count + 1,
@@ -645,7 +647,8 @@
           transaction: transaction,
           status: "pending",
           queue_time: queue_time,
-          reference_number: Math.floor(Math.random() * 1000000000000),
+          reference_number:
+            Math.floor(Math.random() * 900000000000) + 100000000000,
         });
       },
       async proceedToTicket() {
