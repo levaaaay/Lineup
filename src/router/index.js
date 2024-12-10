@@ -49,6 +49,11 @@ const routes = [
     name: 'staffschedule',
     component: staffSchedule
   },
+  {
+    path: '/direct',
+    name: 'direct',
+    component: directing
+  },
 ];
 
 const router = createRouter({

@@ -1,7 +1,7 @@
 <template>
   <div class="servicesOffered">
     <div class="globalHeader">
-      <h1>Services Offered</h1>
+      <h1>Update Tickets</h1>
     </div>
     <div class="container">
       <div class="card">
@@ -50,23 +50,8 @@ export default {
     };
   },
   mounted() {
-    this.showServiceDetails();
   },
   methods: {
-    async showServiceDetails() {
-      const { data, error } = await supabase
-        .from("services")
-        .select("service_name, service_description")
-        .eq("service_type", "main");
-      if (error) {
-        console.error(error);
-      }
-
-      this.ServiceName = data.map((service) => service.service_name);
-      this.ServiceDescription = data.map(
-        (service) => service.service_description
-      );
-    },
   },
 };
 </script>
@@ -97,7 +82,7 @@ p {
 .card {
   width: 21.875rem;
   height: 25.625rem;
-  background: #084298;
+  background: #052C65;
 }
 
 .line {

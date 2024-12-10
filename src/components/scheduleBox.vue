@@ -196,72 +196,8 @@
           <button type="button" class="btn btn-secondary" @click="closeModal">
             Cancel
           </button>
-          <button type="button" class="btn btn-primary specbtn" style="border: none" @click="proceedToEmail">
-            Next
-          </button>
-        </div>
-      </div>
-    </div>
-    <div v-if="showEmailModal" class="modal-box" style="padding: 0">
-      <div style="display: flex; flex-direction: column">
-        <div class="modalHeader" style="display: flex; padding: 1rem">
-          <span style="font-size: 1rem; font-weight: 600">Enter Email</span>
-          <img :src="x" alt="x" style="margin-left: auto; cursor: pointer" @click="closeModal" />
-        </div>
-        <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-        <div class="modalBody" style="padding: 1rem">
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Email Address" aria-label="Email Address"
-              aria-describedby="basic-addon1" v-model="email" />
-          </div>
-        </div>
-        <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-        <div class="modalFooter" style="
-            display: flex;
-            margin-left: auto;
-            gap: 0.5rem;
-            padding: 0 1rem 1rem 1rem;
-          ">
-          <button type="button" class="btn btn-secondary" @click="goBackModal">
-            Return
-          </button>
-          <button type="button" class="btn btn-primary specbtn" style="border: none" @click="proceedToVerify">
-            Next
-          </button>
-        </div>
-      </div>
-    </div>
-    <div v-if="showVerifyModal" class="modal-box" style="padding: 0">
-      <div style="display: flex; flex-direction: column">
-        <div class="modalHeader" style="display: flex; padding: 1rem">
-          <span style="font-size: 1rem; font-weight: 600">Verify Email</span>
-          <img :src="x" alt="x" style="margin-left: auto; cursor: pointer" @click="closeModal" />
-        </div>
-        <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-        <div class="modalBody" style="padding: 1rem">
-          <span>We have sent an OTP to your entered email address. Kindly input the
-            OTP in the space provided below.</span>
-        </div>
-        <div class="numContainer">
-          <div class="numbox" v-for="(digit, index) in code" :key="index">
-            <form>
-              <input type="text" required class="num" maxlength="1" inputmode="numeric" @input="validateInput($event)"
-                v-model="code[index]" />
-            </form>
-          </div>
-        </div>
-        <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-        <div class="modalFooter" style="
-            display: flex;
-            margin-left: auto;
-            gap: 0.5rem;
-            padding: 0 1rem 1rem 1rem;
-          ">
-          <button type="button" class="btn btn-secondary" @click="goBackEmail">
-            Return
-          </button>
           <button type="button" class="btn btn-primary specbtn" style="border: none" @click="proceedToTicket">
-            Confirm
+            Next
           </button>
         </div>
       </div>
@@ -315,8 +251,6 @@ export default {
       twoWeeksDays: [],
       blur: false,
       showModal: false,
-      showEmailModal: false,
-      showVerifyModal: false,
       showTicketModal: false,
       selectedServiceType: null,
       selectedSpecificService: null,
@@ -473,37 +407,6 @@ export default {
         this.selectedSpecificService = service;
       }
     },
-    async proceedToEmail() {
-      if (this.selectedSpecificService) {
-        this.showModal = false;
-        this.showEmailModal = true;
-        console.log(this.selectedDay);
-      }
-    },
-    async proceedToVerify() {
-      if (this.email) {
-        const { data, error } = await supabase
-          .from("tickets")
-          .select("email")
-          .eq("email", this.email);
-
-        if (data.length == 1) {
-          console.log(data);
-          alert("You already queued!");
-        } else {
-          const { data, error } = await supabase.auth.signInWithOtp({
-            email: this.email,
-            options: {
-              shouldCreateUser: true,
-            },
-          });
-          this.showEmailModal = false;
-          this.showVerifyModal = true;
-        }
-      } else {
-        alert("Enter Valid Email!");
-      }
-    },
     async insertTicket() {
       let service;
       let parent_service;
@@ -590,22 +493,9 @@ export default {
       });
     },
     async proceedToTicket() {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.verifyOtp({
-        email: this.email,
-        token: this.code.join(""),
-        type: "email",
-      });
-      if (error) {
-        console.log(error);
-        alert("Invalid OTP! Check and enter again.");
-      } else {
-        this.showVerifyModal = false;
+        this.showModal = false;
         this.showTicketModal = true;
         this.insertTicket();
-      }
     },
     ticketRoute() {
       this.$router.push({ name: "ticket" });
@@ -613,16 +503,6 @@ export default {
     goBackModal() {
       this.showEmailModal = false;
       this.showModal = true;
-    },
-    goBackEmail() {
-      this.showEmailModal = true;
-      this.showVerifyModal = false;
-    },
-    validateInput(event) {
-      const input = event.target;
-      if (!/^\d*$/.test(input.value)) {
-        input.value = "";
-      }
     },
   },
   created() {
