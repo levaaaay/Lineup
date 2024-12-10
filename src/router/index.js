@@ -6,6 +6,7 @@ import schedule from '@/views/schedule.vue';
 import ticket from '@/views/ticket.vue';
 import StaffHome from '@/views/staffHome.vue';
 import SysadHome from '@/views/sysadHome.vue';
+import staffSchedule from '@/views/staffSchedule.vue';
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
     path: '/sysadhome',
     name: 'sysadhome',
     component: SysadHome
+  },
+  {
+    path: '/staffschedule',
+    name: 'staffschedule',
+    component: staffSchedule
   },
 ];
 
