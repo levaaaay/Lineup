@@ -274,6 +274,9 @@ export default {
       return this.currentIndex < this.twoWeeksDays.length - 1;
     },
   },
+  mounted () {
+    this.getEmail();
+  },
   methods: {
     async showServiceQueueNumber() {
       const today = new Date(
@@ -407,6 +410,14 @@ export default {
         this.selectedSpecificService = service;
       }
     },
+    async getEmail() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        this.email = session.user.email;
+    },
     async insertTicket() {
       let service;
       let parent_service;
@@ -414,19 +425,19 @@ export default {
       let queue_time;
 
       switch (this.selectedSpecificService) {
-        case "Student's Permit":
+        case "Student Permit":
           service = 4;
           parent_service = 1;
           transaction = "Student's Permit";
           queue_time = 0;
           break;
-        case "New Driver's License (Non-Professional)":
+        case "New Driver License (Non-Professional)":
           service = 5;
           parent_service = 1;
           transaction = "New Driver's License (Non-Professional)";
           queue_time = 0;
           break;
-        case "Conductor’s License":
+        case "Conductor License":
           service = 6;
           parent_service = 1;
           transaction = "Conductor’s License";
@@ -462,7 +473,7 @@ export default {
           transaction = "LETAS Fines and Penalties";
           queue_time = 0;
           break;
-        case "Encoding of Alarm on Driver's License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies":
+        case "Encoding of Alarm on Driver License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies":
           service = 17;
           parent_service = 3;
           transaction =
@@ -472,7 +483,7 @@ export default {
       const { count, error: countError } = await supabase
         .from("tickets")
         .select("service_id", { count: "exact", head: true })
-        .eq("service_id", service)
+        .eq("parent_service_id", parent_service)
         .gte("queue_date", `${this.selectedDay.formattedQueueDate} 00:00:00`)
         .lte("queue_date", `${this.selectedDay.formattedQueueDate} 23:59:59`);
 
@@ -493,9 +504,18 @@ export default {
       });
     },
     async proceedToTicket() {
+      const { data, error } = await supabase
+      .from("tickets")
+      .select("email")
+      .eq("email", this.email)
+      
+      if (data.length === 0) {
         this.showModal = false;
         this.showTicketModal = true;
         this.insertTicket();
+      } else {
+        alert("You already queued!");
+      }
     },
     ticketRoute() {
       this.$router.push({ name: "ticket" });

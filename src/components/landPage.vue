@@ -35,6 +35,7 @@
   import prcLogo from "@/assets/prcLogo.svg";
   import birLogo from "@/assets/birLogo.svg";
   import psaLogo from "@/assets/psaLogo.svg";
+  import { supabase } from "../client/supabase";
 
   export default {
     name: "landPage",
@@ -47,32 +48,34 @@
         birLogo,
         psaLogo,
         queueText: "in queue today.",
-        queueNumber: 200,
+        queueNumber: null,
       };
     },
-    mounted() {
-      // Check for URL error parameters on mount
-      const urlParams = new URLSearchParams(window.location.search);
-      const error = urlParams.get("error");
-      const errorCode = urlParams.get("error_code");
-      const errorDescription = urlParams.get("error_description");
-
-      // Display alert if unauthorized error is found
-      if (
-        error === "server_error" &&
-        errorCode === "500" &&
-        errorDescription === "Database error saving new user"
-      ) {
-        alert(
-          "Unauthorized access: You are not authorized to sign in with this account."
-        );
-        this.$router.push("/");
-      }
+    async mounted() {
+      this.checkSession();
+      this.getTotalQueueNumber();
     },
     methods: {
       queue() {
         this.$router.push({ name: "schedule" }).then(() => {});
       },
+      async checkSession() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+          this.$router.push("login");
+        } 
+      },
+      async getTotalQueueNumber() {
+        const { count, error} =
+          await supabase
+            .from("tickets")
+            .select("ticket_id", { count: "exact", head: true })
+        this.queueNumber = count;
+      }
     },
   };
 </script>

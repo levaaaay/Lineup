@@ -158,7 +158,7 @@
       if (email) {
         this.homeDirectory(email);
       } else {
-        console.error("No email found in the session.");
+        this.$router.push("login");
       }
     },
     methods: {
