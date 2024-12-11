@@ -222,7 +222,12 @@
           if (error) {
             alert(`${error.message}.`);
           } else {
-            console.log(data);
+            const { data, error } = await supabase.auth.signInWithOtp({
+              email: this.registerEmail,
+              options: {
+                shouldCreateUser: true
+              }
+            })
             this.authIsVisible = !this.authIsVisible;
             this.regIsVisible = false;
           }
@@ -252,7 +257,7 @@
           data: { session },
           error,
         } = await supabase.auth.verifyOtp({
-          email: this.email,
+          email: this.registerEmail,
           token: this.code.join(""),
           type: "email",
         });
@@ -261,7 +266,7 @@
           alert("Invalid OTP! Check and enter again.");
         } else {
           console.log(session);
-          this.$router.push("staffhome");
+          this.$router.push("direct");
         }
       },
     },
