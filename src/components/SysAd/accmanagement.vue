@@ -10,24 +10,19 @@
                     <p>Email</p>
                     <p>Role</p>
                     <p>Password</p>
+                    <p></p>
                 </div>
             </div>
             <div class="ticketBoxes">
                 <div class="ticketBox" v-for="(item, index) in ticketCount" :key="index">
                     <p>{{ index + 1 }}</p>
-                    <p>{{ item.service }}</p>
-                    <p>{{ item.reference }}</p>
+                    <p>{{ item.email }}</p>
+                    <p>{{ item.role }}</p>
+                    <p>{{ item.password }}</p>
                     <div class="statusBox">
-                        <button class="statusButton" :class="getStatusClass(item.status)"
-                            @click.stop="toggleDropdown(index)">
-                            {{ item.status }}
+                        <button class="statusButton" @click.stop="editAccount(index)">
+                            edit
                         </button>
-                        <div v-if="activeDropdown === index" class="dropdownMenu">
-                            <p v-for="status in ['Pending', 'Done', 'In Progress', 'Rejected']" :key="status"
-                                @click.stop="updateStatus(index, status)" :class="getStatusClass(status)">
-                                {{ status }}
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -40,7 +35,7 @@
             <div v-if="showModal" class="modal-box" style="padding: 0">
                 <div style="display: flex; flex-direction: column">
                     <div class="modalHeader" style="display: flex; padding: 1rem">
-                        <span style="font-size: 1rem; font-weight: 600">Select Service</span>
+                        <span style="font-size: 1rem; font-weight: 600">Add Account</span>
                         <img :src="x" alt="x" style="margin-left: auto; cursor: pointer" @click="closeModal" />
                     </div>
                     <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
@@ -50,21 +45,72 @@
                                 aria-label="Email Address" aria-describedby="basic-addon1" v-model="email">
                         </div>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Role" aria-label="role"
-                                aria-describedby="basic-addon1" v-model="role">
+                            <div class="dropdown">
+                                <input type="button" class="form-control" :value="role || 'Select Role'"
+                                    @click="toggleRoleDropdown" />
+                                <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
+                                    <p v-for="roleOption in ['client', 'staff', 'system admin']" :key="roleOption"
+                                        @click="selectRole(roleOption)" class="dropdown-item">
+                                        {{ roleOption }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                         <div class="input-group mb-3">
                             <input type="password" class="form-control" placeholder="Password" aria-label="password"
-                                aria-describedby="basic-addon1" v-model="password" style="background-color: #DEE2E6;">
+                                aria-describedby="basic-addon1" v-model="password">
                         </div>
                     </div>
                     <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-                    <div class="modalFooter" style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
+                    <div class="modalFooter"
+                        style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
                         <button type="button" class="btn btn-secondary" @click="closeModal">
                             Cancel
                         </button>
-                        <button type="button" class="btn btn-primary specbtn" style="border: none; background-color: #031633;"
-                            @click="confirmAccount">
+                        <button type="button" class="btn btn-primary specbtn"
+                            style="border: none; background-color: #031633;" @click="confirmAccount">
+                            confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div v-if="showEditAccount" class="modal-box" style="padding: 0">
+                <div style="display: flex; flex-direction: column">
+                    <div class="modalHeader" style="display: flex; padding: 1rem">
+                        <span style="font-size: 1rem; font-weight: 600">Edit Account</span>
+                        <img :src="x" alt="x" style="margin-left: auto; cursor: pointer" @click="closeModal" />
+                    </div>
+                    <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
+                    <div class="modalBody" style="padding: 1rem">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Enter New Email"
+                                aria-label="Email Address" aria-describedby="basic-addon1" v-model="email">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="dropdown">
+                                <input type="button" class="form-control" :value="role || 'Select Role'"
+                                    @click="toggleRoleDropdown" />
+                                <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
+                                    <p v-for="roleOption in ['client', 'staff', 'system admin']" :key="roleOption"
+                                        @click="selectRole(roleOption)" class="dropdown-item">
+                                        {{ roleOption }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" placeholder="Password" aria-label="password"
+                                aria-describedby="basic-addon1" v-model="password">
+                        </div>
+                    </div>
+                    <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
+                    <div class="modalFooter"
+                        style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
+                        <button type="button" class="btn btn-secondary" @click="closeModal">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary specbtn"
+                            style="border: none; background-color: #031633;" @click="confirmAccount">
                             confirm
                         </button>
                     </div>
@@ -82,49 +128,61 @@ export default {
         return {
             x,
             ticketCount: [
-                { service: "Driver's License Renewal", reference: "DL123", status: "Pending" },
-                { service: "Student Permit Application", reference: "SP456", status: "Pending" },
-                { service: "Conductor's License", reference: "CL789", status: "Pending" },
+                { email: "nicky", role: "the goat", password: "cadalig" },
+                { email: "Student Permit Application", role: "SP456", password: "Pending" },
+                { email: "Conductor's License", role: "CL789", password: "Pending" },
             ],
-            activeDropdown: null,
             showModal: false,
+            showEditAccount: false,
             blur: false,
+            showRoleDropdown: false,
             email: "",
             role: "",
             password: "",
+            editingIndex: null,
         };
     },
     methods: {
-        toggleDropdown(index) {
-            this.activeDropdown = this.activeDropdown === index ? null : index;
-        },
-        updateStatus(index, newStatus) {
-            this.ticketCount[index].status = newStatus;
-            this.activeDropdown = null;
-        },
-        getStatusClass(status) {
-            if (status === 'Done') {
-                return 'status-done';
-            } else if (status === 'In Progress') {
-                return 'status-in-progress';
-            } else if (status === 'Pending') {
-                return 'status-pending';
-            } else {
-                return 'status-rejected';
-            }
-        },
         addAccountModal() {
             this.showModal = true;
             this.blur = true;
         },
+        editAccount(index) {
+            this.editingIndex = index;
+            const account = this.ticketCount[index];
+            this.email = account.email;
+            this.role = account.role;
+            this.password = account.password;
+            this.showEditAccount = true;
+            this.blur = true;
+        },
         closeModal() {
-        this.showModal = false;
-        this.blur = false;
+            this.showModal = false;
+            this.blur = false;
+            this.showEditAccount = false;
         },
         confirmAccount() {
-            this.showModal= false;
-            this.blur = false;
-        }
+            if (this.editingIndex !== null) {
+                const updatedAccount = {
+                    email: this.email,
+                    role: this.role,
+                    password: this.password,
+                };
+                this.ticketCount[this.editingIndex] = updatedAccount;
+            }
+            this.closeModal();
+        },
+        toggleRoleDropdown() {
+            this.showRoleDropdown = !this.showRoleDropdown;
+        },
+
+        selectRole(selectedRole) {
+            this.role = selectedRole;
+            this.showRoleDropdown = false;
+        },
+        closeDropdown() {
+            this.showRoleDropdown = false;
+        },
     },
 };
 </script>
@@ -139,7 +197,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 3rem;
+    padding: 2rem;
     gap: 0;
 }
 
@@ -197,12 +255,18 @@ export default {
 }
 
 .boxHeaderTexts p:nth-child(4),
-.ticketBox .statusBox {
+.ticketBox p:nth-child(4) {
     flex: 2;
+}
+
+.boxHeaderTexts p:nth-child(5),
+.ticketBox .statusBox {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
 
 .ticketBox {
     width: 69rem;
@@ -211,80 +275,32 @@ export default {
     border-bottom: 1px solid #DEE2E6;
 }
 
-.statusBox {
+.dropdown {
     position: relative;
-    overflow: visible;
-    width: 13.125rem;
-    height: 2rem;
-    background-color: #EBE5FC;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.statusButton {
-    width: 100%;
-    height: 100%;
-    background: none;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-}
-
-.dropdownMenu {
+.dropdown-menu {
     position: absolute;
-    top: 2.5rem;
+    top: 100%;
     left: 0;
-    background: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border: 1px solid #dee2e6;
     border-radius: 5px;
-    z-index: 10;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1050;
+    /* Ensure this is above other elements */
+    display: block;
+    /* Explicitly show the dropdown */
 }
 
-.dropdownMenu p {
-    margin: 0;
+.dropdown-item {
     padding: 0.5rem 1rem;
     cursor: pointer;
-    text-align: center;
-    display: block;
+    text-align: left;
 }
 
-.dropdownMenu p:hover {
-    background: #f0f0f0;
-}
-
-.dropdownMenu p {
-    margin: 0;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    text-align: center;
-    display: block;
-}
-
-.dropdownMenu p:hover {
-    background: #f0f0f0;
-}
-
-
-.status-done {
-    color: #198754;
-}
-
-.status-in-progress {
-    color: #FFC107;
-}
-
-.status-pending {
-    color: #ADB5BD;
-}
-
-.status-rejected {
-    color: red;
+.dropdown-item:hover {
+    background-color: #f8f9fa;
 }
 
 .overlay {
@@ -315,5 +331,26 @@ export default {
 .modal-box button {
     margin-top: 20px;
     padding: 10px 20px;
+}
+
+.statusButton {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.statusBox {
+    position: relative;
+    overflow: visible;
+    width: 13.125rem;
+    height: 2rem;
+    background-color: #ebe5fc;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>
