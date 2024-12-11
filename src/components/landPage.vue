@@ -26,6 +26,9 @@
     <div class="queueNowButton">
       <button class="btn btn-primary" @click="queue">Queue Now</button>
     </div>
+    <div class="signOutButton">
+      <button class="btn btn-primary" @click="SignOut">Sign out</button>
+    </div>   
   </div>
 </template>
 
@@ -75,6 +78,10 @@
             .from("tickets")
             .select("ticket_id", { count: "exact", head: true })
         this.queueNumber = count;
+      },
+      async SignOut() {
+        const { error } = await supabase.auth.signOut()
+        this.$router.push("login");
       }
     },
   };
