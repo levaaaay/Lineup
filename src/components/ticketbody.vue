@@ -4,24 +4,58 @@
       <h1 style="padding: 2rem 0 0 0">Ticket</h1>
     </div>
     <div style="display: flex; justify-content: center">
-      <div class="dispenser" style="
+      <div
+        class="dispenser"
+        style="
           width: 53.5rem;
           height: 5px;
           background-color: #adadad;
           border-radius: 10px;
-        "></div>
+        "
+      ></div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center">
       <div class="ticket" v-if="noTicketIsVisible">
         <div class="ticketBorder">
-          <p style="font-weight: 700; font-size: 1rem">Enter Reference Number</p>
-          <div style="display: flex; align-items: center; gap: 0.5rem; margin: 1rem 1rem 1rem 1rem">
-            <input type="text" class="form-control" placeholder="Reference #" aria-label="reference"
-              aria-describedby="basic-addon1" v-model="reference" style="width: 20vw;">
-              <button @click="findRef" style="width: 4.9375rem;  height: 2rem; background-color: #084298; border: none; border-radius: 5px; color: white; font-size: 0.875rem;">Confirm</button>
+          <p style="font-weight: 700; font-size: 1rem">
+            Enter Reference Number
+          </p>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              margin: 1rem 1rem 1rem 1rem;
+            "
+          >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Reference #"
+              aria-label="reference"
+              aria-describedby="basic-addon1"
+              v-model="reference"
+              style="width: 20vw"
+            />
+            <button
+              @click="findRef"
+              style="
+                width: 4.9375rem;
+                height: 2rem;
+                background-color: #084298;
+                border: none;
+                border-radius: 5px;
+                color: white;
+                font-size: 0.875rem;
+              "
+            >
+              Confirm
+            </button>
           </div>
-          <div style="color: #68717A; padding: 1rem 1rem 2rem 1rem;">-------------------- or --------------------</div>
-            <button class="queue" @click="gotoSchedule">Queue now</button>
+          <div style="color: #68717a; padding: 1rem 1rem 2rem 1rem">
+            -------------------- or --------------------
+          </div>
+          <button class="queue" @click="gotoSchedule">Queue now</button>
         </div>
       </div>
       <div class="ticket" v-if="!noTicketIsVisible">
@@ -29,29 +63,38 @@
           <div class="infobox">
             <span class="boldtext">Queue Number: </span>
             <span style="color: #084298; font-weight: 700; margin-left: 0.5vw">
-              {{ queueNumber }}</span>
+              {{ queueNumber }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Transaction: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ transaction }}</span>
+              {{ transaction }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Estimated Waiting Time: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ estimatedWait }}</span>
+              {{ estimatedWait }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Reference Number: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ referenceNumber }}</span>
+              {{ referenceNumber }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Status: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ status }}</span>
+              {{ status }}</span
+            >
           </div>
-          <button class="queue" @click="updateTicket" style="font-size: 0.9rem; font-weight: 500">
+          <button
+            class="queue"
+            @click="updateTicket"
+            style="font-size: 0.9rem; font-weight: 500"
+          >
             Update
           </button>
         </div>
@@ -66,7 +109,7 @@ export default {
   name: "ticketbody",
   data() {
     return {
-      noTicketIsVisible: true,
+      noTicketIsVisible: false,
       queueNumber: null,
       transaction: null,
       estimatedWait: null,
@@ -111,9 +154,7 @@ export default {
     updateTicket() {
       window.location.reload();
     },
-    findRef() {
-      
-    }
+    findRef() {},
   },
 };
 </script>
@@ -137,6 +178,7 @@ export default {
   height: 43vh;
   border: 5px solid black;
   border-radius: 10px;
+  padding: 1rem 0 0 0;
 }
 
 .queue {
@@ -173,5 +215,4 @@ export default {
   color: #68717a;
   font-weight: 700;
 }
-
 </style>
