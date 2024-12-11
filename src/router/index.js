@@ -8,6 +8,7 @@ import StaffHome from '@/views/staffHome.vue';
 import SysadHome from '@/views/sysadHome.vue';
 import staffSchedule from '@/views/staffSchedule.vue';
 import directing from '@/views/direct.vue';
+import SysaddAcc from '@/views/sysaddAcc.vue';
 
 const routes = [
   {
@@ -55,6 +56,11 @@ const routes = [
     name: 'direct',
     component: directing
   },
+  {
+    path: '/account',
+    name: 'account',
+    component: SysaddAcc
+  }
 ];
 
 const router = createRouter({

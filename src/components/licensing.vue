@@ -270,6 +270,6 @@
   }
 
   .status-rejected {
-    color: red;
+    color: #dc3545;
   }
 </style>
