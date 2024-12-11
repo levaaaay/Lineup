@@ -115,7 +115,9 @@
           }
         }
       },
-      updateTicket() {},
+      updateTicket() {
+        window.location.reload();
+      },
     },
   };
 </script>

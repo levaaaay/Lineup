@@ -590,7 +590,7 @@
           }),
           queue_date: this.selectedDay.formattedQueueDate,
           transaction: transaction,
-          status: "pending",
+          status: "Pending",
           queue_time: queue_time,
           reference_number:
             Math.floor(Math.random() * 900000000000) + 100000000000,
