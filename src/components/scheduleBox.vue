@@ -334,7 +334,7 @@
             padding: 0 1rem 1rem 1rem;
           "
         >
-          <button type="button" class="btn btn-secondary" @click="close">
+          <button type="button" class="btn btn-secondary" @click="closeModal">
             Close
           </button>
           <button
@@ -492,14 +492,8 @@
       },
       closeModal() {
         this.showModal = false;
-        this.showEmailModal = false;
-        this.showVerifyModal = false;
         this.showTicketModal = false;
         this.selectedServiceType = null;
-        this.blur = false;
-      },
-      close() {
-        this.showModal = false;
         this.blur = false;
       },
       selectSpecificService(service) {

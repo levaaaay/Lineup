@@ -52,20 +52,18 @@ export default {
                 { service: "Student Permit Application", reference: "SP456", status: "Pending" },
                 { service: "Conductor's License", reference: "CL789", status: "Pending" },
             ],
-            activeDropdown: null, // Tracks which dropdown is active by index
+            activeDropdown: null,
         };
     },
     methods: {
         toggleDropdown(index) {
-            // Toggle activeDropdown state
             this.activeDropdown = this.activeDropdown === index ? null : index;
         },
         updateStatus(index, newStatus) {
             this.ticketCount[index].status = newStatus;
-            this.activeDropdown = null; // Close dropdown after selection
+            this.activeDropdown = null; 
         },
         getStatusClass(status) {
-            // Return a different class based on the status
             if (status === 'Done') {
                 return 'status-done';
             } else if (status === 'In Progress') {
@@ -130,40 +128,30 @@ export default {
     text-overflow: ellipsis;
 }
 
-/* Assign consistent flex values for each column */
 .boxHeaderTexts p:nth-child(1),
 .ticketBox p:nth-child(1) {
     flex: 1;
-    /* # column */
 }
 
 .boxHeaderTexts p:nth-child(2),
 .ticketBox p:nth-child(2) {
     flex: 3;
-    /* Service column */
     text-align: left;
-    /* Align service name to the left */
 }
 
 .boxHeaderTexts p:nth-child(3),
 .ticketBox p:nth-child(3) {
     flex: 2;
-    /* Reference # column */
 }
 
 .boxHeaderTexts p:nth-child(4),
 .ticketBox .statusBox {
     flex: 2;
-    /* Handle/status column */
     display: flex;
-    /* Ensure alignment of status box */
     align-items: center;
-    /* Vertical alignment */
     justify-content: center;
-    /* Center content */
 }
 
-/* Ensure consistent height for ticket rows */
 .ticketBox {
     width: 69rem;
     height: 3rem;
@@ -232,15 +220,15 @@ export default {
 
 
 .status-done {
-    color: green;
+    color: #198754;
 }
 
 .status-in-progress {
-    color: yellow;
+    color: #FFC107;
 }
 
 .status-pending {
-    color: gray;
+    color: #ADB5BD;
 }
 
 .status-rejected {
