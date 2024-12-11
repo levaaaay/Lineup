@@ -73,10 +73,17 @@
         } 
       },
       async getTotalQueueNumber() {
+        const today = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
+        const currentDay = new Date(today);
+        const dateString = currentDay.toLocaleDateString("en-CA");
         const { count, error} =
           await supabase
             .from("tickets")
             .select("ticket_id", { count: "exact", head: true })
+            .eq("queue_date", dateString);
+            
         this.queueNumber = count;
       },
       async SignOut() {
