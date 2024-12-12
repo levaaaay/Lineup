@@ -13,7 +13,7 @@
                         <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
                         <a class="nav-link" href="staffSchedule">Schedule</a>
                         <a class="nav-link" href="services">Verify</a>
-                        <img :src="logout" alt="logout" @click="logout" class="logout">
+                        <img :src="logout" alt="logout" @click="signoff()" class="logout">
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@ export default {
                 });
             }
         },
-        logout() {
+        signoff() {
 
         },
         navigateOrScrollToAboutUs(sectionId) {
@@ -67,7 +67,7 @@ export default {
             }
         },
         navigateOrScrollToLandingPage() {
-            this.$router.push({ name: 'home' }).then(() => {
+            this.$router.push({ name: 'staffhome' }).then(() => {
                 this.$nextTick(() => {
                     window.scrollTo({
                         top: 0,

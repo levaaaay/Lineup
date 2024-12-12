@@ -13,7 +13,7 @@
                         <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
                         <a class="nav-link" href="schedule">Schedule</a>
                         <a class="nav-link" href="ticket">Ticket</a>
-                        <img :src="logout" alt="logout" @click="logout" class="logout">
+                        <img :src="logout" alt="logout" @click="signoff()" class="logout">
                     </div>
                 </div>
             </div>
@@ -49,35 +49,33 @@ export default {
                 });
             };
         },
-        logout() {
+        signoff() {
 
         },
-    },
-
-    navigateOrScrollToAboutUs(sectionId) {
-        const currentRoute = this.$route.name;
-        if (currentRoute === 'home') {
-            this.scrollToAboutUs(sectionId);
-        } else {
+        navigateOrScrollToAboutUs(sectionId) {
+            const currentRoute = this.$route.name;
+            if (currentRoute === 'home') {
+                this.scrollToAboutUs(sectionId);
+            } else {
+                this.$router.push({ name: 'home' }).then(() => {
+                    this.$nextTick(() => {
+                        this.$nextTick(() => {
+                            this.scrollToAboutUs(sectionId);
+                        });
+                    });
+                });
+            }
+        },
+        navigateOrScrollToLandingPage() {
             this.$router.push({ name: 'home' }).then(() => {
                 this.$nextTick(() => {
-                    this.$nextTick(() => {
-                        this.scrollToAboutUs(sectionId);
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
                     });
                 });
             });
-        }
-    },
-
-    navigateOrScrollToLandingPage() {
-        this.$router.push({ name: 'home' }).then(() => {
-            this.$nextTick(() => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth"
-                });
-            });
-        });
+        },
     },
 }
 </script>

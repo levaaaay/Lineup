@@ -13,7 +13,7 @@
                         <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
                         <a class="nav-link" href="sysadSchedule">Schedule</a>
                         <a class="nav-link" href="account">Accounts</a>
-                        <img :src="logout" alt="logout" @click="logout" class="logout">
+                        <img :src="logout" alt="logout" @click="signoff()" class="logout">
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@ export default {
                 });
             }
         },
-        logout() {
+        signoff() {
 
         },
         navigateOrScrollToAboutUs(sectionId) {
