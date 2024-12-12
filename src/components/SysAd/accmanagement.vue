@@ -1,285 +1,394 @@
 <template>
-    <div class="accmanagement">
-        <div class="globalHeader">
-            <h1>Accounts</h1>
-        </div>
-        <div class="container">
-            <div class="boxHeader">
-                <div class="boxHeaderTexts">
-                    <p>#</p>
-                    <p>Email</p>
-                    <p>Role</p>
-                    <p>Password</p>
-                    <p></p>
-                </div>
-            </div>
-            <div class="ticketBoxes">
-                <div class="ticketBox" v-for="(item, index) in ticketCount" :key="index">
-                    <p>{{ index + 1 }}</p>
-                    <p>{{ item.email }}</p>
-                    <p>{{ item.role }}</p>
-                    <p>{{ item.password }}</p>
-                    <div class="statusBox">
-                        <button class="statusButton" @click.stop="editAccount(index)">
-                            edit
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="boxHeader" @click="addAccountModal">
-                <div class="boxHeaderTexts">
-                    <p>+ Add New Account</p>
-                </div>
-            </div>
-            <div v-if="blur" class="overlay" @click="closeModal"></div>
-            <div v-if="showModal" class="modal-box" style="padding: 0">
-                <div style="display: flex; flex-direction: column">
-                    <div class="modalHeader" style="display: flex; padding: 1rem">
-                        <span style="font-size: 1rem; font-weight: 600">Add Account</span>
-                        <img :src="x" alt="x" style="margin-left: auto; cursor: pointer" @click="closeModal" />
-                    </div>
-                    <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-                    <div class="modalBody" style="padding: 1rem">
-                        <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="Email Address"
-                                aria-label="Email Address" aria-describedby="basic-addon1" v-model="email">
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="dropdown">
-                                <input type="button" class="form-control" :value="role || 'Select Role'"
-                                    @click="toggleRoleDropdown" />
-                                <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
-                                    <p v-for="roleOption in ['client', 'staff', 'system admin']" :key="roleOption"
-                                        @click="selectRole(roleOption)" class="dropdown-item">
-                                        {{ roleOption }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="password" class="form-control" placeholder="Password" aria-label="password"
-                                aria-describedby="basic-addon1" v-model="password">
-                        </div>
-                    </div>
-                    <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-                    <div class="modalFooter"
-                        style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
-                        <button type="button" class="btn btn-secondary" @click="closeModal">
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-primary specbtn"
-                            style="border: none; background-color: #031633;" @click="confirmAccount">
-                            confirm
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div v-if="showEditAccount" class="modal-box" style="padding: 0">
-                <div style="display: flex; flex-direction: column">
-                    <div class="modalHeader" style="display: flex; padding: 1rem">
-                        <span style="font-size: 1rem; font-weight: 600">Edit Account</span>
-                        <img :src="x" alt="x" style="margin-left: auto; cursor: pointer" @click="closeModal" />
-                    </div>
-                    <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-                    <div class="modalBody" style="padding: 1rem">
-                        <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="Enter New Email"
-                                aria-label="Email Address" aria-describedby="basic-addon1" v-model="email">
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="dropdown">
-                                <input type="button" class="form-control" :value="role || 'Select Role'"
-                                    @click="toggleRoleDropdown" />
-                                <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
-                                    <p v-for="roleOption in ['client', 'staff', 'system admin']" :key="roleOption"
-                                        @click="selectRole(roleOption)" class="dropdown-item">
-                                        {{ roleOption }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <input type="password" class="form-control" placeholder="Password" aria-label="password"
-                                aria-describedby="basic-addon1" v-model="password">
-                        </div>
-                    </div>
-                    <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
-                    <div class="modalFooter"
-                        style="display: flex; margin-left: auto; gap: 0.5rem; padding: 0 1rem 1rem 1rem;">
-                        <button type="button" class="btn btn-secondary" @click="closeModal">
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-primary specbtn"
-                            style="border: none; background-color: #031633;" @click="confirmAccount">
-                            confirm
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="accmanagement">
+    <div class="globalHeader">
+      <h1>Accounts</h1>
     </div>
+    <div class="container">
+      <div class="boxHeader">
+        <div class="boxHeaderTexts">
+          <p>#</p>
+          <p>Email</p>
+          <p>Role</p>
+          <p>Password</p>
+          <p></p>
+        </div>
+      </div>
+      <div class="ticketBoxes">
+        <div
+          class="ticketBox"
+          v-for="(item, index) in accountCount"
+          :key="index"
+        >
+          <p>{{ index + 1 }}</p>
+          <p>{{ item.email }}</p>
+          <p>{{ item.role }}</p>
+          <p>{{ item.password }}</p>
+          <div class="statusBox">
+            <button class="statusButton" @click.stop="editAccount(index)">
+              edit
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="boxHeader" @click="addAccountModal">
+        <div class="boxHeaderTexts">
+          <p>+ Add New Account</p>
+        </div>
+      </div>
+      <div v-if="blur" class="overlay" @click="closeModal"></div>
+      <div v-if="showModal" class="modal-box" style="padding: 0">
+        <div style="display: flex; flex-direction: column">
+          <div class="modalHeader" style="display: flex; padding: 1rem">
+            <span style="font-size: 1rem; font-weight: 600">Add Account</span>
+            <img
+              :src="x"
+              alt="x"
+              style="margin-left: auto; cursor: pointer"
+              @click="closeModal"
+            />
+          </div>
+          <div
+            style="height: 1px; width: 100%; background-color: #ced4da"
+          ></div>
+          <div class="modalBody" style="padding: 1rem">
+            <div class="input-group mb-3">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Email Address"
+                aria-label="Email Address"
+                aria-describedby="basic-addon1"
+                v-model="email"
+              />
+            </div>
+            <div class="input-group mb-3">
+              <div class="dropdown">
+                <input
+                  type="button"
+                  class="form-control"
+                  :value="role || 'Select Role'"
+                  @click="toggleRoleDropdown"
+                />
+                <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
+                  <p
+                    v-for="roleOption in ['client', 'staff', 'system admin']"
+                    :key="roleOption"
+                    @click="selectRole(roleOption)"
+                    class="dropdown-item"
+                  >
+                    {{ roleOption }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                aria-label="password"
+                aria-describedby="basic-addon1"
+                v-model="password"
+              />
+            </div>
+          </div>
+          <div
+            style="height: 1px; width: 100%; background-color: #ced4da"
+          ></div>
+          <div
+            class="modalFooter"
+            style="
+              display: flex;
+              margin-left: auto;
+              gap: 0.5rem;
+              padding: 0 1rem 1rem 1rem;
+            "
+          >
+            <button type="button" class="btn btn-secondary" @click="closeModal">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary specbtn"
+              style="border: none; background-color: #031633"
+              @click="confirmAccount"
+            >
+              confirm
+            </button>
+          </div>
+        </div>
+      </div>
+      <div v-if="showEditAccount" class="modal-box" style="padding: 0">
+        <div style="display: flex; flex-direction: column">
+          <div class="modalHeader" style="display: flex; padding: 1rem">
+            <span style="font-size: 1rem; font-weight: 600">Edit Account</span>
+            <img
+              :src="x"
+              alt="x"
+              style="margin-left: auto; cursor: pointer"
+              @click="closeModal"
+            />
+          </div>
+          <div
+            style="height: 1px; width: 100%; background-color: #ced4da"
+          ></div>
+          <div class="modalBody" style="padding: 1rem">
+            <div class="input-group mb-3">
+              <input
+                type="email"
+                class="form-control"
+                placeholder="Enter New Email"
+                aria-label="Email Address"
+                aria-describedby="basic-addon1"
+                v-model="email"
+              />
+            </div>
+            <div class="input-group mb-3">
+              <div class="dropdown">
+                <input
+                  type="button"
+                  class="form-control"
+                  :value="role || 'Select Role'"
+                  @click="toggleRoleDropdown"
+                />
+                <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
+                  <p
+                    v-for="roleOption in ['client', 'staff', 'system admin']"
+                    :key="roleOption"
+                    @click="selectRole(roleOption)"
+                    class="dropdown-item"
+                  >
+                    {{ roleOption }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                aria-label="password"
+                aria-describedby="basic-addon1"
+                v-model="password"
+              />
+            </div>
+          </div>
+          <div
+            style="height: 1px; width: 100%; background-color: #ced4da"
+          ></div>
+          <div
+            class="modalFooter"
+            style="
+              display: flex;
+              margin-left: auto;
+              gap: 0.5rem;
+              padding: 0 1rem 1rem 1rem;
+            "
+          >
+            <button type="button" class="btn btn-secondary" @click="closeModal">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary specbtn"
+              style="border: none; background-color: #031633"
+              @click="confirmAccount"
+            >
+              confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import x from '@/assets/x-lg.svg'
-export default {
-    name: 'accmanagement',
+  import x from "@/assets/x-lg.svg";
+  import { supabase } from "../../client/supabase";
+
+  export default {
+    name: "accmanagement",
     data() {
-        return {
-            x,
-            ticketCount: [
-                { email: "nicky", role: "the goat", password: "cadalig" },
-                { email: "Student Permit Application", role: "SP456", password: "Pending" },
-                { email: "Conductor's License", role: "CL789", password: "Pending" },
-            ],
-            showModal: false,
-            showEditAccount: false,
-            blur: false,
-            showRoleDropdown: false,
-            email: "",
-            role: "",
-            password: "",
-            editingIndex: null,
-        };
+      return {
+        x,
+        accountCount: [],
+        showModal: false,
+        showEditAccount: false,
+        blur: false,
+        showRoleDropdown: false,
+        email: "",
+        role: "",
+        password: "",
+        editingIndex: null,
+      };
+    },
+    mounted() {
+      this.getAccounts();
     },
     methods: {
-        addAccountModal() {
-            this.showModal = true;
-            this.blur = true;
-        },
-        editAccount(index) {
-            this.editingIndex = index;
-            const account = this.ticketCount[index];
-            this.email = account.email;
-            this.role = account.role;
-            this.password = account.password;
-            this.showEditAccount = true;
-            this.blur = true;
-        },
-        closeModal() {
-            this.showModal = false;
-            this.blur = false;
-            this.showEditAccount = false;
-        },
-        confirmAccount() {
-            if (this.editingIndex !== null) {
-                const updatedAccount = {
-                    email: this.email,
-                    role: this.role,
-                    password: this.password,
-                };
-                this.ticketCount[this.editingIndex] = updatedAccount;
-            }
-            this.closeModal();
-        },
-        toggleRoleDropdown() {
-            this.showRoleDropdown = !this.showRoleDropdown;
-        },
+      addAccountModal() {
+        this.showModal = true;
+        this.blur = true;
+      },
+      editAccount(index) {
+        this.editingIndex = index;
+        const account = this.accountCount[index];
+        this.email = account.email;
+        this.role = account.role;
+        this.password = account.password;
+        this.showEditAccount = true;
+        this.blur = true;
+      },
+      closeModal() {
+        this.showModal = false;
+        this.blur = false;
+        this.showEditAccount = false;
+      },
+      async confirmAccount() {
+        if (this.editingIndex !== null) {
+          const updatedAccount = {
+            email: this.email,
+            role: this.role,
+            password: this.password,
+          };
+          this.accountCount[this.editingIndex] = updatedAccount;
+          const { data, error } = await supabase
+            .from("users")
+            .update({ email: this.email, role: this.role})
+            .eq("user_id", this.editingIndex + 1);
 
-        selectRole(selectedRole) {
-            this.role = selectedRole;
-            this.showRoleDropdown = false;
-        },
-        closeDropdown() {
-            this.showRoleDropdown = false;
-        },
+        }
+        this.closeModal();
+      },
+      toggleRoleDropdown() {
+        this.showRoleDropdown = !this.showRoleDropdown;
+      },
+
+      selectRole(selectedRole) {
+        this.role = selectedRole;
+        this.showRoleDropdown = false;
+      },
+      closeDropdown() {
+        this.showRoleDropdown = false;
+      },
+      async getAccounts() {
+        const { data, error } = await supabase
+          .from("users")
+          .select("user_id, email, role");
+
+        if (error) {
+          console.error(error);
+        }
+
+        if (data) {
+          const sortedData = data.sort(
+            (a, b) => a.user_id - b.user_id
+          );
+          this.accountCount = sortedData.map((item) => ({
+            email: item.email,
+            role: item.role,
+            password: "hidden",
+          }));
+        }
+      },
     },
-};
+  };
 </script>
 
 <style scoped>
-.accmanagement {
-    background: #E9ECEF;
+  .accmanagement {
+    background: #e9ecef;
     height: 83vh;
-}
+  }
 
-.container {
+  .container {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 2rem;
     gap: 0;
-}
+  }
 
-.boxHeader {
+  .boxHeader {
     width: 69rem;
     height: 3.0625rem;
     background: #031633;
     display: flex;
-}
+  }
 
-.boxHeaderTexts {
+  .boxHeaderTexts {
     display: flex;
     justify-content: space-between;
     width: 100%;
-}
+  }
 
-.boxHeaderTexts p {
+  .boxHeaderTexts p {
     color: white;
     font-weight: bold;
     margin: 0;
     flex: 1;
-}
+  }
 
-.boxHeaderTexts,
-.ticketBox {
+  .boxHeaderTexts,
+  .ticketBox {
     display: flex;
     align-items: center;
     width: 100%;
     padding: 0 1rem;
-}
+  }
 
-.boxHeaderTexts p,
-.ticketBox p {
+  .boxHeaderTexts p,
+  .ticketBox p {
     margin: 0;
     text-align: center;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-}
+  }
 
-.boxHeaderTexts p:nth-child(1),
-.ticketBox p:nth-child(1) {
+  .boxHeaderTexts p:nth-child(1),
+  .ticketBox p:nth-child(1) {
     flex: 1;
-}
+  }
 
-.boxHeaderTexts p:nth-child(2),
-.ticketBox p:nth-child(2) {
+  .boxHeaderTexts p:nth-child(2),
+  .ticketBox p:nth-child(2) {
     flex: 3;
     text-align: left;
-}
+  }
 
-.boxHeaderTexts p:nth-child(3),
-.ticketBox p:nth-child(3) {
+  .boxHeaderTexts p:nth-child(3),
+  .ticketBox p:nth-child(3) {
     flex: 2;
-}
+  }
 
-.boxHeaderTexts p:nth-child(4),
-.ticketBox p:nth-child(4) {
+  .boxHeaderTexts p:nth-child(4),
+  .ticketBox p:nth-child(4) {
     flex: 2;
-}
+  }
 
-.boxHeaderTexts p:nth-child(5),
-.ticketBox .statusBox {
+  .boxHeaderTexts p:nth-child(5),
+  .ticketBox .statusBox {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-}
+  }
 
-
-.ticketBox {
+  .ticketBox {
     width: 69rem;
     height: 3rem;
     background: #ffffff;
-    border-bottom: 1px solid #DEE2E6;
-}
+    border-bottom: 1px solid #dee2e6;
+  }
 
-.dropdown {
+  .dropdown {
     position: relative;
-}
+  }
 
-.dropdown-menu {
+  .dropdown-menu {
     position: absolute;
     top: 100%;
     left: 0;
@@ -291,19 +400,19 @@ export default {
     /* Ensure this is above other elements */
     display: block;
     /* Explicitly show the dropdown */
-}
+  }
 
-.dropdown-item {
+  .dropdown-item {
     padding: 0.5rem 1rem;
     cursor: pointer;
     text-align: left;
-}
+  }
 
-.dropdown-item:hover {
+  .dropdown-item:hover {
     background-color: #f8f9fa;
-}
+  }
 
-.overlay {
+  .overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -312,9 +421,9 @@ export default {
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
     z-index: 999;
-}
+  }
 
-.modal-box {
+  .modal-box {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -326,23 +435,23 @@ export default {
     z-index: 1000;
     width: 38.9375rem;
     text-align: center;
-}
+  }
 
-.modal-box button {
+  .modal-box button {
     margin-top: 20px;
     padding: 10px 20px;
-}
+  }
 
-.statusButton {
+  .statusButton {
     width: 100%;
     height: 100%;
     background: none;
     border: none;
     font-size: 1rem;
     cursor: pointer;
-}
+  }
 
-.statusBox {
+  .statusBox {
     position: relative;
     overflow: visible;
     width: 13.125rem;
@@ -352,5 +461,5 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-}
+  }
 </style>
