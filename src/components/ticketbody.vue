@@ -140,7 +140,6 @@
             .eq("email", session.user.email);
 
           if (data && data.length > 0) {
-            console.log(data[0]);
             this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
             this.transaction = data[0].transaction;
             this.estimatedWait = data[0].queue_time;
@@ -154,17 +153,30 @@
       async updateTicket() {
         const {
           data: { session },
-          error,
+          error: sessionError,
         } = await supabase.auth.getSession();
 
         if (session) {
-          const { data, error } = await supabase
+          const query = supabase
             .from("tickets")
-            .select("email, ticket_number, transaction, queue_time, reference_number, status")
-            .or(
+            .select(
+              "email, ticket_number, transaction, queue_time, reference_number, status"
+            );
+
+          // Build dynamic filter based on whether `this.reference` is provided
+          if (this.reference) {
+            query.or(
               `email.eq.${session.user.email},reference_number.eq.${this.reference}`
             );
-          if (data && data.length > 0) {
+          } else {
+            query.eq("email", session.user.email);
+          }
+
+          const { data, error } = await query;
+
+          if (error) {
+            console.error(error);
+          } else if (data && data.length > 0) {
             this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
             this.transaction = data[0].transaction;
             this.estimatedWait = data[0].queue_time;

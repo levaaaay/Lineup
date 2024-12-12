@@ -35,7 +35,7 @@
     name: "landPage",
     data() {
       return {
-        name: "Gem",
+        name: null,
         ltoLogo,
         dfaLogo,
         prcLogo,
