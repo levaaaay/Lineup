@@ -51,7 +51,7 @@
         queueNumber: null,
       };
     },
-    async mounted() {
+    mounted() {
       this.checkSession();
       this.getTotalQueueNumber();
     },
