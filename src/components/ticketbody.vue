@@ -104,40 +104,82 @@
 </template>
 
 <script>
-import { supabase } from "../client/supabase";
-export default {
-  name: "ticketbody",
-  data() {
-    return {
-      noTicketIsVisible: false,
-      queueNumber: null,
-      transaction: null,
-      estimatedWait: null,
-      referenceNumber: null,
-      status: null,
-      reference: "",
-    };
-  },
-  mounted() {
-    this.showTicketDetails();
-  },
-  methods: {
-    gotoSchedule() {
-      this.$router.push("schedule");
+  import { supabase } from "../client/supabase";
+  export default {
+    name: "ticketbody",
+    data() {
+      return {
+        noTicketIsVisible: false,
+        queueNumber: null,
+        transaction: null,
+        estimatedWait: null,
+        referenceNumber: null,
+        status: null,
+        reference: "",
+      };
     },
-    async showTicketDetails() {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+    mounted() {
+      this.showTicketDetails();
+    },
+    methods: {
+      gotoSchedule() {
+        this.$router.push("schedule");
+      },
+      async showTicketDetails() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
-      if (session) {
+        if (session) {
+          const { data, error } = await supabase
+            .from("tickets")
+            .select(
+              "email, ticket_number, transaction, queue_time, reference_number, status"
+            )
+            .eq("email", session.user.email);
+
+          if (data && data.length > 0) {
+            console.log(data[0]);
+            this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
+            this.transaction = data[0].transaction;
+            this.estimatedWait = data[0].queue_time;
+            this.referenceNumber = data[0].reference_number;
+            this.status = data[0].status;
+          } else {
+            this.noTicketIsVisible = true;
+          }
+        }
+      },
+      async updateTicket() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (session) {
+          const { data, error } = await supabase
+            .from("tickets")
+            .select("email, ticket_number, transaction, queue_time, reference_number, status")
+            .or(
+              `email.eq.${session.user.email},reference_number.eq.${this.reference}`
+            );
+          if (data && data.length > 0) {
+            this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
+            this.transaction = data[0].transaction;
+            this.estimatedWait = data[0].queue_time;
+            this.referenceNumber = data[0].reference_number;
+            this.status = data[0].status;
+          }
+        }
+      },
+      async findRef() {
         const { data, error } = await supabase
           .from("tickets")
           .select(
-            "email, ticket_number, transaction, queue_time, reference_number, status"
+            "ticket_number, transaction, queue_time, reference_number, status"
           )
-          .eq("email", session.user.email);
+          .eq("reference_number", this.reference);
 
         if (data && data.length > 0) {
           console.log(data[0]);
@@ -146,73 +188,67 @@ export default {
           this.estimatedWait = data[0].queue_time;
           this.referenceNumber = data[0].reference_number;
           this.status = data[0].status;
-        } else {
-          this.noTicketIsVisible = true;
+          this.noTicketIsVisible = false;
         }
-      }
+      },
     },
-    updateTicket() {
-      window.location.reload();
-    },
-    findRef() {},
-  },
-};
+  };
 </script>
 
 <style scoped>
-.ticket {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 37.5vw;
-  height: 52vh;
-  background-color: white;
-}
+  .ticket {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 37.5vw;
+    height: 52vh;
+    background-color: white;
+  }
 
-.ticketBorder {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 33vw;
-  height: 43vh;
-  border: 5px solid black;
-  border-radius: 10px;
-  padding: 1rem 0 0 0;
-}
+  .ticketBorder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 33vw;
+    height: 43vh;
+    border: 5px solid black;
+    border-radius: 10px;
+    padding: 1rem 0 0 0;
+  }
 
-.queue {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 8.625rem;
-  height: 3rem;
-  border: none;
-  background-color: #084298;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-}
+  .queue {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 8.625rem;
+    height: 3rem;
+    border: none;
+    background-color: #084298;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+  }
 
-.queue:hover {
-  background-color: #085ad4;
-}
+  .queue:hover {
+    background-color: #085ad4;
+  }
 
-.infobox {
-  display: flex;
-  align-items: center;
-  width: 28vw;
-  height: 5vh;
-  background-color: white;
-  border: 1px solid #dee2e6;
-  border-radius: 10px;
-  margin-bottom: 1vh;
-  padding-left: 2vh;
-  font-size: 0.9vw;
-}
+  .infobox {
+    display: flex;
+    align-items: center;
+    width: 28vw;
+    height: 5vh;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    margin-bottom: 1vh;
+    padding-left: 2vh;
+    font-size: 0.9vw;
+  }
 
-.boldtext {
-  color: #68717a;
-  font-weight: 700;
-}
+  .boldtext {
+    color: #68717a;
+    font-weight: 700;
+  }
 </style>
