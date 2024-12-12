@@ -11,7 +11,7 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
                         <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
-                        <a class="nav-link" href="schedule">Schedule</a>
+                        <a class="nav-link" href="sysadSchedule">Schedule</a>
                         <a class="nav-link" href="account">Accounts</a>
                         <img :src="logout" alt="logout" @click="logout" class="logout">
                     </div>

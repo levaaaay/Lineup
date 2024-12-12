@@ -9,6 +9,7 @@ import SysadHome from '@/views/sysadHome.vue';
 import staffSchedule from '@/views/staffSchedule.vue';
 import directing from '@/views/direct.vue';
 import SysaddAcc from '@/views/sysaddAcc.vue';
+import SysadSchedule from '@/views/sysadSchedule.vue';
 
 const routes = [
   {
@@ -60,6 +61,11 @@ const routes = [
     path: '/account',
     name: 'account',
     component: SysaddAcc
+  },
+  {
+    path: '/sysadSchedule',
+    name: 'sysadSchedule',
+    component: SysadSchedule
   }
 ];
 
