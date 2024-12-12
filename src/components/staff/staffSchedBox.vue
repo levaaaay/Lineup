@@ -93,7 +93,7 @@
 import previous from "@/assets/previous.svg";
 import next from "@/assets/next.svg";
 import x from "@/assets/x-lg.svg";
-import navbar from "@/components/navbar.vue";
+import navbar from "@/components/staff/staffnavbar.vue";
 import { supabase } from "@/client/supabase";
 
 export default {

@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import navbar from '@/components/navbar.vue'
+import navbar from '@/components/staff/staffnavbar.vue'
 import servicesOffered from '@/components/servicesOffered.vue';
 import licensing from '@/components/licensing.vue';
-import foot from '@/components/footer.vue';
+import foot from '@/components/staff/staffFooter.vue';
 import registration from '@/components/registration.vue';
 import letas from '@/components/letas.vue'
 

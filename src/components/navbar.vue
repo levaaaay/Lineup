@@ -1,81 +1,88 @@
-<template> 
+<template>
     <div class="navbar sticky-top">
         <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
             <div class="container-fluid">
                 <img :src="lineupLogo" alt="" @click="navigateOrScrollToLandingPage()" class="logo">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+                    aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
                         <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')">About Us</a>
-                        <a class="nav-link" href="services">Services</a>
                         <a class="nav-link" href="schedule">Schedule</a>
                         <a class="nav-link" href="ticket">Ticket</a>
+                        <img :src="logout" alt="logout" @click="logout" class="logout">
                     </div>
                 </div>
             </div>
         </nav>
-    </div> 
+    </div>
 </template>
 
-<script> 
+<script>
 import lineupLogo from '@/assets/lightLogo.svg';
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import logout from "@/assets/logout.svg";
 
 gsap.registerPlugin(ScrollToPlugin);
 
-    export default {
-        name: "navBar",
-        data() {
-            return {
-                lineupLogo,
-            }
+export default {
+    name: "navBar",
+    data() {
+        return {
+            lineupLogo,
+            logout,
+        }
+    },
+    methods: {
+        scrollToAboutUs(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const offset = 0;
+                const elementPosition = section.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({
+                    top: elementPosition + offset,
+                    behavior: "smooth"
+                });
+            };
         },
-        methods: {
-            scrollToAboutUs(sectionId) {
-                const section = document.getElementById(sectionId);
-                if (section) {
-                    const offset = 0;
-                    const elementPosition = section.getBoundingClientRect().top + window.scrollY;
-                    window.scrollTo({
-                        top: elementPosition + offset,
-                        behavior: "smooth"
-                    });
-                }
-            },
+        logout() {
 
-            navigateOrScrollToAboutUs(sectionId) {
-                const currentRoute = this.$route.name; 
-                if (currentRoute === 'home') {
-                    this.scrollToAboutUs(sectionId);
-                } else {
-                    this.$router.push({ name: 'home' }).then(() => {
-                        this.$nextTick(() => {
-                            this.$nextTick(() => {
-                                this.scrollToAboutUs(sectionId);
-                            });
-                        });
-                    });
-                }
-            },
+        },
+    },
 
-            navigateOrScrollToLandingPage() {
-                this.$router.push({ name: 'home' }).then(() => {
+    navigateOrScrollToAboutUs(sectionId) {
+        const currentRoute = this.$route.name;
+        if (currentRoute === 'home') {
+            this.scrollToAboutUs(sectionId);
+        } else {
+            this.$router.push({ name: 'home' }).then(() => {
+                this.$nextTick(() => {
                     this.$nextTick(() => {
-                        window.scrollTo({
-                            top: 0,
-                            behavior: "smooth"
-                        });
+                        this.scrollToAboutUs(sectionId);
                     });
                 });
-            },
+            });
         }
-    };
+    },
+
+    navigateOrScrollToLandingPage() {
+        this.$router.push({ name: 'home' }).then(() => {
+            this.$nextTick(() => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+            });
+        });
+    },
+}
 </script>
 
-<style scoped> 
+<style scoped>
 .navbar {
     --bs-navbar-padding-y: 0.25rem;
     width: 100%;
@@ -107,4 +114,7 @@ gsap.registerPlugin(ScrollToPlugin);
     margin-top: -0.5rem;
 }
 
+.logout {
+    cursor: pointer;
+}
 </style>
