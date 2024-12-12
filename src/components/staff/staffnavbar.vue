@@ -26,6 +26,7 @@ import lineupLogo from '@/assets/lightLogo.svg';
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import logout from "@/assets/logout.svg";
+import { supabase } from "@/client/supabase";
 
 gsap.registerPlugin(ScrollToPlugin);
 
@@ -49,8 +50,9 @@ export default {
                 });
             }
         },
-        signoff() {
-
+        async signoff() {
+            const { error } = await supabase.auth.signOut()
+            this.$router.push("login");
         },
         navigateOrScrollToAboutUs(sectionId) {
             const currentRoute = this.$route.name;
@@ -110,5 +112,9 @@ export default {
     height: 2.5rem;
     width: 4.375rem;
     margin-top: -0.5rem;
+}
+
+.logout {
+    cursor: pointer;
 }
 </style>
