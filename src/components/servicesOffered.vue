@@ -45,8 +45,10 @@ export default {
     return {
       ltoLogo,
       boxes: Array(3).fill(null),
-      ServiceName: [],
-      ServiceDescription: [],
+      ServiceName: ["Driver's Licensing", "Vehicle Registration", "Law Enforcement"],
+      ServiceDescription: ["This service covers the issuance of various types of driver’s licenses, from student permits to professional licenses. It also includes renewal, replacement, and assessments like written and practical driving exams.", 
+      "This service involves the registration of new vehicles or renewal of existing registrations, ensuring compliance with national transportation laws. It includes the issuance of license plates, stickers, and official registration documents.", 
+      "This service involves the encoding of alarm on driver's license and motor vehicles in relation to orders issued by competent courts or quasi-judicial bodies."],
     };
   },
   mounted() {
