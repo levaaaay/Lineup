@@ -151,6 +151,8 @@ async function getStaff(next) {
   } else {
     if (data[0].role === "staff") {
       next();
+    } else if (data[0].role === "system admin") {
+      next();
     } 
   }
 }
