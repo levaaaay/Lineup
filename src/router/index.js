@@ -10,17 +10,22 @@ import staffSchedule from '@/views/staffSchedule.vue';
 import directing from '@/views/direct.vue';
 import SysaddAcc from '@/views/sysaddAcc.vue';
 import SysadSchedule from '@/views/sysadSchedule.vue';
+import { supabase } from "../client/supabase";
+
+let email;
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: homeView
+    component: homeView,
+    meta: { requireAuth: true }
   },
   {
     path: '/services',
     name: 'services',
-    component: services
+    component: services,
+    meta: { requireStaff: true }
   },
   {
     path: '/login',
@@ -30,42 +35,51 @@ const routes = [
   {
     path: '/schedule',
     name: 'schedule',
-    component: schedule
+    component: schedule,
+    meta: { requireAuth: true }
   },
   {
     path: '/ticket',
     name: 'ticket',
-    component: ticket
+    component: ticket,
+    meta: { requireAuth: true }
   },
   {
     path: '/staffhome',
     name: 'staffhome',
-    component: StaffHome
+    component: StaffHome,
+    meta: { requireStaff: true }
+
   },
   {
     path: '/sysadhome',
     name: 'sysadhome',
-    component: SysadHome
+    component: SysadHome,
+    meta: { requireAdmin: true }
   },
   {
     path: '/staffschedule',
     name: 'staffschedule',
-    component: staffSchedule
+    component: staffSchedule,
+    meta: { requireStaff: true }
   },
   {
     path: '/direct',
     name: 'direct',
-    component: directing
+    component: directing,
+    meta: { directUser: true }
   },
   {
     path: '/account',
     name: 'account',
-    component: SysaddAcc
+    component: SysaddAcc,
+    meta: { requireAdmin: true }
   },
   {
     path: '/sysadSchedule',
     name: 'sysadSchedule',
-    component: SysadSchedule
+    component: SysadSchedule,
+    meta: { requireAdmin: true }
   }
 ];
 
@@ -77,4 +91,111 @@ const router = createRouter({
   }
 });
 
+async function directUser(next) {
+  const { data: { session } } = await supabase.auth.getSession();
+  email = session.user.email;
+
+  const { data, error } = await supabase
+  .from("users")
+  .select("role") 
+  .eq("email", email);
+  
+  if (data.length === 0) {
+        next("/");
+  } else {
+      if (data[0].role === "staff") {
+        next("staffhome");
+      } else if (data[0].role === "system admin") {
+        next("sysadhome");
+      }
+    }
+}
+
+async function getClient(next) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    next("/login");
+    return;
+  } 
+  email = session.user.email;
+
+  const { data, error } = await supabase
+  .from("users")
+  .select("role") 
+  .eq("email", email);
+
+  if (data.length !== 0) {
+    if (data[0].role === "staff") {
+      next("/staffhome");
+    }
+  }
+
+  next();
+}
+
+async function getStaff(next) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    next("/login");
+    return;
+  } 
+  email = session.user.email;
+
+  const { data, error } = await supabase
+  .from("users")
+  .select("role") 
+  .eq("email", email);
+
+  if (data.length === 0) {
+    next("/")
+  } else {
+    if (data[0].role === "staff") {
+      next();
+    } 
+  }
+}
+
+async function getAdmin(next) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    next("/login");
+    return;
+  } 
+  email = session.user.email;
+
+  const { data, error } = await supabase
+  .from("users")
+  .select("role") 
+  .eq("email", email);
+
+  if (data.length === 0) {
+    next("/")
+  } else {
+    if (data[0].role === "staff") {
+      next("/staffhome");
+    } else if (data[0].role === "system admin") {
+      next();
+    } 
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requireAuth) {
+    getClient(next);
+  }
+  else if (to.meta.requireStaff){
+    getStaff(next);
+  }
+  else if (to.meta.directUser) {
+    directUser(next);
+  }
+  else if (to.meta.requireAdmin) {
+    getAdmin(next);
+  }
+  else {
+    next();
+  }
+})
+
 export default router;
+

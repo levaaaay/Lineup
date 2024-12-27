@@ -52,7 +52,7 @@
     },
     methods: {
       queue() {
-        this.$router.push({ name: "schedule" }).then(() => {});
+        this.$router.push({ path: "/" }).then(() => {});
       },
       async getTotalQueueNumber() {
         const today = new Date(

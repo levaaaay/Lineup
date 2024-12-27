@@ -52,22 +52,11 @@
       };
     },
     mounted() {
-      this.checkSession();
       this.getTotalQueueNumber();
     },
     methods: {
       queue() {
         this.$router.push({ name: "schedule" }).then(() => {});
-      },
-      async checkSession() {
-        const {
-          data: { session },
-          error,
-        } = await supabase.auth.getSession();
-
-        if (!session) {
-          this.$router.push("login");
-        } 
       },
       async getTotalQueueNumber() {
         const today = new Date(
