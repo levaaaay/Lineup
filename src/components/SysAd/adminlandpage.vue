@@ -78,7 +78,6 @@
             .from("users")
             .select("display_name")
             .eq("email", session.user.email);
-            console.log(session.user.email)
           this.name = data[0].display_name;
         }
       },

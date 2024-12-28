@@ -111,7 +111,7 @@
               type="button"
               class="btn btn-primary specbtn"
               style="border: none; background-color: #031633"
-              @click="confirmAccount"
+              @click="addAccount"
             >
               confirm
             </button>
@@ -206,7 +206,7 @@
 
 <script>
   import x from "@/assets/x-lg.svg";
-  import { supabase } from "../../client/supabase";
+  import { supabase } from "@/client/supabase";
 
   export default {
     name: "accmanagement",
@@ -235,6 +235,7 @@
       editAccount(index) {
         this.editingIndex = index;
         const account = this.accountCount[index];
+        this.oldEmail = account.email;
         this.email = account.email;
         this.role = account.role;
         this.password = account.password;
@@ -245,6 +246,10 @@
         this.showModal = false;
         this.blur = false;
         this.showEditAccount = false;
+        this.oldEmail = "";
+        this.email = "";
+        this.role = "";
+        this.password = "";
       },
       async confirmAccount() {
         if (this.editingIndex !== null) {
@@ -256,10 +261,31 @@
           this.accountCount[this.editingIndex] = updatedAccount;
           const { data, error } = await supabase
             .from("users")
-            .update({ email: this.email, role: this.role})
-            .eq("user_id", this.editingIndex + 1);
-
+            .update({ email: this.email, role: this.role })
+            .eq("email", this.oldEmail);
         }
+        this.closeModal();
+      },
+      async addAccount() {
+        const { user, error: signUpError } =
+          await supabase.auth.admin.createUser({
+            email: this.email,
+            password: this.password,
+          });
+        if (signUpError) {
+          alert("Unable to create user.");
+        } else {
+          console.log("User created successfully!");
+        }
+        const { data, error } = await supabase
+          .from("users")
+          .insert({ email: this.email, role: this.role });
+
+        this.accountCount.push({
+          email: this.email,
+          role: this.role,
+          password: "hidden",
+        });
         this.closeModal();
       },
       toggleRoleDropdown() {
@@ -283,9 +309,7 @@
         }
 
         if (data) {
-          const sortedData = data.sort(
-            (a, b) => a.user_id - b.user_id
-          );
+          const sortedData = data.sort((a, b) => a.user_id - b.user_id);
           this.accountCount = sortedData.map((item) => ({
             email: item.email,
             role: item.role,
