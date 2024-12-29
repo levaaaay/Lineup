@@ -58,9 +58,9 @@
                     class="btn btn-primary specServ"
                     :class="{
                       selected: day.selectedService === 'license',
-                      disabled: day.license >= 100,
+                      disabled: day.license >= queueLimit,
                     }"
-                    :disabled="day.license >= 100"
+                    :disabled="day.license >= queueLimit"
                     @click="selectService('license', index)"
                   >
                     <span>Licensing</span>
@@ -68,7 +68,7 @@
                       class="counter"
                       :class="queueNumberColor(day.license)"
                     >
-                      {{ day.license }}/100
+                      {{ day.license }}/{{ queueLimit }}
                     </span>
                     <span class="select">Select</span>
                   </button>
@@ -375,7 +375,8 @@
         selectedSpecificService: null,
         email: null,
         code: Array(6).fill(""),
-        queueCount: [],
+        queueLimit: 100,
+        isActive: null,
       };
     },
     computed: {
@@ -397,7 +398,7 @@
       this.getEmail();
     },
     methods: {
-      async showServiceQueueNumber() {
+      async getQueueDetails() {
         const today = new Date(
           new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
         );
@@ -412,29 +413,45 @@
           { id: 3, key: "LawEnforcement" },
         ];
 
-        for (let i = 0; i < 5; i++) {
+        // Build a date range for the next 5 days
+        const dateRanges = Array.from({ length: 5 }, (_, i) => {
           const currentDay = new Date(today);
           currentDay.setDate(today.getDate() + i);
-          const dateString = currentDay.toLocaleDateString("en-CA");
+          const dateString = currentDay.toISOString().split("T")[0];
+          return {
+            start: `${dateString} 00:00:00`,
+            end: `${dateString} 23:59:59`,
+          };
+        });
 
-          for (const service of services) {
-            const { count, error } = await supabase
-              .from("tickets")
-              .select("service_id", { count: "exact", head: true })
-              .or(
-                `service_id.eq.${service.id},parent_service_id.eq.${service.id}`
-              )
-              .gte("queue_date", `${dateString} 00:00:00`)
-              .lte("queue_date", `${dateString} 23:59:59`);
+        // Fetch all data in one query
+        const { data: tickets, error } = await supabase
+          .from("tickets")
+          .select("service_id, parent_service_id, queue_date");
 
-            if (error) {
-              console.error(`Error fetching count for ${service.key}:`, error);
-              continue;
-            }
-
-            this[service.key][i] = count || 0; 
-          }
+        if (error) {
+          console.error("Error fetching tickets:", error);
+          return;
         }
+
+        // Process tickets locally
+        services.forEach((service) => {
+          const counts = Array(5).fill(0);
+
+          dateRanges.forEach((range, i) => {
+            counts[i] = tickets.filter((ticket) => {
+              const queueDate = new Date(ticket.queue_date);
+              return (
+                (ticket.service_id === service.id ||
+                  ticket.parent_service_id === service.id) &&
+                queueDate >= new Date(range.start) &&
+                queueDate <= new Date(range.end)
+              );
+            }).length;
+          });
+
+          this[service.key] = counts;
+        });
       },
       goToNext() {
         if (this.currentIndex < this.twoWeeksDays.length - 1) {
@@ -450,6 +467,9 @@
         if (value > 76) return "red";
         if (value > 50) return "yellow";
         return "green";
+      },
+      getQueueLimit() {
+        return 100;
       },
       resetToToday() {
         const today = new Date();
@@ -619,7 +639,7 @@
       },
     },
     created() {
-      this.showServiceQueueNumber().then(() => {
+      this.getQueueDetails().then(() => {
         const days = [];
         const today = new Date();
 

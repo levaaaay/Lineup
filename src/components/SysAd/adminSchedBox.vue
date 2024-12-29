@@ -192,55 +192,51 @@
         this.VehicleRegistration = [];
         this.LawEnforcement = [];
 
-        for (let i = 0; i < 5; i++) {
+        const services = [
+          { id: 1, key: "DriverLicense" },
+          { id: 2, key: "VehicleRegistration" },
+          { id: 3, key: "LawEnforcement" },
+        ];
+
+        // Build a date range for the next 5 days
+        const dateRanges = Array.from({ length: 5 }, (_, i) => {
           const currentDay = new Date(today);
           currentDay.setDate(today.getDate() + i);
-          const dateString = currentDay.toLocaleDateString("en-CA");
+          const dateString = currentDay.toISOString().split("T")[0];
+          return {
+            start: `${dateString} 00:00:00`,
+            end: `${dateString} 23:59:59`,
+          };
+        });
 
-          const { count: DriverLicenseCount, error: DriverLicenseCountError } =
-            await supabase
-              .from("tickets")
-              .select("service_id", { count: "exact", head: true })
-              .or("service_id.eq.1,parent_service_id.eq.1")
-              .gte("queue_date", `${dateString} 00:00:00`)
-              .lte("queue_date", `${dateString} 23:59:59`);
+        // Fetch all data in one query
+        const { data: tickets, error } = await supabase
+          .from("tickets")
+          .select("service_id, parent_service_id, queue_date");
 
-          if (DriverLicenseCountError) {
-            console.error(DriverLicenseCountError);
-          }
-
-          const {
-            count: VehicleRegistrationCount,
-            error: VehicleRegistrationCountError,
-          } = await supabase
-            .from("tickets")
-            .select("service_id", { count: "exact", head: true })
-            .or("service_id.eq.2,parent_service_id.eq.2")
-            .gte("queue_date", `${dateString} 00:00:00`)
-            .lte("queue_date", `${dateString} 23:59:59`);
-
-          if (VehicleRegistrationCountError) {
-            console.error(VehicleRegistrationCountError);
-          }
-
-          const {
-            count: LawEnforcementCount,
-            error: LawEnforcementCountError,
-          } = await supabase
-            .from("tickets")
-            .select("service_id", { count: "exact", head: true })
-            .or("service_id.eq.3,parent_service_id.eq.3")
-            .gte("queue_date", `${dateString} 00:00:00`)
-            .lte("queue_date", `${dateString} 23:59:59`);
-
-          if (LawEnforcementCountError) {
-            console.error(LawEnforcementCountError);
-          }
-
-          this.DriverLicense[i] = DriverLicenseCount;
-          this.VehicleRegistration[i] = VehicleRegistrationCount;
-          this.LawEnforcement[i] = LawEnforcementCount;
+        if (error) {
+          console.error("Error fetching tickets:", error);
+          return;
         }
+
+        // Process tickets locally
+        services.forEach((service) => {
+          const counts = Array(5).fill(0);
+
+          dateRanges.forEach((range, i) => {
+            counts[i] = tickets.filter((ticket) => {
+              const queueDate = new Date(ticket.queue_date);
+              return (
+                (ticket.service_id === service.id ||
+                  ticket.parent_service_id === service.id) &&
+                queueDate >= new Date(range.start) &&
+                queueDate <= new Date(range.end)
+              );
+            }).length;
+          });
+
+          this[service.key] = counts;
+        });
       },
       toggleDisable(day) {
         day.disabled = !day.disabled;
