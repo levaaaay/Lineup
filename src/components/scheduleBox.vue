@@ -403,10 +403,6 @@
           new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
         );
 
-        this.DriverLicense = [];
-        this.VehicleRegistration = [];
-        this.LawEnforcement = [];
-
         const services = [
           { id: 1, key: "DriverLicense" },
           { id: 2, key: "VehicleRegistration" },
