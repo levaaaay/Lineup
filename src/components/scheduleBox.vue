@@ -66,7 +66,7 @@
                     <span>Licensing</span>
                     <span
                       class="counter"
-                      :class="queueNumberColor(day.license)"
+                      :class="queueNumberColor(day.license, day.licenseLimit)"
                     >
                       {{ day.license }}/{{ day.licenseLimit }}
                     </span>
@@ -84,7 +84,7 @@
                     <span>Registration</span>
                     <span
                       class="counter"
-                      :class="queueNumberColor(day.registration)"
+                      :class="queueNumberColor(day.registration, day.registrationLimit)"
                     >
                       {{ day.registration }}/{{ day.registrationLimit }}
                     </span>
@@ -100,7 +100,7 @@
                     @click="selectService('LETAS', index)"
                   >
                     <span>LETAS</span>
-                    <span class="counter" :class="queueNumberColor(day.LETAS)">
+                    <span class="counter" :class="queueNumberColor(day.LETAS, day.LETASLimit)">
                       {{ day.LETAS }}/{{ day.LETASLimit }}
                     </span>
                     <span class="select">Select</span>
@@ -522,9 +522,9 @@
           this.currentIndex--;
         }
       },
-      queueNumberColor(value) {
-        if (value > 76) return "red";
-        if (value > 50) return "yellow";
+      queueNumberColor(value, limit) {
+        if (value >= (limit * 0.75)) return "red";
+        if (value >= (limit * 0.5)) return "yellow";
         return "green";
       },
       getQueueLimit() {
