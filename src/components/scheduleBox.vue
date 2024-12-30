@@ -16,7 +16,7 @@
           v-for="(day, index) in twoWeeksDays"
           :key="index"
           class="card-group"
-          :class="{ current: index === currentIndex }"
+          :class="{ current: index === currentIndex, disabled: day.disabled }"
         >
           <div class="card mb-3" style="max-width: 53.625rem; height: 22.75rem">
             <div class="row g-0">
@@ -58,9 +58,9 @@
                     class="btn btn-primary specServ"
                     :class="{
                       selected: day.selectedService === 'license',
-                      disabled: day.license >= queueLimit,
+                      disabled: day.license >= day.licenseLimit,
                     }"
-                    :disabled="day.license >= queueLimit"
+                    :disabled="day.license >= day.licenseLimit || day.disabled" 
                     @click="selectService('license', index)"
                   >
                     <span>Licensing</span>
@@ -68,7 +68,7 @@
                       class="counter"
                       :class="queueNumberColor(day.license)"
                     >
-                      {{ day.license }}/{{ queueLimit }}
+                      {{ day.license }}/{{ day.licenseLimit }}
                     </span>
                     <span class="select">Select</span>
                   </button>
@@ -76,9 +76,9 @@
                     class="btn btn-primary specServ"
                     :class="{
                       selected: day.selectedService === 'registration',
-                      disabled: day.registration >= 100,
+                      disabled: day.registration >= day.registrationLimit,
                     }"
-                    :disabled="day.registration >= 100"
+                    :disabled="day.registration >= day.registrationLimit || day.disabled"
                     @click="selectService('registration', index)"
                   >
                     <span>Registration</span>
@@ -86,7 +86,7 @@
                       class="counter"
                       :class="queueNumberColor(day.registration)"
                     >
-                      {{ day.registration }}/100
+                      {{ day.registration }}/{{ day.registrationLimit }}
                     </span>
                     <span class="select">Select</span>
                   </button>
@@ -94,14 +94,14 @@
                     class="btn btn-primary specServ"
                     :class="{
                       selected: day.selectedService === 'LETAS',
-                      disabled: day.LETAS >= 100,
+                      disabled: day.LETAS >= day.LETASLimit,
                     }"
-                    :disabled="day.LETAS >= 100"
+                    :disabled="day.LETAS >= day.LETASLimit || day.disabled"
                     @click="selectService('LETAS', index)"
                   >
                     <span>LETAS</span>
                     <span class="counter" :class="queueNumberColor(day.LETAS)">
-                      {{ day.LETAS }}/100
+                      {{ day.LETAS }}/{{ day.LETASLimit }}
                     </span>
                     <span class="select">Select</span>
                   </button>
@@ -375,8 +375,8 @@
         selectedSpecificService: null,
         email: null,
         code: Array(6).fill(""),
-        queueLimit: 100,
         isActive: null,
+        disabledDates: [],
       };
     },
     computed: {
@@ -404,9 +404,13 @@
         );
 
         const services = [
-          { id: 1, key: "DriverLicense" },
-          { id: 2, key: "VehicleRegistration" },
-          { id: 3, key: "LawEnforcement" },
+          { id: 1, key: "DriverLicense", limit: "DriverLicenseLimit" },
+          {
+            id: 2,
+            key: "VehicleRegistration",
+            limit: "VehicleRegistrationLimit",
+          },
+          { id: 3, key: "LawEnforcement", limit: "LawEnforcementLimit" },
         ];
 
         // Build a date range for the next 5 days
@@ -420,14 +424,23 @@
           };
         });
 
-        // Fetch all data in one query
-        const { data: tickets, error } = await supabase
+        // Fetch Tickets
+        const { data: tickets, error: ticketError } = await supabase
           .from("tickets")
           .select("service_id, parent_service_id, queue_date");
 
-        if (error) {
+        if (ticketError) {
           console.error("Error fetching tickets:", error);
           return;
+        }
+
+        // Fetch Limits
+        const { data: limits, error: limitError } = await supabase
+          .from("queue_schedules")
+          .select("date, service_name, limit");
+
+        if (limitError) {
+          console.error("Error fetching limits:", error);
         }
 
         // Process tickets locally
@@ -445,9 +458,59 @@
               );
             }).length;
           });
-
           this[service.key] = counts;
         });
+
+        // Process limits locally
+        const now = new Date();
+        const date = new Date(now);
+        const year = date.getFullYear();
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const formattedQueueDate = `${year}-${month}-${day}`;
+        const startDate = new Date(formattedQueueDate);
+        const daysRange = 5;
+
+        services.forEach((service) => {
+          this[service.limit] = new Array(daysRange).fill(0);
+
+          limits
+            .filter((item) => item.service_name === service.key)
+            .forEach((item) => {
+              const itemDate = new Date(item.date);
+              const dayIndex = Math.floor(
+                (itemDate - startDate) / (1000 * 60 * 60 * 24)
+              );
+              if (dayIndex >= 0 && dayIndex < daysRange) {
+                this[service.limit][dayIndex] = item.limit;
+              }
+            });
+        });
+
+        // Define the range of dates
+        const dateRange = Array.from({ length: daysRange }, (_, i) => {
+          const date = new Date(startDate);
+          date.setDate(date.getDate() + i);
+          return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+        });
+
+        // Fetch disabled dates
+        const { data: is_disabled, error: disabledError } = await supabase
+          .from("queue_dates")
+          .select("is_disabled, date");
+
+        // Process disabled dates
+        if (disabledError) {
+          console.error("Error fetching disabled dates:", disabledError);
+        } else {
+          // Map fetched data by date for quick lookup
+          const disabledDatesMap = Object.fromEntries(
+            is_disabled.map((item) => [item.date, item.is_disabled === "true"])
+          );
+
+          // Construct disabledDates array sorted by the defined range
+          this.disabledDates = dateRange.map((date) => disabledDatesMap[date] ?? null);
+        }
       },
       goToNext() {
         if (this.currentIndex < this.twoWeeksDays.length - 1) {
@@ -660,6 +723,10 @@
             registration: this.VehicleRegistration[i],
             LETAS: this.LawEnforcement[i],
             selectedService: null,
+            licenseLimit: this.DriverLicenseLimit[i] || 100,
+            registrationLimit: this.VehicleRegistrationLimit[i] || 100,
+            LETASLimit: this.LawEnforcementLimit[i] || 100,
+            disabled: this.disabledDates[i] || false,
           });
         }
         this.twoWeeksDays = days;
