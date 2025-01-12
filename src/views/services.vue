@@ -9,7 +9,7 @@
 
 <script>
 import navbar from '@/components/staff/staffnavbar.vue'
-import servicesOffered from '@/components/servicesOffered.vue';
+import servicesOffered from '@/components/staff/servicesOffered.vue';
 import licensing from '@/components/licensing.vue';
 import foot from '@/components/staff/staffFooter.vue';
 import registration from '@/components/registration.vue';

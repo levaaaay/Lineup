@@ -10,6 +10,7 @@ import staffSchedule from '@/views/staffSchedule.vue';
 import directing from '@/views/direct.vue';
 import SysaddAcc from '@/views/sysaddAcc.vue';
 import SysadSchedule from '@/views/sysadSchedule.vue';
+import info from '@/views/info.vue';
 import { supabase } from "../client/supabase";
 
 let email;
@@ -80,6 +81,11 @@ const routes = [
     name: 'sysadSchedule',
     component: SysadSchedule,
     meta: { requireAdmin: true }
+  },
+  {
+    path: '/info',
+    name: 'info',
+    component: info
   }
 ];
 

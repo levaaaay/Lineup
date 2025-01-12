@@ -37,7 +37,7 @@
 
 <script>
 import ltoLogo from "@/assets/ltoLogo.svg";
-import { supabase } from "../client/supabase";
+import { supabase } from "../../client/supabase";
 
 export default {
   name: "servicesOffered",
