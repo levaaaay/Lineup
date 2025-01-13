@@ -90,21 +90,21 @@
               {{ status }}</span
             >
           </div>
-          <button
-            class="queue"
-            @click="updateTicket"
-            style="font-size: 0.9rem; font-weight: 500"
-          >
-            Update
-          </button>
         </div>
       </div>
+    </div>
+    <div class="refreshcontainer">
+      <button class="refresh-button" @click="updateTicket">
+        <img :src="refreshButton" alt="Refresh" />
+      </button>
     </div>
   </div>
 </template>
 
 <script>
   import { supabase } from "../client/supabase";
+  import refreshButton from "@/assets/refreshButton.svg";
+
   export default {
     name: "ticketbody",
     data() {
@@ -116,6 +116,7 @@
         referenceNumber: null,
         status: null,
         reference: "",
+        refreshButton,
       };
     },
     mounted() {
@@ -224,7 +225,7 @@
     align-items: center;
     width: 33vw;
     height: 43vh;
-    border: 5px solid black;
+    border: 5px solid #031633;
     border-radius: 10px;
     padding: 1rem 0 0 0;
   }
@@ -254,7 +255,7 @@
     background-color: white;
     border: 1px solid #dee2e6;
     border-radius: 10px;
-    margin-bottom: 1vh;
+    margin-bottom: 1.5vh;
     padding-left: 2vh;
     font-size: 0.9vw;
   }
@@ -263,4 +264,33 @@
     color: #68717a;
     font-weight: 700;
   }
+
+  .refresh-button {
+  background-color: #084298;
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.refresh-button img {
+  width: 2.5rem;
+  height: 2.5rem;
+  filter: invert(1);
+}
+
+.refresh-button:hover {
+  background-color: #085ad4;
+}
+
+.refreshcontainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 20rem;
+}
 </style>
