@@ -1,6 +1,5 @@
 <template>
     <navbar />
-    <servicesOffered />
     <licensing />
     <registration />
     <letas />

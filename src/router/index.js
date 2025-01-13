@@ -11,7 +11,7 @@ import directing from '@/views/direct.vue';
 import SysaddAcc from '@/views/sysaddAcc.vue';
 import SysadSchedule from '@/views/sysadSchedule.vue';
 import info from '@/views/info.vue';
-import staffServicesInfo from '@/components/staff/staffServicesInfo.vue';
+import staffServicesInfo from '@/views/staffServices.vue';
 import { supabase } from "../client/supabase";
 
 let email;

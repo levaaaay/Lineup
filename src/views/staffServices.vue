@@ -1,21 +1,19 @@
 <template>
     <navbar />
-    <StaffServicesInfo />
-    <licensing />
-    <registration />
-    <letas />
+    <LicensingInfo />
+    <RegistrationInfo />
+    <LetasInfo />
     <foot />
 </template>
 
 <script>
 import navbar from '@/components/staff/staffnavbar.vue'
-import staffServicesInfo from '@/components/staff/staffServicesInfo.vue';
-import licensing from '@/components/licensing.vue';
-import registration from '@/components/registration.vue';
-import letas from '@/components/letas.vue'
 import foot from '@/components/staff/staffFooter.vue';
+import LicensingInfo from '@/components/staff/licensingInfo.vue';
+import RegistrationInfo from '@/components/staff/registrationInfo.vue';
+import LetasInfo from '@/components/staff/letasInfo.vue';
 
 export default {
-    components: { navbar, staffServicesInfo, licensing, registration, letas, foot },
+    components: { navbar, LicensingInfo, RegistrationInfo, LetasInfo, foot },
 };
 </script>
