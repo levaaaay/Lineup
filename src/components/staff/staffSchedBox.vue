@@ -18,9 +18,11 @@
                     <h2 class="card-title">{{ day.formattedDate }}</h2>
                   </div>
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                      style="width: 3.9375rem; height: 2.4375rem; background-color: #052C65; border: none;"
-                      @click="toggleDisable(day)" checked>
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" :style="{
+                      width: '3.9375rem',
+                      height: '2.4375rem',
+                      border: 'none',
+                    }" @click="toggleDisable(day)" :checked="!isDisabled(day)">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                   </div>
                 </div>
@@ -358,6 +360,9 @@ export default {
     ticketRoute() {
       this.$router.push({ name: "ticket" });
     },
+    isDisabled(day) {
+      return this.disabledDates.includes(day);
+    },
   },
   created() {
     this.showServiceQueueNumber().then(() => {
@@ -394,6 +399,7 @@ export default {
       this.twoWeeksDays = days;
     });
   },
+
 };
 </script>
 
@@ -631,5 +637,10 @@ h3 {
 .disabled-btn {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.form-check-input:checked {
+    background-color: #084298;
+    border-color: #084298;
 }
 </style>
