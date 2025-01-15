@@ -14,7 +14,6 @@
         <button @click="addNewService">+ Add New Service</button>
       </div>
     </div>
-
     <div v-if="blur" class="overlay" @click="closeModal"></div>
     <div v-if="showModal" class="modal-box">
       <div class="modalHeader">
