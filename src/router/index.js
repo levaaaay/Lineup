@@ -13,6 +13,7 @@ import SysadSchedule from '@/views/sysadSchedule.vue';
 import info from '@/views/info.vue';
 import staffServicesInfo from '@/views/staffServices.vue';
 import windows from '@/views/windows.vue';
+import staffLogin from '@/views/staffLogin.vue';
 import { supabase } from "../client/supabase";
 
 let email;
@@ -98,6 +99,11 @@ const routes = [
     path: '/windows',
     name: 'windows',
     component: windows
+  },
+  {
+    path: '/staffLogin',
+    name: 'staffLogin',
+    component: staffLogin
   }
 ];
 
