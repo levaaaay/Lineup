@@ -12,6 +12,7 @@ import SysaddAcc from '@/views/sysaddAcc.vue';
 import SysadSchedule from '@/views/sysadSchedule.vue';
 import info from '@/views/info.vue';
 import staffServicesInfo from '@/views/staffServices.vue';
+import windows from '@/views/windows.vue';
 import { supabase } from "../client/supabase";
 
 let email;
@@ -92,6 +93,11 @@ const routes = [
     path: '/staffServicesInfo',
     name: 'staffServicesInfo',
     component: staffServicesInfo
+  },
+  {
+    path: '/windows',
+    name: 'windows',
+    component: windows
   }
 ];
 

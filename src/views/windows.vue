@@ -1,15 +1,15 @@
 <template>
     <navbar />
-    <accmanagement />
+    <windows />
     <foot />
 </template>
 
 <script>
-import accmanagement from '@/components/superAdmin/accmanagement.vue'
 import navbar from '@/components/SysAd/adminnavbar.vue'
 import foot from '@/components/SysAd/adminfooter.vue'
+import windows from '@/components/SysAd/adminWindows.vue';
 
 export default {
-  components: { navbar, accmanagement, foot},
+  components: { navbar, foot, windows},
 }
 </script>
