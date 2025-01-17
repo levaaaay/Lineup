@@ -52,6 +52,12 @@ export default {
         },
         async signoff() {
             const { error } = await supabase.auth.signOut()
+            const { data } = await supabase
+                .from('staff_logs')
+                .update({ end: '11:20:11' })
+                .is('end', null)
+                .eq('window_number', 'Window 1');
+
             this.$router.push("login");
         },
         navigateOrScrollToAboutUs(sectionId) {

@@ -128,7 +128,7 @@ async function directUser(next) {
         next("/");
   } else {
       if (data[0].role === "staff") {
-        next("staffhome");
+        next("stafflogin");
       } else if (data[0].role === "system admin") {
         next("sysadhome");
       }

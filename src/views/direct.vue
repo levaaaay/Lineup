@@ -3,7 +3,6 @@
 </template>
 
 <script>
-  import { supabase } from "../client/supabase";
   export default {
     name: "direct",
   };
