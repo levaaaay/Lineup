@@ -172,8 +172,8 @@
           this.$router.push("/");
         } else {
           if (data[0].role === "staff") {
-            this.$router.push("staffhome");
-          } else if (data[0].role === "sysadmin") {
+            this.$router.push("stafflogin");
+          } else if (data[0].role === "system admin") {
             this.$router.push("sysadhome");
           }
         }

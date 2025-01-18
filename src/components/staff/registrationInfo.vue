@@ -21,7 +21,11 @@
         <button @click="addNewService">+ Add New Service</button>
       </div>
     </div>
-    <div v-if="blur" class="overlay" @click="closeModal"></div>
+
+    <!-- Overlay -->
+    <div v-if="blur" class="overlay" @click="closeAllModals"></div>
+
+    <!-- Edit Modal -->
     <div v-if="showModal" class="modal-box">
       <div class="modalHeader">
         <span>Edit Service</span>
@@ -42,6 +46,14 @@
           v-model="editingService.tooltip"
           class="modal-textarea"
         ></textarea>
+        <label for="transaction-time">Transaction Time</label>
+        <input
+          id="transaction-time"
+          type="text"
+          v-model="editingService.time"
+          class="modal-input"
+          placeholder="Transaction Time(In Minutes)"
+        />
       </div>
       <div class="modalFooter">
         <button class="delete-button" @click="deleteService">
@@ -53,24 +65,73 @@
         </div>
       </div>
     </div>
+
+    <!-- Add New Service Modal -->
+    <div v-if="showAddModal" class="modal-box">
+      <div class="modalHeader">
+        <span>Add New Service</span>
+        <img :src="x" alt="Close" @click="closeAddModal" class="close-icon" />
+      </div>
+      <div style="height: 1px; width: 100%; background-color: #ced4da"></div>
+      <div class="modalBody">
+        <label for="new-service-name">Name</label>
+        <input
+          id="new-service-name"
+          type="text"
+          v-model="newService.name"
+          class="modal-input"
+          placeholder="Service Name"
+        />
+        <label for="new-service-description">Description</label>
+        <textarea
+          id="new-service-description"
+          v-model="newService.tooltip"
+          class="modal-textarea"
+          placeholder="Description"
+        ></textarea>
+        <label for="new-transaction-time">Transaction Time</label>
+        <input
+          id="new-transaction-time"
+          type="text"
+          v-model="newService.time"
+          class="modal-input"
+          placeholder="Transaction Time(In Minutes)"
+        />
+      </div>
+      <div class="modalFooter">
+        <div class="action-buttons">
+          <button class="cancel-button" @click="closeAddModal">Cancel</button>
+          <button class="confirm-button" @click="addServiceToDatabase">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import x from "@/assets/x-lg.svg";
   import { supabase } from "@/client/supabase";
+  import x from "@/assets/x-lg.svg";
 
   export default {
-    name: "registration",
+    name: "letas",
     data() {
       return {
         services: [],
         blur: false,
         showModal: false,
+        showAddModal: false,
         editingIndex: null,
         editingService: {
           name: "",
           tooltip: "",
+          time: null,
+        },
+        newService: {
+          name: "",
+          tooltip: "",
+          time: null,
         },
         x,
       };
@@ -82,16 +143,56 @@
       async showService() {
         const { data, error } = await supabase
           .from("services")
-          .select("service_name, service_description")
+          .select("service_name, service_description, transaction_time")
           .eq("parent_service_id", 2);
 
-          this.services = data.map((service) => ({
+        this.services = data.map((service) => ({
           name: service.service_name,
           tooltip: service.service_description,
+          time: service.transaction_time,
         }));
       },
       addNewService() {
-        this.services.push("New Service");
+        this.showAddModal = true;
+        this.blur = true;
+      },
+      closeAddModal() {
+        if (this.services[this.services.length - 1] === this.newService) {
+          this.services.pop();
+        }
+        this.showAddModal = false;
+        this.blur = false;
+      },
+      async addServiceToDatabase() {
+        if (isNaN(this.newService.time)) {
+            alert("Please enter a valid number for transaction time.");
+            return;
+          }
+        else{
+          console.log(this.newService.time)
+        }
+        try {
+          const { data, error } = await supabase.from("services").insert([
+            {
+              service_name: this.newService.name,
+              service_description: this.newService.tooltip,
+              transaction_time: this.newService.time,
+              parent_service_id: 2,
+            },
+          ]);
+
+          if (error) {
+            console.error("Error adding service:", error);
+          } else {
+            console.log("Service added successfully!", data);
+          }
+        } catch (err) {
+          console.error("Unexpected error:", err);
+        } finally {
+          this.closeAddModal();
+          this.services.push(this.newService);
+          this.newService = { name: "", tooltip: "", time: null };
+        }
       },
       openEditModal(index) {
         this.editingIndex = index;
@@ -102,30 +203,36 @@
       closeModal() {
         this.showModal = false;
         this.blur = false;
-        this.editingService = { name: "", tooltip: "" };
+        this.editingService = { name: "", tooltip: "", time: null };
       },
       async saveChanges() {
         if (this.editingIndex !== null) {
           const updatedService = { ...this.editingService };
+          
+          if (isNaN(updatedService.time)) {
+            alert("Please enter a valid number for transaction time.");
+            return;
+          }
+          try {
+            const { error } = await supabase
+              .from("services")
+              .update({
+                service_name: updatedService.name,
+                service_description: updatedService.tooltip,
+                transaction_time: updatedService.time, 
+              })
+              .eq("service_name", this.services[this.editingIndex].name);
 
-          supabase
-            .from("services")
-            .update({
-              service_name: updatedService.name,
-              service_description: updatedService.tooltip,
-            })
-            .eq("service_name", this.services[this.editingIndex].name)
-            .then(({ data, error }) => {
-              if (error) {
-                console.error("Error updating service:", error);
-              } else {
-                console.log("Service updated successfully:", data);
-
-                this.services[this.editingIndex] = updatedService;
-              }
-            });
-
-          this.closeModal();
+            if (error) {
+              console.error("Error updating service:", error.message);
+            } else {
+              this.services[this.editingIndex] = updatedService;
+            }
+          } catch (err) {
+            console.error("Unexpected error updating service:", err);
+          } finally {
+            this.closeModal();
+          }
         }
       },
       async deleteService() {
@@ -136,7 +243,7 @@
             const { error } = await supabase
               .from("services")
               .delete()
-              .eq("service_name", serviceToDelete.name); 
+              .eq("service_name", serviceToDelete.name);
 
             if (error) {
               console.error("Error deleting service:", error);
@@ -144,13 +251,16 @@
             }
 
             this.services.splice(this.editingIndex, 1);
-            console.log("Service deleted successfully");
-
-            this.closeModal();
           } catch (err) {
             console.error("Unexpected error deleting service:", err);
+          } finally {
+            this.closeModal();
           }
         }
+      },
+      closeAllModals() {
+        this.closeModal();
+        this.closeAddModal();
       },
     },
   };

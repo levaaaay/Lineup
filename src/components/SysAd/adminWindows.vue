@@ -18,7 +18,7 @@
           v-for="(item, index) in windowCount"
           :key="index"
         >
-          <p>{{ index + 1 }}</p>
+          <p>{{ item.windowNumber }}</p>
           <p>{{ item.staff }}</p>
           <div class="statusBox">
             <button class="statusButton" @click.stop="editWindowModal(index)">
@@ -32,12 +32,81 @@
           </div>
         </div>
       </div>
-      <div class="boxHeader" @click="addWindow">
+      <div class="boxHeader" @click="showAddWindowModal">
         <div class="boxHeaderTexts">
           <p id="newAccText">+ Add New Window</p>
         </div>
       </div>
-      <div v-if="blur" class="overlay" @click="closeModal"></div>
+
+      <!-- Add Window Modal -->
+      <div v-if="showAddModal" class="modal-box" style="padding: 0">
+        <div style="display: flex; flex-direction: column">
+          <div class="modalHeader" style="display: flex; padding: 1rem">
+            <span style="font-size: 1rem; font-weight: 600"
+              >Add New Window</span
+            >
+            <img
+              :src="x"
+              alt="x"
+              style="margin-left: auto; cursor: pointer"
+              @click="closeModal"
+            />
+          </div>
+          <div
+            style="height: 1px; width: 100%; background-color: #ced4da"
+          ></div>
+          <div class="modalBody" style="padding: 1rem">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Staff Name"
+                aria-label="Staff Name"
+                aria-describedby="basic-addon1"
+                v-model="newStaff"
+              />
+            </div>
+          </div>
+          <div class="modalBody" style="padding: 1rem">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Window Number"
+                aria-label="Window Number"
+                aria-describedby="basic-addon1"
+                v-model="windowNumber"
+              />
+            </div>
+          </div>
+          <div
+            style="height: 1px; width: 100%; background-color: #ced4da"
+          ></div>
+          <div
+            class="modalFooter"
+            style="
+              display: flex;
+              margin-left: auto;
+              gap: 0.5rem;
+              padding: 0 1rem 1rem 1rem;
+            "
+          >
+            <button type="button" class="btn btn-secondary" @click="closeModal">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary specbtn"
+              style="border: none; background-color: #031633"
+              @click="addWindow"
+            >
+              Add Window
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Window Modal -->
       <div v-if="editWindow" class="modal-box" style="padding: 0">
         <div style="display: flex; flex-direction: column">
           <div class="modalHeader" style="display: flex; padding: 1rem">
@@ -55,13 +124,25 @@
           <div class="modalBody" style="padding: 1rem">
             <div class="input-group mb-3">
               <input
-                type="staff"
+                type="text"
                 class="form-control"
                 placeholder="Staff Name"
-                aria-label="Email Address"
+                aria-label="Staff Name"
                 aria-describedby="basic-addon1"
                 v-model="staff"
               />
+            </div>
+            <div class="modalBody" style="padding: 0rem">
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Window Number"
+                  aria-label="Window Number"
+                  aria-describedby="basic-addon1"
+                  v-model="windowNumber"
+                />
+              </div>
             </div>
             <button class="delete-button" @click="deleteWindow">
               Delete Window
@@ -86,17 +167,19 @@
               type="button"
               class="btn btn-primary specbtn"
               style="border: none; background-color: #031633"
-              @click="saveChanges(editingIndex)"
+              @click="saveChanges"
             >
-              confirm
+              Confirm
             </button>
           </div>
         </div>
       </div>
-      <div v-if="showLogModal" class="modal-box" style="padding: 0">
+
+      <!-- View Logs Modal -->
+      <div v-if="showLogModal" class="modal-box">
         <div style="display: flex; flex-direction: column">
           <div class="modalHeader" style="display: flex; padding: 1rem">
-            <span style="font-size: 1rem; font-weight: 600">View Logs</span>
+            <span style="font-size: 1rem; font-weight: 600">Staff Logs</span>
             <img
               :src="x"
               alt="x"
@@ -107,7 +190,10 @@
           <div
             style="height: 1px; width: 100%; background-color: #ced4da"
           ></div>
-          <div class="modalBody" style="padding: 1rem">
+          <div
+            class="modalBody"
+            style="padding: 1rem; max-height: 300px; overflow-y: auto"
+          >
             <table
               style="width: 100%; border-collapse: collapse; text-align: left"
             >
@@ -133,12 +219,21 @@
               </tbody>
             </table>
           </div>
-
           <div
             style="height: 1px; width: 100%; background-color: #ced4da"
           ></div>
+          <div
+            class="modalFooter"
+            style="display: flex; justify-content: flex-end; padding: 1rem"
+          >
+            <button type="button" class="btn btn-secondary" @click="closeModal">
+              Close
+            </button>
+          </div>
         </div>
       </div>
+
+      <div v-if="blur" class="overlay" @click="closeModal"></div>
     </div>
   </div>
 </template>
@@ -155,8 +250,11 @@
         windowCount: [],
         editWindow: false,
         showLogModal: false,
+        showAddModal: false,
         blur: false,
         staff: "",
+        newStaff: "",
+        windowNumber: null,
         editingIndex: null,
         selectedLogs: [],
       };
@@ -166,103 +264,126 @@
     },
     methods: {
       closeModal() {
-        this.showModal = false;
-        this.editWindow = false;
+        this.showAddModal = false;
         this.showLogModal = false;
+        this.editWindow = false;
         this.blur = false;
         this.selectedLogs = [];
       },
-      editWindowModal(index) {
+      showAddWindowModal() {
         this.blur = true;
-        this.editWindow = true;
-        this.editingIndex = index;
-        const window = this.windowCount[index];
-        this.oldStaff = window.staff;
-        this.staff = window.staff;
+        this.showAddModal = true;
       },
-      async deleteWindow() {
-        if (this.editingIndex !== null) {
-          const windowToDelete = this.windowCount[this.editingIndex];
-
-          try {
-            const { error } = await supabase
-              .from("windows")
-              .delete()
-              .eq("current_staff", windowToDelete.staff);
-
-            if (error) {
-              console.error("Error deleting service:", error);
-              return;
-            }
-
-            this.windowCount.splice(this.editingIndex, 1);
-            console.log("Service deleted successfully");
-
-            this.closeModal();
-          } catch (err) {
-            console.error("Unexpected error deleting service:", err);
-          }
+      async addWindow() {
+        if (!this.newStaff) {
+          alert("Please enter a staff name.");
+          return;
         }
-      },
-      async viewLogs(index) {
-        this.blur = true;
-        this.showLogModal = true;
-        this.selectedLogs = [];
+
+        const newWindow = {
+          window_number: this.windowNumber,
+          current_staff: this.newStaff,
+        };
+        const { data: staffName } = await supabase
+          .from("users")
+          .select("display_name")
+          .eq("display_name", this.newStaff);
+
+        if (staffName.length === 0) {
+          alert("Staff not found");
+          return;
+        }
+        if (!this.windowNumber) {
+          alert("Please enter a window number.");
+          return;
+        }
         const { data, error } = await supabase
-          .from("staff_logs")
-          .select("staff, start, end, date")
-          .eq("window_number", "Window 1");
-
-        if (data) {
-          this.selectedLogs = data;
+          .from("windows")
+          .insert(newWindow);
+        if (error) {
+          console.error("Error adding window:", error.message);
+          alert("Error adding window.");
+          return;
         }
+        this.windowCount.push({ staff: this.newStaff , windowNumber: this.windowNumber });
+        this.staff = "";
+        this.newStaff = "";
+        this.windowNumber = null;
+        this.closeModal();
+        alert("Window added successfully.");
       },
       async getWindows() {
         const { data, error } = await supabase
           .from("windows")
           .select("window_number, current_staff");
-
         if (error) {
           console.error(error);
+          return;
         }
-
-        if (data) {
-          const sortedData = data.sort(
-            (a, b) => a.window_number - b.window_number
-          );
-          this.windowCount = sortedData.map((item) => ({
-            staff: item.current_staff,
-          }));
-        }
+        const sortedData = data.sort(
+          (a, b) => a.window_number - b.window_number
+        );
+        this.windowCount = sortedData.map((item) => ({
+          windowNumber: item.window_number,
+          staff: item.current_staff,
+        }));
       },
-      async addWindow() {
-        this.windowCount.push({
-          staff: this.staff,
-        });
+      async viewLogs(index) {
+        this.blur = true;
+        this.showLogModal = true;
+        const { data, error } = await supabase
+          .from("staff_logs")
+          .select("*")
+          .eq("window_number", index + 1);
+        if (error) {
+          console.error("Error fetching logs:", error.message);
+          return;
+        }
+        this.selectedLogs = data || [];
+      },
+      editWindowModal(index) {
+        this.blur = true;
+        this.editWindow = true;
+        this.editingIndex = index;
+        this.staff = this.windowCount[index].staff;
+        this.windowNumber = this.windowCount[index].windowNumber;
+      },
+      async deleteWindow() {
+        const { error } = await supabase
+          .from("windows")
+          .delete()
+          .eq("window_number", this.editingIndex + 1);
+        if (error) {
+          console.error("Error deleting window:", error.message);
+          alert("Error deleting window.");
+          return;
+        }
+        this.windowCount.splice(this.editingIndex, 1);
         this.closeModal();
+        alert("Window deleted successfully.");
       },
       async saveChanges() {
-        if (this.editingIndex !== null) {
-          const updatedWindow = {
-            staff: this.staff,
-          };
-          const { data: staff, error: staffError } = await supabase
-            .from("users")
-            .select("display_name")
-            .eq("display_name", this.staff);
+        const { data } = await supabase
+          .from("users")
+          .select("display_name")
+          .eq("display_name", this.staff);
 
-          if (staff.length === 0) {
-            alert("Staff does not exist");
-            return;
-          }
-          this.windowCount[this.editingIndex] = updatedWindow;
-          const { data, error } = await supabase
-            .from("windows")
-            .update({ current_staff: this.staff })
-            .eq("current_staff", this.oldStaff);
+        if (data.length === 0) {
+          alert("Staff not found");
+          return;
         }
-        console.log(this.oldStaff);
+        const { error } = await supabase
+          .from("windows")
+          .update({ current_staff: this.staff })
+          .eq("window_number", this.editingIndex + 1);
+        if (error) {
+          console.error("Error updating window:", error.message);
+          alert("Error updating window.");
+          return;
+        }
+        this.windowCount[this.editingIndex].staff = this.staff;
         this.closeModal();
+        alert("Changes saved successfully.");
       },
     },
   };

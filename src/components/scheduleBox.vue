@@ -258,45 +258,9 @@
         selectedServiceType: null, // Default selected type
         selectedSpecificService: "",
         specificServices: {
-          license: [
-            { name: "Student Permit", details: "Details about Student Permit" },
-            {
-              name: "New Driver License (Non-Professional)",
-              details: "Details about New Driver License",
-            },
-            {
-              name: "Conductor License",
-              details: "Details about Conductor License",
-            },
-          ],
-          registration: [
-            {
-              name: "Sales Reporting and Registration of Motor Vehicles",
-              details: "Details about Sales Reporting",
-            },
-            {
-              name: "Vehicle Encoding/Linking",
-              details: "Details about Vehicle Encoding",
-            },
-            {
-              name: "Renewal of Motor Vehicle Registration",
-              details: "Details about Renewal",
-            },
-          ],
-          LETAS: [
-            {
-              name: "Settlement of Apprehension Cases",
-              details: "Details about Settlement",
-            },
-            {
-              name: "LETAS Fines and Penalties",
-              details: "Details about LETAS Fines",
-            },
-            {
-              name: "Encoding of Alarm on Driver License and Motor Vehicles",
-              details: "Details about Encoding of Alarm",
-            },
-          ],
+          license: [],
+          registration: [],
+          LETAS: [],
         },
         email: null,
         code: Array(6).fill(""),
@@ -323,6 +287,33 @@
       this.getEmail();
     },
     methods: {
+      async showServiceDetails() {
+        let parent_id;
+
+        if (this.selectedServiceType === "license") {
+          parent_id = 1;
+        } else if (this.selectedServiceType === "registration") {
+          parent_id = 2;
+        } else if (this.selectedServiceType === "LETAS") {
+          parent_id = 3;
+        }
+        const { data, error } = await supabase
+          .from("services")
+          .select("service_name, service_description")
+          .eq("parent_service_id", parent_id);
+
+        this.specificServices[this.selectedServiceType] = data.map(
+          (service) => ({
+            name: service.service_name,
+            details: service.service_description,
+          })
+        );
+
+        if (error) {
+          console.error("Error fetching service details:", error);
+          return;
+        }
+      },
       async getQueueDetails() {
         const today = new Date(
           new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
@@ -493,11 +484,13 @@
           console.log(`${service} is full and cannot be selected.`);
         }
       },
-      showQueueModal(day) {
+      async showQueueModal(day) {
         this.selectedDay = day;
         this.selectedServiceType = day.selectedService || null;
         this.showModal = true;
         this.blur = true;
+
+        await this.showServiceDetails();
       },
       closeModal() {
         this.showModal = false;
@@ -529,62 +522,18 @@
         let transaction;
         let queue_time;
 
-        switch (this.selectedSpecificService) {
-          case "Student Permit":
-            service = 4;
-            parent_service = 1;
-            transaction = "Student-Driver's Permit";
-            queue_time = 60;
-            break;
-          case "New Driver License (Non-Professional)":
-            service = 5;
-            parent_service = 1;
-            transaction = "New Driver's License (Non-Professional)";
-            queue_time = 60;
-            break;
-          case "Conductor License":
-            service = 6;
-            parent_service = 1;
-            transaction = "Conductor’s License";
-            queue_time = 60;
-            break;
-          case "Sales Reporting and Registration of Motor Vehicles":
-            service = 7;
-            parent_service = 2;
-            transaction = "Sales Reporting and Registration of Motor Vehicles";
-            queue_time = 60;
-            break;
-          case "Vehicle Encoding/Linking":
-            service = 8;
-            parent_service = 2;
-            transaction = "Vehicle Encoding/Linking";
-            queue_time = 60;
-            break;
-          case "Renewal of Motor Vehicle Registration":
-            service = 9;
-            parent_service = 2;
-            transaction = "Renewal of Motor Vehicle Registration";
-            queue_time = 60;
-            break;
-          case "Settlement of Apprehension Cases":
-            service = 12;
-            parent_service = 3;
-            transaction = "Settlement of Apprehension Cases";
-            queue_time = 60;
-            break;
-          case "LETAS Fines and Penalties":
-            service = 13;
-            parent_service = 3;
-            transaction = "LETAS Fines and Penalties";
-            queue_time = 60;
-            break;
-          case "Encoding of Alarm on Driver License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies":
-            service = 17;
-            parent_service = 3;
-            transaction =
-              "Encoding of Alarm on Driver's License and Motor Vehicles in Relation to Orders Issued by Competent Courts or Quasi-Judicial Bodies";
-            queue_time = 60;
-        }
+        const { data, error: specificError } = await supabase
+          .from("services")
+          .select(
+            "service_id, parent_service_id, service_name, transaction_time"
+          )
+          .eq("service_name", this.selectedSpecificService);
+
+        parent_service = data[0].parent_service_id;
+        service = data[0].service_id;
+        transaction = data[0].service_name;
+        queue_time = data[0].transaction_time;
+
         const { count, error: countError } = await supabase
           .from("tickets")
           .select("service_id", { count: "exact", head: true })
@@ -633,7 +582,7 @@
       this.getQueueDetails().then(() => {
         const days = [];
         const today = new Date();
-        console.log(this.DriverLicense);
+
         for (let i = 0; i < 5; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);

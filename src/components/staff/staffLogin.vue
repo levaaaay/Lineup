@@ -55,22 +55,58 @@
         googleLogo,
         isLogin: true,
         regIsVisible: false,
-        window: "Window 1",
+        window: "",
+        windowNumber: null,
         authIsVisible: false,
         staff: "",
         code: Array(6).fill(""),
       };
     },
+    mounted() {
+      this.getWindow();
+    },
     methods: {
+      async getWindow() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (session) {
+          const { data, error } = await supabase
+            .from("users")
+            .select("window_number")
+            .eq("email", session.user.email);
+          this.windowNumber = data[0].window_number;
+          this.window = `Window ${this.windowNumber}`;
+        }
+      },
       async Start() {
         const { data, error } = await supabase
           .from("users")
           .select("display_name")
           .eq("display_name", this.staff);
 
+        const today = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
+        const year = today.getFullYear();
+        const day = String(today.getDate()).padStart(2, "0");
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const hours = String(today.getHours()).padStart(2, "0");
+        const minutes = String(today.getMinutes()).padStart(2, "0");
+        const seconds = String(today.getSeconds()).padStart(2, "0");
+        const formattedDate = `${year}-${month}-${day}`;
+        const formattedTime = `${hours}:${minutes}:${seconds}`;
+
         const { error: insertError } = await supabase
           .from("staff_logs")
-          .insert({ window_number: this.window, staff: this.staff, start: "12:11:22", date: new Date()});
+          .insert({
+            window_number: this.windowNumber,
+            staff: this.staff,
+            start: formattedTime,
+            date: formattedDate,
+          });
 
         if (data.length === 0) {
           alert("Staff not found");

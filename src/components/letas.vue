@@ -15,10 +15,10 @@
       <div class="ticketBoxes">
         <div
           class="ticketBox"
-          v-for="(item, index) in ticketCount"
+          v-for="(item, index) in paginatedTickets"
           :key="index"
         >
-          <p>{{ index + 1 }}</p>
+          <p>{{ index + 1 + (currentPage - 1) * ticketsPerPage }}</p>
           <p>{{ item.service }}</p>
           <p>{{ item.reference }}</p>
           <div class="statusBox">
@@ -33,7 +33,12 @@
               <p
                 v-for="status in ['Pending', 'Done', 'In Progress', 'Rejected']"
                 :key="status"
-                @click.stop="updateStatus(index, status)"
+                @click.stop="
+                  updateStatus(
+                    index + (currentPage - 1) * ticketsPerPage,
+                    status
+                  )
+                "
                 :class="getStatusClass(status)"
               >
                 {{ status }}
@@ -41,6 +46,17 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <button @click="changePage(-1)" :disabled="currentPage === 1">
+          Previous
+        </button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button @click="changePage(1)" :disabled="currentPage === totalPages">
+          Next
+        </button>
       </div>
     </div>
   </div>
@@ -55,7 +71,19 @@
       return {
         ticketCount: [],
         activeDropdown: null,
+        currentPage: 1,
+        ticketsPerPage: 10, 
       };
+    },
+    computed: {
+      paginatedTickets() {
+        const start = (this.currentPage - 1) * this.ticketsPerPage;
+        const end = start + this.ticketsPerPage;
+        return this.ticketCount.slice(start, end);
+      },
+      totalPages() {
+        return Math.ceil(this.ticketCount.length / this.ticketsPerPage);
+      },
     },
     mounted() {
       this.getTickets();
@@ -69,19 +97,16 @@
           .from("tickets")
           .update({ status: newStatus })
           .eq("reference_number", this.ticketCount[index].reference);
-        this.ticketCount[index].status = newStatus;
-        this.activeDropdown = null;
+        if (!error) {
+          this.ticketCount[index].status = newStatus;
+          this.activeDropdown = null;
+        }
       },
       getStatusClass(status) {
-        if (status === "Done") {
-          return "status-done";
-        } else if (status === "In Progress") {
-          return "status-in-progress";
-        } else if (status === "Pending") {
-          return "status-pending";
-        } else {
-          return "status-rejected";
-        }
+        if (status === "Done") return "status-done";
+        if (status === "In Progress") return "status-in-progress";
+        if (status === "Pending") return "status-pending";
+        return "status-rejected";
       },
       async getTickets() {
         const today = new Date(
@@ -113,11 +138,39 @@
           }));
         }
       },
+      changePage(direction) {
+        const newPage = this.currentPage + direction;
+        if (newPage > 0 && newPage <= this.totalPages) {
+          this.currentPage = newPage;
+        }
+      },
     },
   };
 </script>
 
 <style scoped>
+  /* Add styles for pagination buttons */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+    gap: 1rem;
+  }
+
+  .pagination button {
+    padding: 0.5rem 1rem;
+    background-color: #052c65;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .pagination button:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+  }
   .letas {
     background: #e9ecef;
   }
