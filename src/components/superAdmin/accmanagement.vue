@@ -9,7 +9,6 @@
           <p>#</p>
           <p>Email</p>
           <p>Role</p>
-          <p>Password</p>
           <p></p>
         </div>
       </div>
@@ -22,7 +21,6 @@
           <p>{{ index + 1 }}</p>
           <p>{{ item.email }}</p>
           <p>{{ item.role }}</p>
-          <p>{{ item.password }}</p>
           <div class="statusBox">
             <button class="statusButton" @click.stop="editAccount(index)">
               edit
@@ -153,7 +151,7 @@
                 />
                 <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
                   <p
-                    v-for="roleOption in ['client', 'staff', 'system admin']"
+                    v-for="roleOption in ['staff', 'system admin']"
                     :key="roleOption"
                     @click="selectRole(roleOption)"
                     class="dropdown-item"
@@ -161,17 +159,10 @@
                     {{ roleOption }}
                   </p>
                 </div>
+                <button class="delete-button" @click="deleteAccount">
+                  Delete Account
+                </button>
               </div>
-            </div>
-            <div class="input-group mb-3">
-              <input
-                type="password"
-                class="form-control"
-                placeholder="Password"
-                aria-label="password"
-                aria-describedby="basic-addon1"
-                v-model="password"
-              />
             </div>
           </div>
           <div
@@ -288,6 +279,30 @@
         });
         this.closeModal();
       },
+      async deleteAccount() {
+        if (this.editingIndex !== null) {
+          const emailToDelete = this.oldEmail;
+
+          // Delete from the database
+          const { data, error } = await supabase
+            .from("users")
+            .delete()
+            .eq("email", emailToDelete);
+
+          if (error) {
+            console.error("Error deleting account:", error);
+            alert("Failed to delete account.");
+            return;
+          }
+
+          // Remove from the local account list
+          this.accountCount.splice(this.editingIndex, 1);
+          alert("Account deleted successfully.");
+        }
+
+        // Close the modal
+        this.closeModal();
+      },
       toggleRoleDropdown() {
         this.showRoleDropdown = !this.showRoleDropdown;
       },
@@ -322,6 +337,19 @@
 </script>
 
 <style scoped>
+  .delete-button {
+    background: #ffffff;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+  }
+  .delete-button:hover {
+    background: #ffcccc;
+  }
   .accmanagement {
     background: #e9ecef;
     height: 83vh;
