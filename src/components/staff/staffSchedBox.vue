@@ -338,6 +338,7 @@
           alert("Please enter a limit.");
           return;
         }
+
         const { data, error } = await supabase
           .from("queue_schedules")
           .select("queue_schedule_id")
@@ -345,7 +346,7 @@
           .eq("service_name", this.selectedServiceType);
 
         if (data.length === 0) {
-          const { data, error } = await supabase
+          const { error: insertError } = await supabase
             .from("queue_schedules")
             .insert([
               {
@@ -354,25 +355,39 @@
                 limit: this.selectedLimit,
               },
             ]);
-          if (error) {
-            console.error("Error inserting limit:", error.message);
+          if (insertError) {
+            console.error("Error inserting limit:", insertError.message);
             alert("There was an error updating the limit. Please try again.");
-          } else {
-            alert("Limit updated successfully.");
+            return;
           }
         } else {
-          const { data, error } = await supabase
+          const { error: updateError } = await supabase
             .from("queue_schedules")
             .update({ limit: this.selectedLimit })
             .eq("date", this.selectedDate)
             .eq("service_name", this.selectedServiceType);
-          if (error) {
-            console.error("Error updating limit:", error.message);
+          if (updateError) {
+            console.error("Error updating limit:", updateError.message);
             alert("There was an error updating the limit. Please try again.");
-          } else {
-            alert("Limit updated successfully.");
+            return;
           }
         }
+
+        // Update local state
+        const dayToUpdate = this.twoWeeksDays.find(
+          (day) => day.formattedQueueDate === this.selectedDate
+        );
+        if (dayToUpdate) {
+          if (this.selectedServiceType === "DriverLicense") {
+            dayToUpdate.licenseLimit = this.selectedLimit;
+          } else if (this.selectedServiceType === "VehicleRegistration") {
+            dayToUpdate.registrationLimit = this.selectedLimit;
+          } else if (this.selectedServiceType === "LawEnforcement") {
+            dayToUpdate.LETASLimit = this.selectedLimit;
+          }
+        }
+
+        alert("Limit updated successfully.");
         this.showModal = false;
         this.blur = false;
       },
@@ -396,9 +411,8 @@
         }
       },
       async showQueueModal(day, service) {
-        const selectedDay = this.twoWeeksDays[this.currentIndex];
-        this.selectedDate = selectedDay.formattedQueueDate;
-        this.selectedServiceType = service || null;
+        this.selectedDate = day.formattedQueueDate;
+        this.selectedServiceType = service;
 
         const { data, error } = await supabase
           .from("queue_schedules")
@@ -406,11 +420,7 @@
           .eq("date", this.selectedDate)
           .eq("service_name", this.selectedServiceType);
 
-        if (data.length > 0) {
-          this.selectedLimit = data[0].limit;
-        } else {
-          this.selectedLimit = null;
-        }
+        this.selectedLimit = data.length > 0 ? data[0].limit : null;
         this.showModal = true;
         this.blur = true;
       },

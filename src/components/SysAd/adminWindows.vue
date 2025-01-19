@@ -39,7 +39,7 @@
       </div>
 
       <!-- Add Window Modal -->
-      <div v-if="showAddModal" class="modal-box" style="padding: 0">
+      <div v-if="showAddModal" class="modal-box" style="padding: 1">
         <div style="display: flex; flex-direction: column">
           <div class="modalHeader" style="display: flex; padding: 1rem">
             <span style="font-size: 1rem; font-weight: 600"
@@ -76,6 +76,30 @@
                 aria-label="Window Number"
                 aria-describedby="basic-addon1"
                 v-model="windowNumber"
+              />
+            </div>
+          </div>
+          <div class="modalBody" style="padding: 1rem">
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Email"
+                aria-label="Email"
+                aria-describedby="basic-addon1"
+                v-model="email"
+              />
+            </div>
+          </div>
+          <div class="modalBody" style="padding: 0rem">
+            <div class="input-group mb-3">
+              <input
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                aria-label="Password"
+                aria-describedby="basic-addon1"
+                v-model="password"
               />
             </div>
           </div>
@@ -254,6 +278,8 @@
         blur: false,
         staff: "",
         newStaff: "",
+        email: "",
+        password: "",
         windowNumber: null,
         editingIndex: null,
         selectedLogs: [],
@@ -269,6 +295,11 @@
         this.editWindow = false;
         this.blur = false;
         this.selectedLogs = [];
+        this.windowNumber = null;
+        this.email = "";
+        this.password = "";
+        this.staff = "";
+        this.newStaff = "";
       },
       showAddWindowModal() {
         this.blur = true;
@@ -297,6 +328,28 @@
           alert("Please enter a window number.");
           return;
         }
+        if (isNaN(this.windowNumber)) {
+          alert("Please enter a valid window number.");
+          return;
+        }
+        const { data: windowNumber } = await supabase
+          .from("windows")
+          .select("window_number")
+          .eq("window_number", this.windowNumber);
+
+        const { data: windowStaff } = await supabase
+          .from("users")
+          .select("email")
+          .eq("email", this.email);
+
+        if (windowStaff.length !== 0) {
+          alert("Staff already exists.");
+          return;
+        }
+        if (windowNumber.length !== 0) {
+          alert("Window number already exists.");
+          return;
+        }
         const { data, error } = await supabase
           .from("windows")
           .insert(newWindow);
@@ -305,10 +358,25 @@
           alert("Error adding window.");
           return;
         }
-        this.windowCount.push({ staff: this.newStaff , windowNumber: this.windowNumber });
-        this.staff = "";
-        this.newStaff = "";
-        this.windowNumber = null;
+        const { user, error: signUpError } =
+          await supabase.auth.admin.createUser({
+            email: this.email,
+            password: this.password,
+          });
+        if (signUpError) {
+          alert("Unable to create user.");
+        } else {
+          console.log("User created successfully!");
+        }
+        const { error: addAccountError } = await supabase.from("users").insert({
+          email: this.email,
+          display_name: this.newStaff,
+          window_number: this.windowNumber,
+        });
+        this.windowCount.push({
+          staff: this.newStaff,
+          windowNumber: this.windowNumber,
+        });
         this.closeModal();
         alert("Window added successfully.");
       },
@@ -370,6 +438,10 @@
 
         if (data.length === 0) {
           alert("Staff not found");
+          return;
+        }
+        if (isNaN(this.windowNumber)) {
+          alert("Please enter a valid window number.");
           return;
         }
         const { error } = await supabase

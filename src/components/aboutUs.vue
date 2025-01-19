@@ -10,21 +10,21 @@
                 <img :src="img1" class="card-img-top" alt="img1">
                 <div class="card-body">
                     <h5>Two-Way Queuing System</h5>
-                    <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <p>Efficiently manage queues with seamless customer-staff communication.</p>
                 </div>
             </div>
             <div class="card" style="width: 22.75rem; height: 25.6rem;">
                 <img :src="img2" class="card-img-top" alt="img1">
                 <div class="card-body">
                     <h5>ESP32-Based Device</h5>
-                    <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <p>An efficient ESP32-powered device delivering real-time updates and reliable performance.</p>
                 </div>
             </div>
             <div class="card" style="width: 22.75rem; height: 25.6rem;">
                 <img :src="img3" class="card-img-top" alt="img1">
                 <div class="card-body">
                     <h5>Cross-Platform Web Application</h5>
-                    <p>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <p>Access the queueing system effortlessly on desktops, tablets, and mobile devices.</p>
                 </div>
             </div>
         </div>

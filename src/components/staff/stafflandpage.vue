@@ -43,6 +43,7 @@ export default {
       psaLogo,
       lineupLogo,
       queueText: "in queue today.",
+      windowNumber: null,
       queueNumber: null,
     };
   },
@@ -76,10 +77,18 @@ export default {
       if (session) {
         const { data, error } = await supabase
           .from("users")
-          .select("display_name")
+          .select("window_number")
           .eq("email", session.user.email);
-        this.name = data[0].display_name;
+      
+        this.windowNumber = data[0].window_number;
       }
+
+      const { data } = await supabase
+        .from("windows")
+        .select("current_staff")
+        .eq("window_number", this.windowNumber);
+
+      this.name = data[0].current_staff;
     },
   },
 };

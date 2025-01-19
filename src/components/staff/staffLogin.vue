@@ -87,7 +87,11 @@
           .select("display_name")
           .eq("display_name", this.staff);
 
-        const today = new Date(
+        if (data.length === 0) {
+          alert("Staff not found");
+          return;
+        } else {
+          const today = new Date(
           new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
         );
         const year = today.getFullYear();
@@ -107,10 +111,11 @@
             start: formattedTime,
             date: formattedDate,
           });
+          const { error } = await supabase
+            .from("windows")
+            .update({ current_staff: this.staff })
+            .eq("window_number", this.windowNumber);
 
-        if (data.length === 0) {
-          alert("Staff not found");
-        } else {
           this.$router.push("/staffhome");
         }
       },
