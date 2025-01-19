@@ -79,7 +79,7 @@
             >
           </div>
           <div class="infobox">
-            <span class="boldtext">Estimated Waiting Time: </span>
+            <span class="boldtext">Estimated Transaction Time: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
               {{ estimatedWait }}</span
             >
@@ -100,7 +100,7 @@
       </div>
     </div>
     <div class="refreshcontainer">
-      <button class="refresh-button" @click="updateTicket">
+      <button class="refresh-button" @click="findRef">
         <img :src="refreshButton" alt="Refresh" />
       </button>
     </div>
@@ -133,34 +133,19 @@
       gotoSchedule() {
         this.$router.push("schedule");
       },
-      calculateRemainingTime(timeGenerated, estimatedMinutes, queueDate) {
-        const date = new Date(timeGenerated);
-        // Get hours, minutes, and seconds
-        const hours = String(date.getUTCHours()).padStart(2, "0"); // Use getUTCHours for UTC time
-        const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-        const seconds = String(date.getUTCSeconds()).padStart(2, "0");
-        const generatedDate = new Date();
-        generatedDate.setHours(hours, minutes, seconds);
+      convertMinutes(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
 
-        const year = date.getFullYear();
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const formattedQueueDate = `${year}-${month}-${day}`;
-
-        if (formattedQueueDate !== queueDate) {
-          return "N/A";
+        if (hours === 0) {
+          if (remainingMinutes === 1) return `${remainingMinutes} minute`
+          return `${remainingMinutes} minutes`;
+        } else if (remainingMinutes === 0) {
+          if (hours === 1) return `${hours} hour`
+          return `${hours} hours`;
+        } else {
+          return `${hours} hours and ${remainingMinutes} minutes`;
         }
-
-        const currentTime = new Date();
-        const timeDifference = currentTime - generatedDate;
-        const remainingMinutes =
-          estimatedMinutes - Math.floor(timeDifference / 60000);
-
-        if (remainingMinutes <= 0) {
-          return "0";
-        }
-
-        return `${remainingMinutes} Minutes`;
       },
       async showTicketDetails() {
         const {
@@ -179,72 +164,34 @@
           if (data && data.length > 0) {
             this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
             this.transaction = data[0].transaction;
-            this.estimatedWait = this.calculateRemainingTime(
-              data[0].time_generated,
-              data[0].queue_time,
-              data[0].queue_date
-            );
+            this.estimatedWait = this.convertMinutes(data[0].queue_time);
             this.queueDate = data[0].queue_date;
             this.referenceNumber = data[0].reference_number;
             this.status = data[0].status;
-          } else {
+          } 
+          else {
             this.noTicketIsVisible = true;
           }
         }
       },
-    },
-    async updateTicket() {
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
-
-      if (session) {
-        const query = supabase
+      async findRef() {
+        const { data, error } = await supabase
           .from("tickets")
           .select(
-            "email, ticket_number, transaction, queue_time, reference_number, status"
-          );
+            "ticket_number, transaction, queue_time, reference_number, status, queue_date"
+          )
+          .eq("reference_number", this.referenceNumber);
 
-        // Build dynamic filter based on whether `this.reference` is provided
-        if (this.reference) {
-          query.or(
-            `email.eq.${session.user.email},reference_number.eq.${this.reference}`
-          );
-        } else {
-          query.eq("email", session.user.email);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error(error);
-        } else if (data && data.length > 0) {
+        if (data && data.length > 0) {
+          this.queueDate = data[0].queue_date;
           this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
           this.transaction = data[0].transaction;
-          this.estimatedWait = data[0].queue_time;
+          this.estimatedWait = this.convertMinutes(data[0].queue_time);
           this.referenceNumber = data[0].reference_number;
           this.status = data[0].status;
+          this.noTicketIsVisible = false;
         }
-      }
-    },
-    async findRef() {
-      const { data, error } = await supabase
-        .from("tickets")
-        .select(
-          "ticket_number, transaction, queue_time, reference_number, status"
-        )
-        .eq("reference_number", this.reference);
-
-      if (data && data.length > 0) {
-        console.log(data[0]);
-        this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
-        this.transaction = data[0].transaction;
-        this.estimatedWait = data[0].queue_time;
-        this.referenceNumber = data[0].reference_number;
-        this.status = data[0].status;
-        this.noTicketIsVisible = false;
-      }
+      },
     },
   };
 </script>
@@ -307,31 +254,31 @@
   }
 
   .refresh-button {
-  background-color: #084298;
-  border: none;
-  border-radius: 50%;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+    background-color: #084298;
+    border: none;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
 
-.refresh-button img {
-  width: 2.5rem;
-  height: 2.5rem;
-  filter: invert(1);
-}
+  .refresh-button img {
+    width: 2.5rem;
+    height: 2.5rem;
+    filter: invert(1);
+  }
 
-.refresh-button:hover {
-  background-color: #085ad4;
-}
+  .refresh-button:hover {
+    background-color: #085ad4;
+  }
 
-.refreshcontainer {
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 20rem;
-}
+  .refreshcontainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 20rem;
+  }
 </style>
