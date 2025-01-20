@@ -344,7 +344,7 @@
     overflow: visible;
     width: 13.125rem;
     height: 2rem;
-    background-color: #ebe5fc;
+    background-color: #cfe2ff;
     border-radius: 10px;
     display: flex;
     align-items: center;

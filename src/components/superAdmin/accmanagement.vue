@@ -476,16 +476,14 @@
 
   .dropdown-menu {
     position: absolute;
-    top: 100%;
+    top: 35%;
     left: 0;
     background-color: white;
     border: 1px solid #dee2e6;
     border-radius: 5px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1050;
-    /* Ensure this is above other elements */
     display: block;
-    /* Explicitly show the dropdown */
   }
 
   .dropdown-item {
