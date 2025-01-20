@@ -6,10 +6,9 @@
     <div class="container">
       <div class="boxHeader">
         <div class="boxHeaderTexts">
-          <p>Window #</p>
+          <p>#</p>
+          <p>Email</p>
           <p>Role</p>
-          <p>Current Staff</p>
-          <p></p>
           <p></p>
         </div>
       </div>
@@ -20,23 +19,18 @@
           :key="index"
         >
           <p>{{ index + 1 }}</p>
-          <p>{{ item.role }}</p>
           <p>{{ item.email }}</p>
+          <p>{{ item.role }}</p>
           <div class="statusBox">
             <button class="statusButton" @click.stop="editAccount(index)">
-              Edit Window
-            </button>
-          </div>
-          <div class="statusBox">
-            <button class="statusButton" @click.stop="editAccount(index)">
-              View Logs
+              Edit account
             </button>
           </div>
         </div>
       </div>
-      <div class="newWindow" @click="addAccountModal">
-        <div class="newWindowText">
-          <p>+ Add New Window</p>
+      <div class="newAccount" @click="addAccountModal">
+        <div class="newAccountTexts">
+          <p>+ Add New Account</p>
         </div>
       </div>
       <div v-if="blur" class="overlay" @click="closeModal"></div>
@@ -55,6 +49,9 @@
             style="height: 1px; width: 100%; background-color: #ced4da"
           ></div>
           <div class="modalBody" style="padding: 1rem">
+            <div class="modalBoxFormTitle">
+            Enter New Email Address:
+            </div>
             <div class="input-group mb-3">
               <input
                 type="email"
@@ -64,6 +61,9 @@
                 aria-describedby="basic-addon1"
                 v-model="email"
               />
+            </div>
+            <div class="modalBoxFormTitle">
+            Select a role:
             </div>
             <div class="input-group mb-3">
               <div class="dropdown">
@@ -84,6 +84,9 @@
                   </p>
                 </div>
               </div>
+            </div>
+            <div class="modalBoxFormTitle">
+            Enter a new password:
             </div>
             <div class="input-group mb-3">
               <input
@@ -137,6 +140,9 @@
             style="height: 1px; width: 100%; background-color: #ced4da"
           ></div>
           <div class="modalBody" style="padding: 1rem">
+            <div class="modalBoxFormTitle">
+            Current Email Address
+            </div>
             <div class="input-group mb-3">
               <input
                 type="email"
@@ -146,6 +152,9 @@
                 aria-describedby="basic-addon1"
                 v-model="email"
               />
+            </div>
+            <div class="modalBoxFormTitle">
+            Current Role
             </div>
             <div class="input-group mb-3">
               <div class="dropdown">
@@ -215,7 +224,7 @@
         showEditAccount: false,
         blur: false,
         showRoleDropdown: false,
-        currentStaff: "",
+        email: "",
         role: "",
         password: "",
         editingIndex: null,
@@ -349,7 +358,7 @@
     border: 1px solid #dc3545;
     color: #dc3545;
     border-radius: 5px;
-    padding: 0.5rem 1rem;
+    padding: 1rem;
     cursor: pointer;
     width: 100%;
     text-align: center;
@@ -383,16 +392,20 @@
     width: 100%;
   }
 
-  .newWindow {
-    display: flex;
-    align-items: center;
+  .newAccount {
+    width: 69rem;
+    height: 3.0625rem;
     background: #031633;
+    display: flex;
+    justify-content: center;
   }
-  
-  .newWindowText p{
+
+  .newAccountTexts  p{
+    display: flex;
+    width: 100%;
     color: white;
     font-weight: bold;
-    align-items: center;
+    margin: 0;
   }
 
   .boxHeaderTexts p {
@@ -427,7 +440,7 @@
 
   .boxHeaderTexts p:nth-child(2),
   .ticketBox p:nth-child(2) {
-    flex: 1;
+    flex: 3;
     text-align: left;
   }
 
@@ -439,12 +452,12 @@
 
   .boxHeaderTexts p:nth-child(4),
   .ticketBox p:nth-child(4) {
-    flex: 1;
+    flex: 2;
   }
 
   .boxHeaderTexts p:nth-child(5),
   .ticketBox .statusBox {
-    flex: 1;
+    flex: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -510,28 +523,35 @@
     text-align: center;
   }
 
-  
-
   .modal-box button {
     margin-top: 20px;
     padding: 10px 20px;
   }
 
+  .modalBoxFormTitle {
+    font-weight: 800;
+    display: flex;
+    padding: 5px
+  }
+
   .statusButton {
-    width: 90%;
-    height: 2.2rem;
+    width: 80%;
+    height: 100%;
     background: none;
     border: none;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    background-color: #ebe5fc;
     border-radius: 10px;
+    background-color: #ebe5fc;
     font-weight: 600;
   }
 
   .statusBox {
     position: relative;
     overflow: visible;
+    height: 2rem;
+    
+   
     display: flex;
     align-items: center;
     justify-content: center;
