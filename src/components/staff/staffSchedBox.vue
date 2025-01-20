@@ -35,7 +35,7 @@
                       :style="{
                         width: '3.9375rem',
                         height: '2.4375rem',
-                        border: 'none',
+                        border: '',
                       }"
                       :checked="!day.disabled"
                       @change="updateDatabase(day)"
