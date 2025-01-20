@@ -22,12 +22,9 @@
               {{ item.status }}
             </button>
             <div v-if="activeDropdown === index" class="dropdownMenu">
-              <p v-for="status in windows" :key="status" @click.stop="
-                updateStatus(
-                  index + (currentPage - 1) * ticketsPerPage,
-                  status
-                )
-                " :class="getStatusClass(status)">
+              <p v-for="status in windows" :key="status"
+                @click.stop="confirmStatusChange(index + (currentPage - 1) * ticketsPerPage, status)"
+                :class="getStatusClass(status)">
                 {{ status }}
               </p>
             </div>
@@ -35,7 +32,6 @@
         </div>
       </div>
 
-      <!-- Pagination Controls -->
       <div class="pagination">
         <button @click="changePage(-1)" :disabled="currentPage === 1">
           Previous
@@ -46,11 +42,29 @@
         </button>
       </div>
     </div>
+    <div v-if="blur" class="overlay" @click="closeModal"></div>
+    <div v-if="showModal" class="modal-box">
+      <div class="modalHeader">
+        <span>Confirm Ticket Completion</span>
+        <img :src="x" alt="close" @click="closeModal" style="cursor: pointer;" />
+      </div>
+      <div class="line"></div>
+      <div class="modalBody">
+        <p>Are you sure you want to complete this ticket? This action cannot be undone and any unsaved changes or
+          progress will be lost.</p>
+      </div>
+      <div class="line"></div>
+      <div class="modalFooter">
+        <button @click="closeModal" class="btn btn-secondary">Cancel</button>
+        <button @click="applyStatusChange" class="btn btn-primary specbtn">Confirm</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { supabase } from "../client/supabase";
+import x from "@/assets/x-lg.svg";
 
 export default {
   name: "registration",
@@ -60,7 +74,12 @@ export default {
       activeDropdown: null,
       currentPage: 1,
       ticketsPerPage: 10,
-      windows: ["window 1", 'window 2', 'window 3', 'window 4', "completed"]
+      windows: ["window 1", 'window 2', 'window 3', 'window 4', "completed"],
+      blur: false,
+      showModal: false,
+      pendingStatusIndex: null,
+      pendingStatus: null,
+      x
     };
   },
   computed: {
@@ -131,6 +150,46 @@ export default {
         this.currentPage = newPage;
       }
     },
+    confirmStatusChange(index, newStatus) {
+      if (newStatus === 'completed') {
+        this.pendingStatusIndex = index;
+        this.pendingStatus = newStatus;
+        this.showModal = true;
+        this.blur = true;
+      } else {
+        this.updateStatus(index, newStatus);
+      }
+    },
+    async updateStatus(index, newStatus) {
+      const { data, error } = await supabase
+        .from("tickets")
+        .update({ status: newStatus })
+        .eq("reference_number", this.ticketCount[index].reference);
+      if (!error) {
+        this.ticketCount[index].status = newStatus;
+      }
+    },
+    applyStatusChange() {
+      if (this.pendingStatusIndex !== null) {
+        this.updateStatus(this.pendingStatusIndex, this.pendingStatus);
+        this.showModal = false;
+        this.pendingStatusIndex = null;
+        this.pendingStatus = null;
+        this.activeDropdown = null;  
+        this.blur = false;
+      }
+    },
+    closeModal() {
+      this.showModal = false;
+      this.pendingStatusIndex = null;
+      this.pendingStatus = null;
+      this.blur = false
+    },
+    getStatusClass(status) {
+      if (status === "completed") return "status-done";
+      if (status.includes("window")) return "status-in-progress";
+      return "status-pending";
+    }
   },
 };
 </script>
@@ -304,5 +363,52 @@ export default {
 
 .status-in-progress {
   color: #68717A;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  z-index: 999;
+}
+
+.modal-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 1000;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.modalBody {
+  padding: 10px;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 20px;
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  background: #ced4da;
 }
 </style>
