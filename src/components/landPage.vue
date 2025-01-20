@@ -25,7 +25,14 @@
     </div>
     <div class="queueNowButton">
       <button class="btn btn-primary" @click="queue">Queue Now</button>
-    </div>  
+    </div>
+
+    <div class="textLink">
+      <p>Click here for </p>
+      <a href="https://www.ltoncr.com/wp-content/uploads/2023/07/LTO-CITIZENS-CHARTER-2023.pdf">
+        LTO Manual of Operations
+      </a>
+    </div>
     <div class="queueNowButton">
       <button class="btn btn-primary" @click="queue">Back to SysAdmin View</button>
     </div>
@@ -33,155 +40,181 @@
 </template>
 
 <script>
-  import ltoLogo from "@/assets/ltoLogo.svg";
-  import dfaLogo from "@/assets/dfaLogo.svg";
-  import prcLogo from "@/assets/prcLogo.svg";
-  import birLogo from "@/assets/birLogo.svg";
-  import psaLogo from "@/assets/psaLogo.svg";
-  import { supabase } from "../client/supabase";
+import ltoLogo from "@/assets/ltoLogo.svg";
+import dfaLogo from "@/assets/dfaLogo.svg";
+import prcLogo from "@/assets/prcLogo.svg";
+import birLogo from "@/assets/birLogo.svg";
+import psaLogo from "@/assets/psaLogo.svg";
+import { supabase } from "../client/supabase";
 
-  export default {
-    name: "landPage",
-    data() {
-      return {
-        headerLine1: "Queue at the comfort of your home",
-        ltoLogo,
-        dfaLogo,
-        prcLogo,
-        birLogo,
-        psaLogo,
-        queueText: "in queue today.",
-        queueNumber: null,
-      };
+export default {
+  name: "landPage",
+  data() {
+    return {
+      headerLine1: "Queue at the comfort of your home",
+      ltoLogo,
+      dfaLogo,
+      prcLogo,
+      birLogo,
+      psaLogo,
+      queueText: "in queue today.",
+      queueNumber: null,
+    };
+  },
+  mounted() {
+    this.getTotalQueueNumber();
+  },
+  methods: {
+    queue() {
+      this.$router.push({ name: "schedule" }).then(() => { });
     },
-    mounted() {
-      this.getTotalQueueNumber();
+    async getTotalQueueNumber() {
+      const today = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+      );
+      const currentDay = new Date(today);
+      const dateString = currentDay.toLocaleDateString("en-CA");
+      const { count, error } =
+        await supabase
+          .from("tickets")
+          .select("ticket_id", { count: "exact", head: true })
+          .eq("queue_date", dateString);
+
+      this.queueNumber = count;
     },
-    methods: {
-      queue() {
-        this.$router.push({ name: "schedule" }).then(() => {});
-      },
-      async getTotalQueueNumber() {
-        const today = new Date(
-          new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-        );
-        const currentDay = new Date(today);
-        const dateString = currentDay.toLocaleDateString("en-CA");
-        const { count, error} =
-          await supabase
-            .from("tickets")
-            .select("ticket_id", { count: "exact", head: true })
-            .eq("queue_date", dateString);
-            
-        this.queueNumber = count;
-      },
-    },
-  };
+  },
+};
 </script>
 
 <style scoped>
-  .landPage {
-    background: #dee2e6;
-    height: 39.3rem;
+.landPage {
+  background: #dee2e6;
+  height: 42rem;
+}
+
+h1 {
+  font-weight: 800;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
   }
 
-  h1 {
-    font-weight: 800;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
+  to {
+    transform: translate(-100%);
   }
+}
 
-  @keyframes slide {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translate(-100%);
-    }
-  }
+.logos {
+  overflow: hidden;
+  padding: 2.5rem;
+  white-space: nowrap;
+  position: relative;
+}
 
-  .logos {
-    overflow: hidden;
-    padding: 2.5rem;
-    white-space: nowrap;
-    position: relative;
-  }
+.logos:before,
+.logos:after {
+  position: absolute;
+  top: 0;
+  width: 15.625rem;
+  height: 100%;
+  content: "";
+  z-index: 2;
+}
 
-  .logos:before,
-  .logos:after {
-    position: absolute;
-    top: 0;
-    width: 15.625rem;
-    height: 100%;
-    content: "";
-    z-index: 2;
-  }
+.logos:before {
+  left: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0), #dee2e6);
+}
 
-  .logos:before {
-    left: 0;
-    background: linear-gradient(to left, rgba(255, 255, 255, 0), #dee2e6);
-  }
+.logos:after {
+  right: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), #dee2e6);
+}
 
-  .logos:after {
-    right: 0;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0), #dee2e6);
-  }
+.logos:hover .logosSlide {
+  animation-play-state: paused;
+}
 
-  .logos:hover .logosSlide {
-    animation-play-state: paused;
-  }
+.logosSlide {
+  display: inline-block;
+  animation: 25s slide infinite linear;
+}
 
-  .logosSlide {
-    display: inline-block;
-    animation: 25s slide infinite linear;
-  }
+.logosSlide img {
+  height: 18rem;
+  margin: -2.5rem 0 -2.5rem 2.5rem;
+}
 
-  .logosSlide img {
-    height: 18rem;
-    margin: -2.5rem 0 -2.5rem 2.5rem;
-  }
+.comingSoon {
+  opacity: 0.5;
+}
 
-  .comingSoon {
-    opacity: 0.5;
-  }
+.queueText {
+  display: flex;
+  justify-content: center;
+  font-size: 1.25rem;
+  align-items: center;
+  margin-top: 3rem;
+  font-weight: 700;
+}
 
-  .queueText {
-    display: flex;
-    justify-content: center;
-    font-size: 1.25rem;
-    align-items: center;
-    margin-top: 3rem;
-    font-weight: 700;
-  }
+.dynamic {
+  color: #2252a0;
+  margin-right: 0.625rem;
+}
 
-  .dynamic {
-    color: #2252a0;
-    margin-right: 0.625rem;
-  }
+.btn {
+  width: Fill (8.625rem);
+  height: Hug 3.125rem;
+  padding: 1rem 1.5rem 1rem 1.5rem;
+  gap: 0.5rem;
+  border: none;
+  background: var(--colors-blue-blue-800, #084298);
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .btn {
-    width: Fill (8.625rem);
-    height: Hug 3.125rem;
-    padding: 1rem 1.5rem 1rem 1.5rem;
-    gap: 0.5rem;
-    border: none;
-    background: var(--colors-blue-blue-800, #084298);
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.btn:hover {
+  color: #f0f1f5;
+  background-color: #2252a0;
+}
 
-  .btn:hover {
-    color: #f0f1f5;
-    background-color: #2252a0;
-  }
+.queueNowButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.93rem;
+}
 
-  .queueNowButton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 0.93rem;
-  }
+.textLink {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.textLink p {
+  color: #212631;
+  font-weight: 600;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.textLink a {
+  font-weight: 600;
+  color: #2252a0;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
 </style>

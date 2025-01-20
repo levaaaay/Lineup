@@ -246,7 +246,7 @@ export default {
   cursor: not-allowed;
 }
 
-.letas {
+.licensing {
   background: #e9ecef;
 }
 
