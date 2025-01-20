@@ -323,10 +323,6 @@
         this.showAddModal = true;
       },
       async addWindow() {
-        if (!this.newStaff) {
-          alert("Please enter a staff name.");
-          return;
-        }
 
         const newWindow = {
           window_number: this.windowNumber,
@@ -651,7 +647,7 @@
     overflow: visible;
     width: 9.8675rem;
     height: 2rem;
-    background-color: #ebe5fc;
+    background-color: #cfe2ff;
     border-radius: 10px;
     display: flex;
     align-items: center;
