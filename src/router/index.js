@@ -9,7 +9,6 @@ import SysadHome from '@/views/sysadHome.vue';
 import staffSchedule from '@/views/staffSchedule.vue';
 import directing from '@/views/direct.vue';
 import SysaddAcc from '@/views/sysaddAcc.vue';
-import SysadSchedule from '@/views/sysadSchedule.vue';
 import info from '@/views/info.vue';
 import staffServicesInfo from '@/views/staffServices.vue';
 import windows from '@/views/windows.vue';
@@ -77,12 +76,6 @@ const routes = [
     path: '/account',
     name: 'account',
     component: SysaddAcc,
-    meta: { requireAdmin: true }
-  },
-  {
-    path: '/sysadSchedule',
-    name: 'sysadSchedule',
-    component: SysadSchedule,
     meta: { requireAdmin: true }
   },
   {
