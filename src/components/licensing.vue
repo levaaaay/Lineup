@@ -31,7 +31,7 @@
             </button>
             <div v-if="activeDropdown === index" class="dropdownMenu">
               <p
-                v-for="status in ['Pending', 'Done', 'In Progress', 'Rejected']"
+                v-for="status in windows"
                 :key="status"
                 @click.stop="
                   updateStatus(
@@ -73,6 +73,7 @@
         activeDropdown: null,
         currentPage: 1,
         ticketsPerPage: 10, 
+        windows: ["window 1", 'window 2', 'window 3', 'window 4', "completed"]
       };
     },
     computed: {
@@ -103,11 +104,10 @@
         }
       },
       getStatusClass(status) {
-        if (status === "Done") return "status-done";
-        if (status === "In Progress") return "status-in-progress";
-        if (status === "Pending") return "status-pending";
-        return "status-rejected";
-      },
+      if (status === "completed") return "status-done";
+      if (status.includes("window")) return "status-in-progress";
+      return "status-pending";
+    },
       async getTickets() {
         const today = new Date(
           new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
@@ -315,14 +315,6 @@
   }
 
   .status-in-progress {
-    color: #ffc107;
-  }
-
-  .status-pending {
-    color: #adb5bd;
-  }
-
-  .status-rejected {
-    color: #dc3545;
+    color: #68717A;
   }
 </style>
