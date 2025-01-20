@@ -79,7 +79,7 @@
             >
           </div>
           <div class="infobox">
-            <span class="boldtext">Estimated Transaction Time: </span>
+            <span class="boldtext">Estimated Waiting Time: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
               {{ estimatedWait }}</span
             >
@@ -133,15 +133,40 @@
       gotoSchedule() {
         this.$router.push("schedule");
       },
-      convertMinutes(minutes) {
-        const hours = Math.floor(minutes / 60);
-        const remainingMinutes = minutes % 60;
+      async convertMinutes(minutes, transaction, ticket_number) {
+        const now = new Date();
+        const date = new Date(now);
+        const year = date.getFullYear();
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const formattedQueueDate = `${year}-${month}-${day}`;
+        const { data, error } = await supabase
+          .from("tickets")
+          .select("queue_time, ticket_number")
+          .eq("transaction", transaction)
+          .gte("queue_date", `${formattedQueueDate} 00:00:00`)
+          .lte("queue_date", `${formattedQueueDate} 23:59:59`)
+          .neq("status", "Reject")
+          .neq("status", "Complete")
+
+        const filteredData = data.filter(
+          (item) => item.ticket_number < ticket_number
+        );
+
+        const totalRemainingTime = filteredData.reduce((sum, item) => {
+          return sum + (item.queue_time || 0); 
+        }, 0);
+
+        console.log("Total Remaining Time:", totalRemainingTime);
+        const totalMinutes = minutes + totalRemainingTime
+        const hours = Math.floor(totalMinutes / 60);
+        const remainingMinutes = totalMinutes % 60;
 
         if (hours === 0) {
-          if (remainingMinutes === 1) return `${remainingMinutes} minute`
+          if (remainingMinutes === 1) return `${remainingMinutes} minute`;
           return `${remainingMinutes} minutes`;
         } else if (remainingMinutes === 0) {
-          if (hours === 1) return `${hours} hour`
+          if (hours === 1) return `${hours} hour`;
           return `${hours} hours`;
         } else {
           return `${hours} hours and ${remainingMinutes} minutes`;
@@ -159,35 +184,55 @@
             .select(
               "email, ticket_number, transaction, queue_time, reference_number, status, time_generated, queue_date"
             )
-            .eq("email", session.user.email);
+            .eq("email", session.user.email)
+            .neq("status", "Complete")
+            .neq("status", "Reject");
 
+          if (data.length === 0) {
+            this.noTicketIsVisible = true;
+            return;
+          }
           if (data && data.length > 0) {
             this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
             this.transaction = data[0].transaction;
-            this.estimatedWait = this.convertMinutes(data[0].queue_time);
+            this.estimatedWait = await this.convertMinutes(
+              data[0].queue_time,
+              data[0].transaction,
+              data[0].ticket_number
+            );
             this.queueDate = data[0].queue_date;
             this.referenceNumber = data[0].reference_number;
             this.status = data[0].status;
-          } 
-          else {
+          } else {
             this.noTicketIsVisible = true;
           }
         }
       },
       async findRef() {
-        this.referenceNumber = this.reference
+        if (!this.referenceNumber) {
+          this.referenceNumber = this.reference;
+        }
         const { data, error } = await supabase
           .from("tickets")
           .select(
             "ticket_number, transaction, queue_time, reference_number, status, queue_date"
           )
-          .eq("reference_number", this.referenceNumber);
+          .eq("reference_number", this.referenceNumber)
+          .neq("status", "Complete")
+          .neq("status", "Reject");
 
+        if (data.length === 0) {
+          this.noTicketIsVisible = true;
+          return;
+        }
         if (data && data.length > 0) {
           this.queueDate = data[0].queue_date;
           this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
           this.transaction = data[0].transaction;
-          this.estimatedWait = this.convertMinutes(data[0].queue_time);
+          this.estimatedWait = await this.convertMinutes(
+            data[0].queue_time,
+            data[0].transaction
+          );
           this.referenceNumber = data[0].reference_number;
           this.status = data[0].status;
           this.noTicketIsVisible = false;

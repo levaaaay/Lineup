@@ -466,7 +466,11 @@ export default {
       const { data, error } = await supabase
         .from("tickets")
         .select("email")
-        .eq("email", this.email);
+        .eq("email", this.email)
+        .gte("queue_date", `${this.selectedDay.formattedQueueDate} 00:00:00`)
+        .lte("queue_date", `${this.selectedDay.formattedQueueDate} 23:59:59`)
+        .neq("status", "Complete")
+        .neq("status", "Reject");
 
       if (!data || data.length === 0) {
         this.showModal = false;
