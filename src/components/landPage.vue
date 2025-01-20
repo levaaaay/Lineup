@@ -34,7 +34,7 @@
       </a>
     </div>
     <div class="queueNowButton">
-      <button class="btn btn-primary" @click="queue">Back to SysAdmin View</button>
+      <button class="btn btn-primary" @click="direct" v-if="isSuperAdmin">Back to SysAdmin View</button>
     </div>
   </div>
 </template>
@@ -47,43 +47,62 @@ import birLogo from "@/assets/birLogo.svg";
 import psaLogo from "@/assets/psaLogo.svg";
 import { supabase } from "../client/supabase";
 
-export default {
-  name: "landPage",
-  data() {
-    return {
-      headerLine1: "Queue at the comfort of your home",
-      ltoLogo,
-      dfaLogo,
-      prcLogo,
-      birLogo,
-      psaLogo,
-      queueText: "in queue today.",
-      queueNumber: null,
-    };
-  },
-  mounted() {
-    this.getTotalQueueNumber();
-  },
-  methods: {
-    queue() {
-      this.$router.push({ name: "schedule" }).then(() => { });
+  export default {
+    name: "landPage",
+    data() {
+      return {
+        headerLine1: "Queue at the comfort of your home",
+        ltoLogo,
+        dfaLogo,
+        prcLogo,
+        birLogo,
+        psaLogo,
+        queueText: "in queue today.",
+        queueNumber: null,
+        isSuperAdmin: false,
+      };
     },
-    async getTotalQueueNumber() {
-      const today = new Date(
-        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-      );
-      const currentDay = new Date(today);
-      const dateString = currentDay.toLocaleDateString("en-CA");
-      const { count, error } =
-        await supabase
-          .from("tickets")
-          .select("ticket_id", { count: "exact", head: true })
-          .eq("queue_date", dateString);
+    mounted() {
+      this.getTotalQueueNumber();
+      this.isAdmin();
+    },
+    methods: {
+      async isAdmin() {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      this.queueNumber = count;
+        const { data, error } = await supabase
+          .from("users")
+          .select("role")
+          .eq("email", session.user.email);
+
+        if (data[0].role === "super admin" || data[0].role === "system admin") {
+          this.isSuperAdmin = true;
+        }
+      },
+      direct() {
+       this.$router.push("sysadhome");
+      },
+      queue() {
+        this.$router.push({ name: "schedule" }).then(() => {});
+      },
+      async getTotalQueueNumber() {
+        const today = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
+        const currentDay = new Date(today);
+        const dateString = currentDay.toLocaleDateString("en-CA");
+        const { count, error} =
+          await supabase
+            .from("tickets")
+            .select("ticket_id", { count: "exact", head: true })
+            .eq("queue_date", dateString);
+            
+        this.queueNumber = count;
+      },
     },
-  },
-};
+  };
 </script>
 
 <style scoped>

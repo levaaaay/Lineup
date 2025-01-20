@@ -76,7 +76,7 @@ const routes = [
     path: '/account',
     name: 'account',
     component: SysaddAcc,
-    meta: { requireSuperAdmin: true }
+    meta: { requireAdmin: true }
   },
   {
     path: '/info',
@@ -86,17 +86,20 @@ const routes = [
   {
     path: '/staffServicesInfo',
     name: 'staffServicesInfo',
-    component: staffServicesInfo
+    component: staffServicesInfo,
+    meta: { requireStaff: true }
   },
   {
     path: '/windows',
     name: 'windows',
-    component: windows
+    component: windows,
+    meta: { requireAdmin: true }
   },
   {
     path: '/staffLogin',
     name: 'staffLogin',
-    component: staffLogin
+    component: staffLogin,
+    meta: { requireStaff: true }
   }
 ];
 
@@ -193,11 +196,36 @@ async function getAdmin(next) {
     if (data[0].role === "staff") {
       next("/staffhome");
     } else if (data[0].role === "system admin" || data[0].role ==="super admin") {
-      next();
+        next();
     } 
   }
 }
 
+async function getSuperAdmin(next) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    next("/login");
+    return;
+  } 
+  email = session.user.email;
+
+  const { data, error } = await supabase
+  .from("users")
+  .select("role") 
+  .eq("email", email);
+
+  if (data.length === 0) {
+    next("/")
+  } else {
+    if (data[0].role === "staff") {
+      next("/staffhome");
+    } else if (data[0].role === "system admin") {
+      next("/sysadhome");
+    } else if (data[0].role === "super admin") {
+      next();
+    }
+  }
+}
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
     getClient(next);
@@ -211,7 +239,7 @@ router.beforeEach((to, from, next) => {
   else if (to.meta.requireAdmin) {
     getAdmin(next);
   } else if (to.meta.requireSuperAdmin) {
-    getAdmin(next);
+    getSuperAdmin(next);
   }
   else {
     next();

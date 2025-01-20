@@ -19,190 +19,214 @@
     <div class="queueNowButton">
       <button class="btn btn-primary" @click="queue">Verify Documents</button>
     </div>
+    <div class="queueNowButton">
+      <button class="btn btn-primary" @click="direct" v-if="isSuperAdmin">
+        Back to SysAdmin View
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
-import ltoLogo from "@/assets/ltoLogo.svg";
-import dfaLogo from "@/assets/dfaLogo.svg";
-import prcLogo from "@/assets/prcLogo.svg";
-import birLogo from "@/assets/birLogo.svg";
-import psaLogo from "@/assets/psaLogo.svg";
-import lineupLogo from "@/assets/lineupLogo.svg";
-import { supabase } from "@/client/supabase";
+  import ltoLogo from "@/assets/ltoLogo.svg";
+  import dfaLogo from "@/assets/dfaLogo.svg";
+  import prcLogo from "@/assets/prcLogo.svg";
+  import birLogo from "@/assets/birLogo.svg";
+  import psaLogo from "@/assets/psaLogo.svg";
+  import lineupLogo from "@/assets/lineupLogo.svg";
+  import { supabase } from "@/client/supabase";
 
-export default {
-  name: "landPage",
-  data() {
-    return {
-      name: null,
-      ltoLogo,
-      dfaLogo,
-      prcLogo,
-      birLogo,
-      psaLogo,
-      lineupLogo,
-      queueText: "in queue today.",
-      windowNumber: null,
-      queueNumber: null,
-    };
-  },
-  mounted() {
-    this.getTotalQueueNumber();
-    this.displayName();
-  },
-  methods: {
-    queue() {
-      this.$router.push({ name: "services" }).then(() => {});
+  export default {
+    name: "landPage",
+    data() {
+      return {
+        name: null,
+        ltoLogo,
+        dfaLogo,
+        prcLogo,
+        birLogo,
+        psaLogo,
+        lineupLogo,
+        queueText: "in queue today.",
+        windowNumber: null,
+        queueNumber: null,
+        isSuperAdmin: false,
+      };
     },
-    async getTotalQueueNumber() {
-      const today = new Date(
-        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-      );
-      const currentDay = new Date(today);
-      const dateString = currentDay.toLocaleDateString("en-CA");
-      const { count, error } = await supabase
-        .from("tickets")
-        .select("ticket_id", { count: "exact", head: true })
-        .eq("queue_date", dateString);
-
-      this.queueNumber = count;
+    mounted() {
+      this.getTotalQueueNumber();
+      this.displayName();
+      this.isAdmin();
     },
-    async displayName() {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+    methods: {
+      async isAdmin() {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      if (session) {
         const { data, error } = await supabase
           .from("users")
-          .select("window_number")
+          .select("role")
           .eq("email", session.user.email);
-      
-        this.windowNumber = data[0].window_number;
-      }
 
-      const { data } = await supabase
-        .from("windows")
-        .select("current_staff")
-        .eq("window_number", this.windowNumber);
+        if (data[0].role === "super admin" || data[0].role === "system admin") {
+          this.isSuperAdmin = true;
+        }
+      },
+      direct() {
+        this.$router.push("sysadhome");
+      },
+      queue() {
+        this.$router.push({ name: "services" }).then(() => {});
+      },
+      async getTotalQueueNumber() {
+        const today = new Date(
+          new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
+        const currentDay = new Date(today);
+        const dateString = currentDay.toLocaleDateString("en-CA");
+        const { count, error } = await supabase
+          .from("tickets")
+          .select("ticket_id", { count: "exact", head: true })
+          .eq("queue_date", dateString);
 
-      this.name = data[0].current_staff;
+        this.queueNumber = count;
+      },
+      async displayName() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (session) {
+          const { data, error } = await supabase
+            .from("users")
+            .select("window_number")
+            .eq("email", session.user.email);
+
+          this.windowNumber = data[0].window_number;
+        }
+
+        const { data } = await supabase
+          .from("windows")
+          .select("current_staff")
+          .eq("window_number", this.windowNumber);
+
+        this.name = data[0].current_staff;
+      },
     },
-  },
-};
+  };
 </script>
 
 <style scoped>
-.landPage {
-  background: #dee2e6;
-  height: 39.3rem;
-}
-
-h1 {
-  font-weight: 800;
-  padding-top: 1rem;
-  padding-bottom: 2rem;
-}
-
-.logo {
-  width: 8.3rem;
-  height: 4.75rem;
-  margin: -0.6rem 0.1rem 0 1rem;
-}
-
-@keyframes slide {
-  from {
-    transform: translateX(0);
+  .landPage {
+    background: #dee2e6;
+    height: 39.3rem;
   }
-  to {
-    transform: translate(-100%);
+
+  h1 {
+    font-weight: 800;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
   }
-}
 
-.logos {
-  overflow: hidden;
-  padding: 2.5rem;
-  white-space: nowrap;
-  position: relative;
-}
+  .logo {
+    width: 8.3rem;
+    height: 4.75rem;
+    margin: -0.6rem 0.1rem 0 1rem;
+  }
 
-.logos:before,
-.logos:after {
-  position: absolute;
-  top: 0;
-  width: 15.625rem;
-  height: 100%;
-  content: "";
-  z-index: 2;
-}
+  @keyframes slide {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translate(-100%);
+    }
+  }
 
-.logos:before {
-  left: 0;
-  background: linear-gradient(to left, rgba(255, 255, 255, 0), #dee2e6);
-}
+  .logos {
+    overflow: hidden;
+    padding: 2.5rem;
+    white-space: nowrap;
+    position: relative;
+  }
 
-.logos:after {
-  right: 0;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0), #dee2e6);
-}
+  .logos:before,
+  .logos:after {
+    position: absolute;
+    top: 0;
+    width: 15.625rem;
+    height: 100%;
+    content: "";
+    z-index: 2;
+  }
 
-.logos:hover .logosSlide {
-  animation-play-state: paused;
-}
+  .logos:before {
+    left: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0), #dee2e6);
+  }
 
-.logosSlide {
-  display: inline-block;
-  animation: 25s slide infinite linear;
-}
+  .logos:after {
+    right: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), #dee2e6);
+  }
 
-.logosSlide img {
-  height: 18rem;
-  margin: -2.5rem 0 -2.5rem 2.5rem;
-}
+  .logos:hover .logosSlide {
+    animation-play-state: paused;
+  }
 
-.comingSoon {
-  opacity: 0.5;
-}
+  .logosSlide {
+    display: inline-block;
+    animation: 25s slide infinite linear;
+  }
 
-.queueText {
-  display: flex;
-  justify-content: center;
-  font-size: 1.25rem;
-  align-items: center;
-  margin-top: 3rem;
-  font-weight: 700;
-}
+  .logosSlide img {
+    height: 18rem;
+    margin: -2.5rem 0 -2.5rem 2.5rem;
+  }
 
-.dynamic {
-  color: #2252a0;
-  margin-right: 0.625rem;
-}
+  .comingSoon {
+    opacity: 0.5;
+  }
 
-.btn {
-  width: Fill (8.625rem);
-  height: Hug 3.125rem;
-  padding: 1rem 1.5rem 1rem 1.5rem;
-  gap: 0.5rem;
-  border: none;
-  background: var(--colors-blue-blue-800, #052c65);
-  font-weight: 600;
-  font-size: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .queueText {
+    display: flex;
+    justify-content: center;
+    font-size: 1.25rem;
+    align-items: center;
+    margin-top: 3rem;
+    font-weight: 700;
+  }
 
-.btn:hover {
-  color: #f0f1f5;
-  background-color: #084298;
-}
+  .dynamic {
+    color: #2252a0;
+    margin-right: 0.625rem;
+  }
 
-.queueNowButton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 0.93rem;
-}
+  .btn {
+    width: Fill (8.625rem);
+    height: Hug 3.125rem;
+    padding: 1rem 1.5rem 1rem 1.5rem;
+    gap: 0.5rem;
+    border: none;
+    background: var(--colors-blue-blue-800, #052c65);
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn:hover {
+    color: #f0f1f5;
+    background-color: #084298;
+  }
+
+  .queueNowButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.93rem;
+  }
 </style>

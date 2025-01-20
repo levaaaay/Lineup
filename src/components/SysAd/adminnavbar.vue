@@ -28,7 +28,7 @@
               >About Us</a
             >
             <a class="nav-link" href="windows">Windows</a>
-            <a class="nav-link" href="account" v-if="isSuperAdmin">Accounts</a>
+            <a class="nav-link" href="account">Accounts</a>
             <img :src="logout" alt="logout" @click="signoff()" class="logout" />
           </div>
         </div>
@@ -55,25 +55,7 @@
         isSuperAdmin: false,
       };
     },
-    mounted () {
-        this.isAdmin();
-    },
     methods: {
-      async isAdmin() {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        const { data, error } = await supabase
-          .from("users")
-          .select("role")
-          .eq("email", session.user.email);
-
-        console.log(data)
-        if (data[0].role === "super admin") {
-          this.isSuperAdmin = true;
-        }
-      },
       scrollToAboutUs(sectionId) {
         const section = document.getElementById(sectionId);
         if (section) {

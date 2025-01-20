@@ -28,7 +28,8 @@
               >About Us</a
             >
             <a class="nav-link" href="staffSchedule">Schedule</a>
-            <a class="nav-link" href="services">Verify</a>
+            <a class="nav-link" href="services">Verify Documents</a>
+            <a class="nav-link" href="staffServicesInfo">Services</a>
             <img :src="logout" alt="logout" @click="signoff()" class="logout" />
           </div>
         </div>
