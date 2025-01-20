@@ -173,7 +173,7 @@
         } else {
           if (data[0].role === "staff") {
             this.$router.push("stafflogin");
-          } else if (data[0].role === "system admin") {
+          } else if (data[0].role === "system admin"  || data[0].role ==="super admin") {
             this.$router.push("sysadhome");
           }
         }

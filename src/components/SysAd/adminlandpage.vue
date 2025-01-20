@@ -17,7 +17,10 @@
       <span>{{ queueText }}</span>
     </div>
     <div class="queueNowButton">
-      <button class="btn btn-primary" @click="queue">View as Client</button>
+      <button class="btn btn-primary" @click="client">View as Client</button>
+    </div>
+    <div class="queueNowButton">
+      <button class="btn btn-primary" @click="staff">View as Staff</button>
     </div>
   </div>
 </template>
@@ -51,8 +54,11 @@
       this.displayName();
     },
     methods: {
-      queue() {
+      client() {
         this.$router.push({ path: "/" }).then(() => {});
+      },
+      staff() {
+        this.$router.push({ path: "/staffhome" }).then(() => {});
       },
       async getTotalQueueNumber() {
         const today = new Date(

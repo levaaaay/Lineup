@@ -75,7 +75,7 @@
                 />
                 <div v-if="showRoleDropdown" class="dropdown-menu" @click.stop>
                   <p
-                    v-for="roleOption in ['client', 'staff', 'system admin']"
+                    v-for="roleOption in ['staff', 'system admin']"
                     :key="roleOption"
                     @click="selectRole(roleOption)"
                     class="dropdown-item"
@@ -330,11 +330,12 @@
         }
 
         if (data) {
-          const sortedData = data.sort((a, b) => a.user_id - b.user_id);
+          const sortedData = data
+            .filter((item) => item.role !== "super admin")
+            .sort((a, b) => a.user_id - b.user_id);
           this.accountCount = sortedData.map((item) => ({
             email: item.email,
             role: item.role,
-            password: "hidden",
           }));
         }
       },
