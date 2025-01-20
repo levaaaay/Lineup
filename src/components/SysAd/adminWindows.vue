@@ -41,7 +41,7 @@
       <!-- Add Window Modal -->
       <div v-if="showAddModal" class="modal-box" style="padding: 1">
         <div style="display: flex; flex-direction: column">
-          <div class="modalHeader" style="display: flex; padding: 1rem">
+          <div class="modalHeader" style="display: flex; padding: 0.5rem">
             <span style="font-size: 1rem; font-weight: 600"
               >Add New Window</span
             >
@@ -55,7 +55,10 @@
           <div
             style="height: 1px; width: 100%; background-color: #ced4da"
           ></div>
-          <div class="modalBody" style="padding: 1rem">
+          <div class="modalBody" >
+            <div class="modalBoxFormTitle">
+            Enter new staff name
+            </div>
             <div class="input-group mb-3">
               <input
                 type="text"
@@ -67,7 +70,10 @@
               />
             </div>
           </div>
-          <div class="modalBody" style="padding: 1rem">
+          <div class="modalBody" >
+            <div class="modalBoxFormTitle">
+            Enter a window number
+            </div>
             <div class="input-group mb-3">
               <input
                 type="text"
@@ -79,7 +85,10 @@
               />
             </div>
           </div>
-          <div class="modalBody" style="padding: 1rem">
+          <div class="modalBody" >
+            <div class="modalBoxFormTitle">
+            Enter a new email address
+            </div>
             <div class="input-group mb-3">
               <input
                 type="text"
@@ -91,7 +100,10 @@
               />
             </div>
           </div>
-          <div class="modalBody" style="padding: 0rem">
+          <div class="modalBody" >
+            <div class="modalBoxFormTitle">
+            Enter password
+            </div>
             <div class="input-group mb-3">
               <input
                 type="password"
@@ -112,7 +124,7 @@
               display: flex;
               margin-left: auto;
               gap: 0.5rem;
-              padding: 0 1rem 1rem 1rem;
+              padding: 0 0.5rem 0.5rem 0.5rem;
             "
           >
             <button type="button" class="btn btn-secondary" @click="closeModal">
@@ -130,7 +142,6 @@
         </div>
       </div>
 
-      <!-- Edit Window Modal -->
       <div v-if="editWindow" class="modal-box" style="padding: 0">
         <div style="display: flex; flex-direction: column">
           <div class="modalHeader" style="display: flex; padding: 1rem">
@@ -146,6 +157,9 @@
             style="height: 1px; width: 100%; background-color: #ced4da"
           ></div>
           <div class="modalBody" style="padding: 1rem">
+            <div class="modalBoxFormTitle">
+            Current Staff
+            </div>
             <div class="input-group mb-3">
               <input
                 type="text"
@@ -157,6 +171,9 @@
               />
             </div>
             <div class="modalBody" style="padding: 0rem">
+              <div class="modalBoxFormTitle">
+            Window #
+            </div>
               <div class="input-group mb-3">
                 <input
                   type="text"
@@ -610,6 +627,12 @@
   .modal-box button {
     margin-top: 20px;
     padding: 10px 20px;
+  }
+
+  .modalBoxFormTitle {
+    font-weight: 800;
+    display: flex;
+    padding: 5px
   }
 
   .statusButton {

@@ -510,6 +510,8 @@
     text-align: center;
   }
 
+  
+
   .modal-box button {
     margin-top: 20px;
     padding: 10px 20px;

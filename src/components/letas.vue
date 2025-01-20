@@ -109,7 +109,9 @@
         return this.ticketCount.slice(start, end);
       },
       totalPages() {
-        return Math.ceil(this.ticketCount.length / this.ticketsPerPage);
+      return this.ticketCount.length === 0
+        ? 1
+        : Math.ceil(this.ticketCount.length / this.ticketsPerPage);
       },
     },
     mounted() {
