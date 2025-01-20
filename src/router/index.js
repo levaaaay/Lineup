@@ -76,7 +76,7 @@ const routes = [
     path: '/account',
     name: 'account',
     component: SysaddAcc,
-    meta: { requireAdmin: true }
+    meta: { requireSuperAdmin: true }
   },
   {
     path: '/info',
@@ -122,7 +122,7 @@ async function directUser(next) {
   } else {
       if (data[0].role === "staff") {
         next("stafflogin");
-      } else if (data[0].role === "system admin") {
+      } else if (data[0].role === "system admin" || data[0].role ==="super admin") {
         next("sysadhome");
       }
     }
@@ -168,7 +168,7 @@ async function getStaff(next) {
   } else {
     if (data[0].role === "staff") {
       next();
-    } else if (data[0].role === "system admin") {
+    } else if (data[0].role === "system admin" || data[0].role ==="super admin") {
       next();
     } 
   }
@@ -192,7 +192,7 @@ async function getAdmin(next) {
   } else {
     if (data[0].role === "staff") {
       next("/staffhome");
-    } else if (data[0].role === "system admin") {
+    } else if (data[0].role === "system admin" || data[0].role ==="super admin") {
       next();
     } 
   }
@@ -209,6 +209,8 @@ router.beforeEach((to, from, next) => {
     directUser(next);
   }
   else if (to.meta.requireAdmin) {
+    getAdmin(next);
+  } else if (to.meta.requireSuperAdmin) {
     getAdmin(next);
   }
   else {

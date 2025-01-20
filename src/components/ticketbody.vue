@@ -4,12 +4,15 @@
       <h1 style="padding: 2rem 0 0 0">Ticket</h1>
     </div>
     <div style="display: flex; justify-content: center">
-      <div class="dispenser" style="
+      <div
+        class="dispenser"
+        style="
           width: 53.5rem;
           height: 5px;
           background-color: #adadad;
           border-radius: 10px;
-        "></div>
+        "
+      ></div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center">
       <div class="ticket" v-if="noTicketIsVisible">
@@ -17,15 +20,26 @@
           <p style="font-weight: 700; font-size: 1rem">
             Enter Reference Number
           </p>
-          <div style="
+          <div
+            style="
               display: flex;
               align-items: center;
               gap: 0.5rem;
               margin: 1rem 1rem 1rem 1rem;
-            ">
-            <input type="text" class="form-control" placeholder="Reference #" aria-label="reference"
-              aria-describedby="basic-addon1" v-model="reference" style="width: 20vw" />
-            <button @click="findRef" style="
+            "
+          >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Reference #"
+              aria-label="reference"
+              aria-describedby="basic-addon1"
+              v-model="reference"
+              style="width: 20vw"
+            />
+            <button
+              @click="findRef"
+              style="
                 width: 4.9375rem;
                 height: 2rem;
                 background-color: #084298;
@@ -33,7 +47,8 @@
                 border-radius: 5px;
                 color: white;
                 font-size: 0.875rem;
-              ">
+              "
+            >
               Confirm
             </button>
           </div>
@@ -48,32 +63,38 @@
           <div class="infobox">
             <span class="boldtext">Date: </span>
             <span style="color: #084298; font-weight: 700; margin-left: 0.5vw">
-              {{ queueDate }}</span>
+              {{ queueDate }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Queue Number: </span>
             <span style="color: #084298; font-weight: 700; margin-left: 0.5vw">
-              {{ queueNumber }}</span>
+              {{ queueNumber }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Transaction: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ transaction }}</span>
+              {{ transaction }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Estimated Transaction Time: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ estimatedWait }}</span>
+              {{ estimatedWait }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Reference Number: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ referenceNumber }}</span>
+              {{ referenceNumber }}</span
+            >
           </div>
           <div class="infobox">
             <span class="boldtext">Status: </span>
             <span style="color: #68717a; margin-left: 0.5vw">
-              {{ status }}</span>
+              {{ status }}</span
+            >
           </div>
         </div>
       </div>
@@ -87,178 +108,178 @@
 </template>
 
 <script>
-import { supabase } from "../client/supabase";
-import refreshButton from "@/assets/refreshButton.svg";
+  import { supabase } from "../client/supabase";
+  import refreshButton from "@/assets/refreshButton.svg";
 
-export default {
-  name: "ticketbody",
-  data() {
-    return {
-      noTicketIsVisible: false,
-      queueDate: null,
-      queueNumber: null,
-      transaction: null,
-      estimatedWait: null,
-      referenceNumber: null,
-      status: null,
-      reference: "",
-      refreshButton,
-    };
-  },
-  mounted() {
-    this.showTicketDetails();
-  },
-  methods: {
-    gotoSchedule() {
-      this.$router.push("schedule");
+  export default {
+    name: "ticketbody",
+    data() {
+      return {
+        noTicketIsVisible: false,
+        queueDate: null,
+        queueNumber: null,
+        transaction: null,
+        estimatedWait: null,
+        referenceNumber: null,
+        status: null,
+        reference: "",
+        refreshButton,
+      };
     },
-    convertMinutes(minutes) {
-      const hours = Math.floor(minutes / 60);
-      const remainingMinutes = minutes % 60;
-
-      if (hours === 0) {
-        if (remainingMinutes === 1) return `${remainingMinutes} minute`
-        return `${remainingMinutes} minutes`;
-      } else if (remainingMinutes === 0) {
-        if (hours === 1) return `${hours} hour`
-        return `${hours} hours`;
-      } else {
-        return `${hours} hours and ${remainingMinutes} minutes`;
-      }
+    mounted() {
+      this.showTicketDetails();
     },
-    async showTicketDetails() {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+    methods: {
+      gotoSchedule() {
+        this.$router.push("schedule");
+      },
+      convertMinutes(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
 
-      if (session) {
+        if (hours === 0) {
+          if (remainingMinutes === 1) return `${remainingMinutes} minute`
+          return `${remainingMinutes} minutes`;
+        } else if (remainingMinutes === 0) {
+          if (hours === 1) return `${hours} hour`
+          return `${hours} hours`;
+        } else {
+          return `${hours} hours and ${remainingMinutes} minutes`;
+        }
+      },
+      async showTicketDetails() {
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (session) {
+          const { data, error } = await supabase
+            .from("tickets")
+            .select(
+              "email, ticket_number, transaction, queue_time, reference_number, status, time_generated, queue_date"
+            )
+            .eq("email", session.user.email);
+
+          if (data && data.length > 0) {
+            this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
+            this.transaction = data[0].transaction;
+            this.estimatedWait = this.convertMinutes(data[0].queue_time);
+            this.queueDate = data[0].queue_date;
+            this.referenceNumber = data[0].reference_number;
+            this.status = data[0].status;
+          } 
+          else {
+            this.noTicketIsVisible = true;
+          }
+        }
+      },
+      async findRef() {
+        this.referenceNumber = this.reference
         const { data, error } = await supabase
           .from("tickets")
           .select(
-            "email, ticket_number, transaction, queue_time, reference_number, status, time_generated, queue_date"
+            "ticket_number, transaction, queue_time, reference_number, status, queue_date"
           )
-          .eq("email", session.user.email);
+          .eq("reference_number", this.referenceNumber);
 
         if (data && data.length > 0) {
+          this.queueDate = data[0].queue_date;
           this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
           this.transaction = data[0].transaction;
           this.estimatedWait = this.convertMinutes(data[0].queue_time);
-          this.queueDate = data[0].queue_date;
           this.referenceNumber = data[0].reference_number;
           this.status = data[0].status;
+          this.noTicketIsVisible = false;
         }
-        else {
-          this.noTicketIsVisible = true;
-        }
-      }
+      },
     },
-    async findRef() {
-      const { data, error } = await supabase
-        .from("tickets")
-        .select(
-          "ticket_number, transaction, queue_time, reference_number, status, queue_date"
-        )
-        .eq("reference_number", this.reference);  
-      if (data && data.length > 0) {
-        this.queueDate = data[0].queue_date;
-        this.queueNumber = String(data[0].ticket_number).padStart(3, "0");
-        this.transaction = data[0].transaction;
-        this.estimatedWait = this.convertMinutes(data[0].queue_time);
-        this.referenceNumber = data[0].reference_number;
-        this.status = data[0].status;
-        this.noTicketIsVisible = false;
-      } else {
-        alert("Reference number not found.");
-      }
-    }
-  },
-};
+  };
 </script>
 
 <style scoped>
-.ticket {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 37.5vw;
-  height: 52vh;
-  background-color: white;
-}
+  .ticket {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 37.5vw;
+    height: 52vh;
+    background-color: white;
+  }
 
-.ticketBorder {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 33vw;
-  height: 43vh;
-  border: 5px solid #031633;
-  border-radius: 10px;
-  padding: 1rem 0 0 0;
-}
+  .ticketBorder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 33vw;
+    height: 43vh;
+    border: 5px solid #031633;
+    border-radius: 10px;
+    padding: 1rem 0 0 0;
+  }
 
-.queue {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 8.625rem;
-  height: 3rem;
-  border: none;
-  background-color: #084298;
-  border-radius: 10px;
-  color: white;
-  font-weight: 600;
-}
+  .queue {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 8.625rem;
+    height: 3rem;
+    border: none;
+    background-color: #084298;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+  }
 
-.queue:hover {
-  background-color: #085ad4;
-}
+  .queue:hover {
+    background-color: #085ad4;
+  }
 
-.infobox {
-  display: flex;
-  align-items: center;
-  width: 28vw;
-  height: 5vh;
-  background-color: white;
-  border: 1px solid #dee2e6;
-  border-radius: 10px;
-  margin-bottom: 1.5vh;
-  padding-left: 2vh;
-  font-size: 0.9vw;
-}
+  .infobox {
+    display: flex;
+    align-items: center;
+    width: 28vw;
+    height: 5vh;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    margin-bottom: 1.5vh;
+    padding-left: 2vh;
+    font-size: 0.9vw;
+  }
 
-.boldtext {
-  color: #68717a;
-  font-weight: 700;
-}
+  .boldtext {
+    color: #68717a;
+    font-weight: 700;
+  }
 
-.refresh-button {
-  background-color: #084298;
-  border: none;
-  border-radius: 50%;
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+  .refresh-button {
+    background-color: #084298;
+    border: none;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
 
-.refresh-button img {
-  width: 2.5rem;
-  height: 2.5rem;
-  filter: invert(1);
-}
+  .refresh-button img {
+    width: 2.5rem;
+    height: 2.5rem;
+    filter: invert(1);
+  }
 
-.refresh-button:hover {
-  background-color: #085ad4;
-}
+  .refresh-button:hover {
+    background-color: #085ad4;
+  }
 
-.refreshcontainer {
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 20rem;
-}
+  .refreshcontainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 20rem;
+  }
 </style>

@@ -232,8 +232,8 @@
           { id: 3, key: "LawEnforcement", limit: "LawEnforcementLimit" },
         ];
 
-        // Build a date range for the next 5 days
-        const dateRanges = Array.from({ length: 5 }, (_, i) => {
+        // Build a date range for the next 7 days
+        const dateRanges = Array.from({ length: 7 }, (_, i) => {
           const currentDay = new Date(today);
           currentDay.setDate(today.getDate() + i);
           const dateString = currentDay.toISOString().split("T")[0];
@@ -264,7 +264,7 @@
 
         // Process tickets locally
         services.forEach((service) => {
-          const counts = Array(5).fill(0);
+          const counts = Array(7).fill(0);
 
           dateRanges.forEach((range, i) => {
             counts[i] = tickets.filter((ticket) => {
@@ -288,7 +288,7 @@
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const formattedQueueDate = `${year}-${month}-${day}`;
         const startDate = new Date(formattedQueueDate);
-        const daysRange = 5;
+        const daysRange = 7;
 
         services.forEach((service) => {
           this[service.limit] = new Array(daysRange).fill(0);
@@ -441,7 +441,7 @@
         const days = [];
         const today = new Date();
 
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 7; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() + i);
 
