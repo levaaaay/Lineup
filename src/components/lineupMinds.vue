@@ -50,14 +50,14 @@ export default {
           name: "Nicky Ronald Y. Cadalig Jr.",
           position: "Frontend Developer",
           github: "https://github.com/levaaaay",
-          linkedin: "https://github.com/levaaaay",
+          linkedin: "https://www.linkedin.com/in/cadalig-nicky-38a856340/",
           img: nicky,
         },
         {
           name: "Gabriel Mark A. Capalad",
           position: "UI/UX Designer",
           github: "https://github.com/gemcapalad",
-          linkedin: "https://github.com/levaaaay",
+          linkedin: "https://www.linkedin.com/in/gabrielmarkcapalad/",
           img: gem,
         },
         {
@@ -137,10 +137,12 @@ export default {
 .git {
   width: 3rem;
   height: 3rem;
+  cursor: pointer;
 }
 
 .linked {
   width: 3rem;
   height: 3rem;
+  cursor: pointer;
 }
 </style>
