@@ -6,9 +6,10 @@
     <div class="container">
       <div class="boxHeader">
         <div class="boxHeaderTexts">
-          <p>#</p>
-          <p>Email</p>
+          <p>Window #</p>
           <p>Role</p>
+          <p>Current Staff</p>
+          <p></p>
           <p></p>
         </div>
       </div>
@@ -19,18 +20,23 @@
           :key="index"
         >
           <p>{{ index + 1 }}</p>
-          <p>{{ item.email }}</p>
           <p>{{ item.role }}</p>
+          <p>{{ item.email }}</p>
           <div class="statusBox">
             <button class="statusButton" @click.stop="editAccount(index)">
-              edit
+              Edit Window
+            </button>
+          </div>
+          <div class="statusBox">
+            <button class="statusButton" @click.stop="editAccount(index)">
+              View Logs
             </button>
           </div>
         </div>
       </div>
-      <div class="boxHeader" @click="addAccountModal">
-        <div class="boxHeaderTexts">
-          <p>+ Add New Account</p>
+      <div class="newWindow" @click="addAccountModal">
+        <div class="newWindowText">
+          <p>+ Add New Window</p>
         </div>
       </div>
       <div v-if="blur" class="overlay" @click="closeModal"></div>
@@ -209,7 +215,7 @@
         showEditAccount: false,
         blur: false,
         showRoleDropdown: false,
-        email: "",
+        currentStaff: "",
         role: "",
         password: "",
         editingIndex: null,
@@ -376,6 +382,18 @@
     width: 100%;
   }
 
+  .newWindow {
+    display: flex;
+    align-items: center;
+    background: #031633;
+  }
+  
+  .newWindowText p{
+    color: white;
+    font-weight: bold;
+    align-items: center;
+  }
+
   .boxHeaderTexts p {
     color: white;
     font-weight: bold;
@@ -403,22 +421,24 @@
   .boxHeaderTexts p:nth-child(1),
   .ticketBox p:nth-child(1) {
     flex: 1;
+    text-align: left;
   }
 
   .boxHeaderTexts p:nth-child(2),
   .ticketBox p:nth-child(2) {
-    flex: 3;
+    flex: 1;
     text-align: left;
   }
 
   .boxHeaderTexts p:nth-child(3),
   .ticketBox p:nth-child(3) {
     flex: 2;
+    text-align: left;
   }
 
   .boxHeaderTexts p:nth-child(4),
   .ticketBox p:nth-child(4) {
-    flex: 2;
+    flex: 1;
   }
 
   .boxHeaderTexts p:nth-child(5),
@@ -495,21 +515,20 @@
   }
 
   .statusButton {
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    height: 2.2rem;
     background: none;
     border: none;
-    font-size: 1rem;
+    font-size: 0.8rem;
     cursor: pointer;
+    background-color: #ebe5fc;
+    border-radius: 10px;
+    font-weight: 600;
   }
 
   .statusBox {
     position: relative;
     overflow: visible;
-    width: 13.125rem;
-    height: 2rem;
-    background-color: #ebe5fc;
-    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
