@@ -26,6 +26,9 @@
     <div class="queueNowButton">
       <button class="btn btn-primary" @click="queue">Queue Now</button>
     </div>  
+    <div class="queueNowButton">
+      <button class="btn btn-primary" @click="queue">Back to SysAdmin View</button>
+    </div>
   </div>
 </template>
 
