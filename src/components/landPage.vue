@@ -27,7 +27,7 @@
       <button class="btn btn-primary" @click="queue">Queue Now</button>
     </div>  
     <div class="queueNowButton">
-      <button class="btn btn-primary" @click="queue">Back to SysAdmin View</button>
+      <button class="btn btn-primary" @click="direct" v-if="isSuperAdmin">Back to SysAdmin View</button>
     </div>
   </div>
 </template>
@@ -52,12 +52,31 @@
         psaLogo,
         queueText: "in queue today.",
         queueNumber: null,
+        isSuperAdmin: false,
       };
     },
     mounted() {
       this.getTotalQueueNumber();
+      this.isAdmin();
     },
     methods: {
+      async isAdmin() {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        const { data, error } = await supabase
+          .from("users")
+          .select("role")
+          .eq("email", session.user.email);
+
+        if (data[0].role === "super admin" || data[0].role === "system admin") {
+          this.isSuperAdmin = true;
+        }
+      },
+      direct() {
+       this.$router.push("sysadhome");
+      },
       queue() {
         this.$router.push({ name: "schedule" }).then(() => {});
       },
