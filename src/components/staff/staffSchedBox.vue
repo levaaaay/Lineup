@@ -82,7 +82,7 @@
                     @click="showQueueModal(day, 'LawEnforcement')"
                     :disabled="day.disabled"
                   >
-                    <span>LETAS</span>
+                    <span>Law Enforcement</span>
                     <span class="counter"
                       >{{ day.LETAS }}/{{ day.LETASLimit }}</span
                     >

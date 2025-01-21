@@ -74,7 +74,7 @@ import { supabase } from "../client/supabase";
 import x from "@/assets/x-lg.svg";
 
 export default {
-  name: "letas",
+  name: "licensing",
   data() {
     return {
       ticketCount: [],

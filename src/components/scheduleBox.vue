@@ -66,7 +66,7 @@
                     selected: day.selectedService === 'LETAS',
                     disabled: day.LETAS >= day.LETASLimit,
                   }" :disabled="day.LETAS >= day.LETASLimit || day.disabled" @click="selectService('LETAS', index)">
-                    <span>LETAS</span>
+                    <span style="font-size: 1.3rem;">Law Enforcement</span>
                     <span class="counter" :class="queueNumberColor(day.LETAS, day.LETASLimit)">
                       {{ day.LETAS }}/{{ day.LETASLimit }}
                     </span>

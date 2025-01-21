@@ -74,7 +74,7 @@ import { supabase } from "../client/supabase";
 import x from "@/assets/x-lg.svg";
 
 export default {
-  name: "letas",
+  name: "registration",
   data() {
     return {
       ticketCount: [],
@@ -246,7 +246,7 @@ export default {
   cursor: not-allowed;
 }
 
-.letas {
+.registration {
   background: #e9ecef;
 }
 

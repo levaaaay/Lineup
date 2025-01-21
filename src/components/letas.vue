@@ -1,7 +1,7 @@
 <template>
   <div class="letas">
     <div class="globalHeader">
-      <h1>LETAS</h1>
+      <h1>Law Enforcement</h1>
     </div>
     <div class="container">
       <div class="boxHeader">
