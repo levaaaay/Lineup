@@ -29,7 +29,7 @@
 
     <div class="textLink">
       <p>Click here for </p>
-      <a href="https://www.ltoncr.com/wp-content/uploads/2023/07/LTO-CITIZENS-CHARTER-2023.pdf">
+      <a href="https://www.ltoncr.com/wp-content/uploads/2023/07/LTO-CITIZENS-CHARTER-2023.pdf" target="_blank">
         LTO Manual of Operations
       </a>
     </div>

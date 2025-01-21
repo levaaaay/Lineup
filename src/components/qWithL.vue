@@ -91,7 +91,7 @@ export default {
 <style scoped>
 .qWithL {
     background: #DEE2E6;
-    height: 39.3rem;
+    height: 47rem;
 }
 
 .qWithLHeader {
@@ -116,12 +116,11 @@ export default {
 
 .carousel {
     max-width: 69.75rem; 
-    height: auto;  
     margin: 0 auto; 
 }
 
 .carousel-inner {
-    height: 25rem; 
+    height: 35rem; 
 }
 
 .carousel-item img {
