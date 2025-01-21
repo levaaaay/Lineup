@@ -52,7 +52,7 @@
           type="text"
           v-model="editingService.time"
           class="modal-input"
-          placeholder="Transaction Time(In Minutes)"
+          placeholder="Transaction Time (In Minutes)"
         />
       </div>
       <div class="modalFooter">

@@ -79,7 +79,7 @@
             </button>
             <button type="button" class="btn btn-primary specbtn" style="border: none; background-color: #031633"
               @click="addAccount">
-              confirm
+              Confirm
             </button>
           </div>
         </div>
@@ -129,7 +129,7 @@
             </button>
             <button type="button" class="btn btn-primary specbtn" style="border: none; background-color: #031633"
               @click="confirmAccount">
-              confirm
+              Confirm
             </button>
           </div>
         </div>
