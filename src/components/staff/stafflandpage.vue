@@ -69,6 +69,9 @@
           .select("role")
           .eq("email", session.user.email);
 
+        if (data.length === 0) {
+          return;
+        }
         if (data[0].role === "super admin" || data[0].role === "system admin") {
           this.isSuperAdmin = true;
         }
@@ -100,19 +103,17 @@
 
         if (session) {
           const { data, error } = await supabase
-            .from("users")
-            .select("window_number")
+            .from("windows")
+            .select("window_number, current_staff")
             .eq("email", session.user.email);
 
           this.windowNumber = data[0].window_number;
+          this.name = data[0].current_staff;
+          if (error) {
+            console.error(error);
+            return;
+          }
         }
-
-        const { data } = await supabase
-          .from("windows")
-          .select("current_staff")
-          .eq("window_number", this.windowNumber);
-
-        this.name = data[0].current_staff;
       },
     },
   };

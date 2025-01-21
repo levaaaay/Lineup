@@ -77,9 +77,12 @@ import { supabase } from "../client/supabase";
           .select("role")
           .eq("email", session.user.email);
 
-        if (data[0].role === "super admin" || data[0].role === "system admin") {
-          this.isSuperAdmin = true;
-        }
+          if (data.length === 0){
+          return;
+          }
+          if (data[0].role === "super admin" || data[0].role === "system admin") {
+            this.isSuperAdmin = true;
+          }
       },
       direct() {
        this.$router.push("sysadhome");

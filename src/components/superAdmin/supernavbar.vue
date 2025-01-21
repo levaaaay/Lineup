@@ -24,7 +24,6 @@
             id="navbarNavAltMarkup"
           >
             <div class="navbar-nav">
-              <a class="nav-link" href="windows">Windows</a>
               <a class="nav-link" href="report">Reports</a>
               <img :src="logout" alt="logout" @click="signoff()" class="logout" />
             </div>

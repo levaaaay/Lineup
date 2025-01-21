@@ -134,6 +134,7 @@
         this.$router.push("schedule");
       },
       async convertMinutes(minutes, transaction, ticket_number) {
+        let totalRemainingTime;
         const now = new Date();
         const date = new Date(now);
         const year = date.getFullYear();
@@ -152,13 +153,13 @@
         const filteredData = data.filter(
           (item) => item.ticket_number < ticket_number
         );
-
-        const totalRemainingTime = filteredData.reduce((sum, item) => {
-          return sum + (item.queue_time || 0); 
-        }, 0);
-
-        console.log("Total Remaining Time:", totalRemainingTime);
-        const totalMinutes = minutes + totalRemainingTime
+        if (filteredData == 0) {
+          totalRemainingTime = 1
+        } else{
+          totalRemainingTime = Math.ceil((filteredData.length) / 10);
+        }
+        
+        const totalMinutes = minutes * totalRemainingTime 
         const hours = Math.floor(totalMinutes / 60);
         const remainingMinutes = totalMinutes % 60;
 
@@ -231,7 +232,8 @@
           this.transaction = data[0].transaction;
           this.estimatedWait = await this.convertMinutes(
             data[0].queue_time,
-            data[0].transaction
+            data[0].transaction,
+            data[0].ticket_number
           );
           this.referenceNumber = data[0].reference_number;
           this.status = data[0].status;

@@ -111,9 +111,6 @@
                     {{ roleOption }}
                   </p>
                 </div>
-                <button class="delete-button" @click="deleteWindowModal">
-                  Delete Account
-                </button>
               </div>
             </div>
           </div>

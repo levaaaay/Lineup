@@ -106,12 +106,14 @@ const routes = [
   {
     path: '/superHome',
     name: 'superHome',
-    component: superHome
+    component: superHome,
+    meta: { requireSuperAdmin: true }
   },
   {
     path: '/report',
     name: 'report',
-    component: report
+    component: report,
+    meta: { requireSuperAdmin: true }
   }
 ];
 
@@ -137,8 +139,10 @@ async function directUser(next) {
   } else {
       if (data[0].role === "staff") {
         next("stafflogin");
-      } else if (data[0].role === "system admin" || data[0].role ==="super admin") {
+      } else if (data[0].role === "system admin") {
         next("sysadhome");
+      } else if (data[0].role ==="super admin") {
+        next("superHome");
       }
     }
 }

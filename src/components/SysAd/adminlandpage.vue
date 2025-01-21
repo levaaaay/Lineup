@@ -22,6 +22,11 @@
     <div class="queueNowButton">
       <button class="btn btn-primary" @click="staff">View as Staff</button>
     </div>
+    <div class="queueNowButton">
+      <button class="btn btn-primary" @click="direct" v-if="isSuperAdmin">
+        Back to Superadmin View
+      </button>
+    </div>
   </div>
 </template>
 
@@ -47,18 +52,40 @@
         lineupLogo,
         queueText: "in queue today.",
         queueNumber: null,
+        isSuperAdmin: false,
       };
     },
     mounted() {
       this.getTotalQueueNumber();
       this.displayName();
+      this.isAdmin();
     },
     methods: {
+      async isAdmin() {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        const { data, error } = await supabase
+          .from("users")
+          .select("role")
+          .eq("email", session.user.email);
+
+        if (data.length === 0) {
+          return;
+        }
+        if (data[0].role === "super admin") {
+          this.isSuperAdmin = true;
+        }
+      },
       client() {
-        this.$router.push({ path: "/" }).then(() => {});
+        this.$router.push({ path: "/" });
       },
       staff() {
-        this.$router.push({ path: "/staffhome" }).then(() => {});
+        this.$router.push({ path: "/staffhome" });
+      },
+      direct() {
+        this.$router.push({ path: "/superHome" });
       },
       async getTotalQueueNumber() {
         const today = new Date(

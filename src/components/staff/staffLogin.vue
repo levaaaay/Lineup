@@ -74,7 +74,7 @@
 
         if (session) {
           const { data, error } = await supabase
-            .from("users")
+            .from("windows")
             .select("window_number")
             .eq("email", session.user.email);
           this.windowNumber = data[0].window_number;
