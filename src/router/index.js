@@ -13,6 +13,8 @@ import info from '@/views/info.vue';
 import staffServicesInfo from '@/views/staffServices.vue';
 import windows from '@/views/windows.vue';
 import staffLogin from '@/views/staffLogin.vue';
+import superHome from '@/views/superHome.vue';
+import report from '@/views/reportPage.vue';
 import { supabase } from "../client/supabase";
 
 let email;
@@ -100,6 +102,16 @@ const routes = [
     name: 'staffLogin',
     component: staffLogin,
     meta: { requireStaff: true }
+  },
+  {
+    path: '/superHome',
+    name: 'superHome',
+    component: superHome
+  },
+  {
+    path: '/report',
+    name: 'report',
+    component: report
   }
 ];
 
