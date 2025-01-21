@@ -134,17 +134,24 @@
         this.$router.push("schedule");
       },
       async convertMinutes(minutes, transaction, ticket_number) {
-        let totalRemainingTime;
         const now = new Date();
         const date = new Date(now);
         const year = date.getFullYear();
         const day = String(date.getDate()).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const formattedQueueDate = `${year}-${month}-${day}`;
+
+        const { data: transactions, error: transactionError } = await supabase
+          .from("tickets")
+          .select("parent_service_id")
+          .eq("transaction", transaction)
+
+        const parent_id = transactions[0].parent_service_id;
+        
         const { data, error } = await supabase
           .from("tickets")
           .select("queue_time, ticket_number")
-          .eq("transaction", transaction)
+          .eq("parent_service_id", parent_id)
           .gte("queue_date", `${formattedQueueDate} 00:00:00`)
           .lte("queue_date", `${formattedQueueDate} 23:59:59`)
           .neq("status", "Reject")
@@ -153,13 +160,11 @@
         const filteredData = data.filter(
           (item) => item.ticket_number < ticket_number
         );
-        if (filteredData == 0) {
-          totalRemainingTime = 1
-        } else{
-          totalRemainingTime = Math.ceil((filteredData.length) / 10);
-        }
+    
+        const totalRemainingTime = Math.ceil((filteredData.length) / 10);
         
-        const totalMinutes = minutes * totalRemainingTime 
+        
+        const totalMinutes = minutes + (totalRemainingTime * 60)
         const hours = Math.floor(totalMinutes / 60);
         const remainingMinutes = totalMinutes % 60;
 
