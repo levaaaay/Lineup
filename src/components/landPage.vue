@@ -23,19 +23,21 @@
       <div class="dynamic">{{ queueNumber }}</div>
       <span>{{ queueText }}</span>
     </div>
-    <div class="queueNowButton">
-      <button class="btn btn-primary" @click="queue">Queue Now</button>
+    <div class="rowAlign">
+      <div class="queueNowButton">
+        <button class="btn btn-primary" @click="queue">Queue Now</button>
+      </div>
+      <div class="queueNowButton">
+        <button class="btn btn-primary" @click="direct" v-if="isSuperAdmin">Back to SysAdmin View</button>
+      </div>
     </div>
-
     <div class="textLink">
       <p>Click here for </p>
       <a href="https://www.ltoncr.com/wp-content/uploads/2023/07/LTO-CITIZENS-CHARTER-2023.pdf" target="_blank">
         LTO Manual of Operations
       </a>
     </div>
-    <div class="queueNowButton">
-      <button class="btn btn-primary" @click="direct" v-if="isSuperAdmin">Back to SysAdmin View</button>
-    </div>
+
   </div>
 </template>
 
@@ -47,65 +49,65 @@ import birLogo from "@/assets/birLogo.svg";
 import psaLogo from "@/assets/psaLogo.svg";
 import { supabase } from "../client/supabase";
 
-  export default {
-    name: "landPage",
-    data() {
-      return {
-        headerLine1: "Queue at the comfort of your home",
-        ltoLogo,
-        dfaLogo,
-        prcLogo,
-        birLogo,
-        psaLogo,
-        queueText: "in queue today.",
-        queueNumber: null,
-        isSuperAdmin: false,
-      };
-    },
-    mounted() {
-      this.getTotalQueueNumber();
-      this.isAdmin();
-    },
-    methods: {
-      async isAdmin() {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
+export default {
+  name: "landPage",
+  data() {
+    return {
+      headerLine1: "Queue at the comfort of your home",
+      ltoLogo,
+      dfaLogo,
+      prcLogo,
+      birLogo,
+      psaLogo,
+      queueText: "in queue today.",
+      queueNumber: null,
+      isSuperAdmin: false,
+    };
+  },
+  mounted() {
+    this.getTotalQueueNumber();
+    this.isAdmin();
+  },
+  methods: {
+    async isAdmin() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-        const { data, error } = await supabase
-          .from("users")
-          .select("role")
-          .eq("email", session.user.email);
+      const { data, error } = await supabase
+        .from("users")
+        .select("role")
+        .eq("email", session.user.email);
 
-          if (data.length === 0){
-          return;
-          }
-          if (data[0].role === "super admin" || data[0].role === "system admin") {
-            this.isSuperAdmin = true;
-          }
-      },
-      direct() {
-       this.$router.push("sysadhome");
-      },
-      queue() {
-        this.$router.push({ name: "schedule" }).then(() => {});
-      },
-      async getTotalQueueNumber() {
-        const today = new Date(
-          new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
-        );
-        const currentDay = new Date(today);
-        const dateString = currentDay.toLocaleDateString("en-CA");
-        const { count, error} =
-          await supabase
-            .from("tickets")
-            .select("ticket_id", { count: "exact", head: true })
-            .eq("queue_date", dateString);
-            
-        this.queueNumber = count;
-      },
+      if (data.length === 0) {
+        return;
+      }
+      if (data[0].role === "super admin" || data[0].role === "system admin") {
+        this.isSuperAdmin = true;
+      }
     },
-  };
+    direct() {
+      this.$router.push("sysadhome");
+    },
+    queue() {
+      this.$router.push({ name: "schedule" }).then(() => { });
+    },
+    async getTotalQueueNumber() {
+      const today = new Date(
+        new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+      );
+      const currentDay = new Date(today);
+      const dateString = currentDay.toLocaleDateString("en-CA");
+      const { count, error } =
+        await supabase
+          .from("tickets")
+          .select("ticket_id", { count: "exact", head: true })
+          .eq("queue_date", dateString);
+
+      this.queueNumber = count;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -193,7 +195,7 @@ h1 {
   width: Fill (8.625rem);
   height: Hug 3.125rem;
   padding: 1rem 1.5rem 1rem 1.5rem;
-  gap: 0.5rem;
+  margin: 1rem;
   border: none;
   background: var(--colors-blue-blue-800, #084298);
   font-weight: 600;
@@ -238,5 +240,11 @@ h1 {
   display: inline-flex;
   align-items: center;
   margin-top: 0.5rem;
+}
+
+.rowAlign {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 </style>
