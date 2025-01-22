@@ -358,6 +358,7 @@
     border: none;
     font-size: 1rem;
     cursor: pointer;
+    color: #495057;
   }
 
   .dropdownMenu {
@@ -399,7 +400,7 @@
   }
 
   .status-done {
-    color: #198754;
+    color: #28A745;
   }
 
   .status-in-progress {
@@ -453,6 +454,6 @@
     background: #ced4da;
   }
   .status-rejected {
-    color: #dc3545;
+    color: #DC3545;
   }
 </style>

@@ -345,6 +345,7 @@ export default {
   border: none;
   font-size: 1rem;
   cursor: pointer;
+  color: #495057;
 }
 
 .dropdownMenu {
@@ -386,7 +387,7 @@ export default {
 }
 
 .status-done {
-  color: #198754;
+  color: #28A745;
 }
 
 .status-in-progress {
@@ -441,6 +442,6 @@ export default {
 }
 
 .status-rejected {
-  color: #dc3545;
+  color: #DC3545;
 }
 </style>
