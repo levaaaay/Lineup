@@ -24,9 +24,6 @@
           id="navbarNavAltMarkup"
         >
           <div class="navbar-nav">
-            <a class="nav-link" @click="navigateOrScrollToAboutUs('aboutUs')"
-              >About Us</a
-            >
             <a class="nav-link" href="staffSchedule">Schedule</a>
             <a class="nav-link" href="services">Verify Documents</a>
             <a class="nav-link" href="staffServicesInfo">Services</a>
@@ -72,18 +69,6 @@
             .select("window_number")
             .eq("email", session.user.email);
           this.windowNumber = data[0].window_number;
-        }
-      },
-      scrollToAboutUs(sectionId) {
-        const section = document.getElementById(sectionId);
-        if (section) {
-          const offset = 0;
-          const elementPosition =
-            section.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({
-            top: elementPosition + offset,
-            behavior: "smooth",
-          });
         }
       },
       async signoff() {
